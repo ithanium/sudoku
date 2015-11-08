@@ -2,6 +2,8 @@ import java.io.*;
 import java.util.*;
 
 import javax.swing.Timer;
+import javax.swing.*;
+import java.awt.Color;
 
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.variables.*;
@@ -88,7 +90,286 @@ public class SudokuModel {
 	return consistent;
     }
 
-    public  boolean solveUsingBacktracking(SudokuWorld sw){
+    public void scheduleSolveFF(){
+	System.out.println("Is scheduleSolve EDT? " + SwingUtilities.isEventDispatchThread());	
+
+	ArrayList<Timer> timers81 = new ArrayList<Timer>();
+
+	Timer timerSolveGraph = viewController.theEdges.getTimerSolve();
+	timers81.add(timerSolveGraph);
+	timerSolveGraph.start();
+
+	timers.add(timers81);
+	
+	if(timers.size() == 1){ // if this is the only timer, start it
+	    // otherwise let another timer start this one when it finishes
+	    //System.out.println("Fadeout model timers = 1, start level");
+	    for(Timer t:timers.get(0)){
+		t.start();
+	    }
+	} else {
+	    //System.out.println("Fade in blocked by other animation");
+	}
+	
+    }
+
+    public SudokuModel super_getThis(){
+	return this;
+    }
+
+    public boolean solveFF(){
+	
+	System.out.println("Solving using FF");
+	System.out.println("Is solveFF EDT? " + SwingUtilities.isEventDispatchThread());
+	/*
+	try{
+	    SwingUtilities.invokeLater(new Runnable() {
+		    public void run() {
+	*/
+	int edges = 0;
+	int n = 20; // we have 20 vertices
+	int[][] A = new int[n][n];
+	int[][] R = new int[n][n];
+	
+	for(int i=0; i<9; i++){
+	    //edges from source to vars (where each var represents a sudoku cell)
+	    edges++;
+	    A[0][i+1] = 1;
+	    R[0][i+1] = 1;
+	}
+	
+	for(int i=0; i<9; i++){
+	    //edges from values (9 circles with one number on them) to sink
+	    edges++;
+	    A[i + 9 + 1][19] = 1;
+	    R[i + 9 + 1][19] = 1;
+	}
+	
+	for(int i=0; i<9; i++){
+	    for(int j=0; j< 9; j++){
+		int row = 8; ////////////
+		
+		// from VAR i to VALUE j
+		int shown_x = theGrid.sudokuCells3Now[i].x;
+		int shown_y = theGrid.sudokuCells3Now[i].y;
+		//int shown_x = row;
+		//int shown_y = i;
+		int capacity = 0;
+		if(worldPeek().grid[shown_x][shown_y].hasValue(j + 1)){
+		    capacity = 1;
+		}
+		
+		edges++;
+		A[i+1][j + 9 + 1] = capacity; ///////////// WAS 1 and it was working
+		R[i+1][j + 9 + 1] = capacity;
+	    }
+	}
+
+	System.out.println("Printing A");
+	for(int i=0; i<20; i++){
+	    for(int j=0; j<20; j++){
+		System.out.print(A[i][j] + " ");
+	    }
+	    System.out.println();
+	}
+	System.out.println("Ended printing A");
+
+	
+	System.out.println("Edges " + edges);
+	FordFulkerson ff = new FordFulkerson(super_getThis(), A, R, 20);
+	System.out.println("FF started");
+	ff.run();
+	System.out.println("Step 1 - FF finished");
+	//viewController.theEdges.applyDrawing(); // apply last green/red
+	
+	viewController.theEdges.drawMoves();
+	
+	viewController.theEdges.finishDrawing(); // hide unmatched paths
+	viewController.theGrid.finishDrawing(); // hide S/T + S/T edges
+
+	System.out.println("Printing R");
+	for(int i=0; i<20; i++){
+	    for(int j=0; j<20; j++){
+		System.out.print(R[i][j] + " ");
+	    }
+	    System.out.println();
+	}
+	System.out.println("Ended printing R");
+	
+	int newA[][] = new int[20][20];
+	int newA2[][] = new int[18][18];
+
+	for(int i=0; i<20; i++){
+	    for(int j=0; j<20; j++){
+		if(i > 0 && i < 10 && A[i][j] == 1 && A[i][j] * R[j][i] == 1){
+		    System.out.println("Edge i: "+(i)+" j:"+(j));
+		    newA[i][j] = 1;
+		}
+	    }
+	}
+
+	System.out.println("printing newA");
+
+       	for(int i=0; i<20; i++){
+	    for(int j=0; j<20; j++){
+		System.out.print(newA[i][j] + " ");
+	    }
+	    System.out.println();
+	}
+
+	System.out.println("finished printing newA");
+
+	for(int i=0; i<18; i++){
+	    for(int j=0; j<18; j++){
+		newA2[i][j] = A[i+1][j+1];
+	    }
+	}
+	
+	for(int i=0; i<18; i++){
+	    for(int j=0; j<18; j++){
+		if(newA[i+1][j+1] == 1){
+		    newA2[i][j] = 0;
+		    newA2[j][i] = 1;
+		}
+	    }
+	}
+	/*
+	//PRESENTATION EXAMPLE
+	for(int i=0; i<18; i++){
+	    for(int j=0; j<18; j++){
+		newA2[i][j] = 0;
+		// wasted right to left
+		if(i == 0 && j == 16) newA2[i][j] = 1;
+		if(i == 1 && j == 10) newA2[i][j] = 1;
+		if(i == 2 && j == 11) newA2[i][j] = 1;
+		if(i == 3 && j == 10) newA2[i][j] = 1;
+		if(i == 3 && j == 13) newA2[i][j] = 1;
+		if(i == 4 && j == 12) newA2[i][j] = 1;
+		if(i == 4 && j == 13) newA2[i][j] = 1;
+		if(i == 5 && j == 12) newA2[i][j] = 1;
+		if(i == 5 && j == 14) newA2[i][j] = 1;
+		if(i == 6 && j == 10) newA2[i][j] = 1;
+		if(i == 6 && j == 17) newA2[i][j] = 1;
+		if(i == 7 && j == 11) newA2[i][j] = 1;
+		if(i == 7 && j == 15) newA2[i][j] = 1;
+		if(i == 8 && j == 10) newA2[i][j] = 1;
+		if(i == 8 && j == 11) newA2[i][j] = 1;
+		if(i == 8 && j == 13) newA2[i][j] = 1;
+		if(i == 8 && j == 16) newA2[i][j] = 1;
+		
+		// assignments left to right
+		if(i == 9 && j == 0) newA2[i][j] = 1;
+		if(i == 10 && j == 2) newA2[i][j] = 1;
+		if(i == 11 && j == 1) newA2[i][j] = 1;
+		if(i == 12 && j == 3) newA2[i][j] = 1;
+		if(i == 13 && j == 5) newA2[i][j] = 1;
+		if(i == 14 && j == 4) newA2[i][j] = 1;
+		if(i == 15 && j == 6) newA2[i][j] = 1;
+		if(i == 16 && j == 7) newA2[i][j] = 1;
+		if(i == 17 && j == 8) newA2[i][j] = 1;
+	    }
+	}
+	*/
+	System.out.println("Printing step 2 arrow flows after maximum matching\n");
+	
+	for(int i=0; i<18; i++){
+	    System.out.print(i+": ");
+	    for(int j=0; j<18; j++){
+		if(newA2[i][j] == 1){
+		    System.out.print(j + " ");
+		    //System.out.print(newA2[i][j] + " ");
+		} else {
+		    //System.out.print("0 ");
+		}
+	    }
+	    System.out.println();
+	}
+
+       	System.out.println("\nStep 2 finished");
+
+	Tarjan tarjan = new Tarjan(this, newA2, 18);
+	ArrayList<ArrayList<Integer>> components = tarjan.run();
+
+	System.out.println("Step 3 - Tarjan finished");
+
+	int newA3[][] = new int[18][18];
+	
+	for(int u=0; u<18; u++){
+	    for(int v=0; v<18; v++){
+		if(newA2[u][v] == 0){
+		    continue;
+		}
+		
+		int start_component_id = tarjan.id(u);
+		int finish_component_id = tarjan.id(v);
+		
+		//System.out.println("u: " + u + " v: " + v + " sC: " + start_component_id + " fC: " + finish_component_id);
+
+		if(start_component_id != finish_component_id){
+		    System.out.println("Considering u: " + u + " v: " + v + " sC: " + start_component_id + " fC: " + finish_component_id);
+		    newA3[u][v] = 1;
+		}
+	    }
+	}
+
+	for(int u=0; u<18; u++){
+	    for(int v=0; v<18; v++){
+		if(newA3[u][v] == 0){
+		    continue;
+		}
+
+		if(u<9){
+		    System.out.println("Delete u: " + u + " v:" + v);
+		    
+		    int shown_x = theGrid.sudokuCells3Before[u].x;
+		    int shown_y = theGrid.sudokuCells3Before[u].y;
+
+		    // delete from sudoku
+		    worldPeek().grid[shown_x][shown_y].eliminateValue(v - (9-1));
+
+		    // repaint
+		    //theGrid.sudokuCells3Now[u].repaint();
+		    // TODO do it in one call in SudokuCell
+		    theGrid.sudokuCells3Now[u].setValuesLabel(theGrid.sudokuCells3Now[u].formatPossibleValues());
+		    theGrid.sudokuCells3Before[u].setValuesLabel(theGrid.sudokuCells3Before[u].formatPossibleValues());
+
+		} else if(u>8){
+		    //System.out.println("Assign u: " + u + " v:" + v);
+		    System.out.println("Assign v: " + v + " u:" + u); // switch
+		    
+		    int shown_x = theGrid.sudokuCells3Before[v].x;
+		    int shown_y = theGrid.sudokuCells3Before[v].y;
+
+		    // delete from sudoku
+		    worldPeek().grid[shown_x][shown_y].setValue(u - (9-1));
+		    
+		    // repaint
+		    //theGrid.sudokuCells3Now[v].repaint();
+		    // TODO do it in one call in SudokuCell
+		    theGrid.sudokuCells3Now[v].setValuesLabel(theGrid.sudokuCells3Now[v].formatPossibleValues());
+		    theGrid.sudokuCells3Before[v].setValuesLabel(theGrid.sudokuCells3Before[v].formatPossibleValues());
+
+		    // propagating on the assignment
+		    //propagateOnAssignment(shown_x, shown_y);
+		}
+	    }
+	}
+
+	System.out.println("Step 4 finished");
+
+	//propagate();
+	
+	// END
+	/*
+	  }});
+	  } catch (Exception e4){
+	  e4.printStackTrace();
+	  }
+	*/
+	return true; // not important yet
+    }
+    
+    public boolean solveUsingBacktracking(SudokuWorld sw){
 	for (int i = 0; i < SIZE; i++) {
 	    for (int j = 0; j < SIZE; j++){
 		if (sw.grid[i][j].getValue() != -1) {
@@ -340,6 +621,22 @@ public class SudokuModel {
 	    }
 	}
 
+	//////// adding the circles
+	for(int i = 0; i <11; i++){
+	    Timer timerFadeOut = theGrid.valueCircles[i].getTimerFadeOut();
+	    timers81.add(timerFadeOut);
+	    theGrid.valueCircles[i].fadeOut();
+	    timerFadeOut.start();
+	}
+	//////// end adding the circles
+
+	/////// adding lines
+	Timer timerFadeOut = viewController.theEdges.getTimerFadeOut();
+	timers81.add(timerFadeOut);
+	viewController.theEdges.fadeOut();
+	timerFadeOut.start();
+	/////// end adding the lines
+
 	timers.add(timers81);
 	
 	if(timers.size() == 1){ // if this is the only timer, start it
@@ -373,6 +670,22 @@ public class SudokuModel {
 	    }
 	}
 
+	//////// adding the circles
+	for(int i = 0; i <11; i++){
+	    Timer timerFadeOut = theGrid.valueCircles[i].getTimerFadeOut();
+	    timers81.add(timerFadeOut);
+	    theGrid.valueCircles[i].fadeOut();
+	    timerFadeOut.start();
+	}
+	//////// end adding the circles
+
+	/////// adding lines
+	Timer timerFadeOut = viewController.theEdges.getTimerFadeOut();
+	timers81.add(timerFadeOut);
+	viewController.theEdges.fadeOut();
+	timerFadeOut.start();
+	/////// end adding the lines
+	
 	timers.add(timers81);
 	
 	if(timers.size() == 1){ // if this is the only timer, start it
@@ -445,6 +758,22 @@ public class SudokuModel {
 	    }
 	}
 
+	//////// adding the circles
+	for(int i = 0; i <11; i++){
+	    Timer timerFadeOut = theGrid.valueCircles[i].getTimerFadeOut();
+	    timers81.add(timerFadeOut);
+	    theGrid.valueCircles[i].fadeOut();
+	    timerFadeOut.start();
+	}
+	//////// end adding the circles
+
+	/////// adding lines
+	Timer timerFadeOut = viewController.theEdges.getTimerFadeOut();
+	timers81.add(timerFadeOut);
+	viewController.theEdges.fadeOut();
+	timerFadeOut.start();
+	/////// end adding the lines
+
 	timers.add(timers81);
 	
 	if(timers.size() == 1){ // if this is the only timer, start it
@@ -480,14 +809,13 @@ public class SudokuModel {
 	    timerFadeIn.start();
 	}
 	//////// end adding the circles
-
+	
 	/////// adding lines
 	Timer timerFadeIn = viewController.theEdges.getTimerFadeIn();
 	timers81.add(timerFadeIn);
 	viewController.theEdges.fadeIn();
 	timerFadeIn.start();
 	/////// end adding the lines
-	
 
 	timers.add(timers81);
 	
@@ -502,6 +830,49 @@ public class SudokuModel {
 	}
     }
 
+    public void fadeInGraph(){ ///////// COMASEAZA ASTA
+	ArrayList<Timer> timers81 = new ArrayList<Timer>();
+	/*
+	// wait for it to finish
+	for(int i=0; i<9; i++){
+	    for(int j=0; j<9; j++){
+		//System.out.println("Is model EDT " + SwingUtilities.isEventDispatchThread());
+		Timer timerFadeIn = theGrid.sudokuCells[i][j].getTimerFadeIn();
+		timers81.add(timerFadeIn); //timer 2 = fadein
+		theGrid.sudokuCells[i][j].fadeIn();
+		timerFadeIn.start();
+	    }
+	}
+	*/
+	//////// adding the circles
+	for(int i = 0; i <11; i++){
+	    Timer timerFadeIn = theGrid.valueCircles[i].getTimerFadeIn();
+	    timers81.add(timerFadeIn);
+	    theGrid.valueCircles[i].fadeIn();
+	    timerFadeIn.start();
+	}
+	//////// end adding the circles
+	
+	/////// adding lines
+	Timer timerFadeIn = viewController.theEdges.getTimerFadeIn();
+	timers81.add(timerFadeIn);
+	viewController.theEdges.fadeIn();
+	timerFadeIn.start();
+	/////// end adding the lines
+
+	timers.add(timers81);
+	
+	if(timers.size() == 1){ // if this is the only timer, start it
+	    // otherwise let another timer start this one when it finishes
+	    //System.out.println("Fadeout model timers = 1, start level");
+	    for(Timer t:timers.get(0)){
+		t.start();
+	    }
+	} else {
+	    //System.out.println("Fade in blocked by other animation");
+	}
+    }
+    
     // NOTE: USES WORLDPEEK() ; DO YOU WANT OLDER ONES?
     public ArrayList<Integer> getPossibleValues(int i, int j){
 	ArrayList<Integer> possibleValues = new ArrayList<Integer>();
@@ -610,5 +981,67 @@ public class SudokuModel {
 
     public void setViewController(ViewController vc){
 	this.viewController = vc;
+    }
+
+    public void moveLeft(){
+	if(theGrid.lastSelectionWasRow){
+	    theGrid.moveRow(theGrid.lastSelectionNumber, false);
+	}
+
+	if(theGrid.lastSelectionWasColumn){
+	    theGrid.moveColumn(theGrid.lastSelectionNumber, false);
+	}
+	
+	if(theGrid.lastSelectionWasBlock){
+	    theGrid.moveBlock(theGrid.lastSelectionNumber, false);
+	}
+
+	viewController.theEdges.edgeColors  = new Color[20][20];
+
+	for(int i=0; i<20; i++){
+	    for(int j=0; j<20; j++){
+		//initially all edges are gray
+		viewController.theEdges.edgeColors[i][j] = Color.LIGHT_GRAY;
+	    }
+	}
+	
+	viewController.theEdges.moves = new ArrayList<TripletIIB>();
+	this.timers = new ArrayList<ArrayList<Timer>>();
+	theGrid.removedCellGoingToTheLeft = new int[9];
+    }
+
+    public boolean propagateOnAssignment(int shown_x, int shown_y){
+	/*
+	ArrayList<Constraint> constraints = worldPeek().grid[shown_x][shown_y].constraints; // participating constaints
+	
+	boolean consistent = true;
+	Stack<Constraint> S = new Stack<Constraint>();
+	for (Constraint c : constraints){ // add all the constraints on the stack
+	    //System.out.println("Push " + c.name);
+	    S.push(c); c.flag = true;
+	}
+	
+	while (consistent && !S.isEmpty()){
+	    Constraint c = S.pop();
+	    //System.out.println("Pop " + c.name);
+	    c.flag = false;
+	    if (c.revise()){
+		redraw();
+		consistent = c.v1.domain.cardinality() > 0;
+		///////
+		for (Constraint cv1 : c.v1.constraints){
+		    if (!cv1.flag){
+			//System.out.println("Push from var " + cv1.name);
+			S.push(cv1); cv1.flag = true;
+		    }
+		}
+		///////
+	    }
+	}
+	
+	return consistent;
+	*/
+	
+	return propagate();
     }
 }

@@ -21,7 +21,9 @@ public class Sudoku{
     public static JButton playButton;
     public static JButton choco3Button;
     public static JButton printButton;
+
     public static JButton solveFFButton;
+    public static JButton unselectButton;
     
     public static void showGUI(){
 	JFrame mainFrame = new JFrame("sudo ku");
@@ -49,15 +51,15 @@ public class Sudoku{
 
 	openFileButton = new JButton("Open");
 	openFileButton.addActionListener(new MouseListener());
-	theGridPlaceHolder.add(openFileButton);
+	//theGridPlaceHolder.add(openFileButton);
 
 	backtrackButton = new JButton("Backtrack Solve");
 	backtrackButton.addActionListener(new MouseListener());
-	theGridPlaceHolder.add(backtrackButton);
+	//theGridPlaceHolder.add(backtrackButton);
 
 	nextButton = new JButton("Start");
 	nextButton.addActionListener(new MouseListener());
-	theGridPlaceHolder.add(nextButton);
+	//theGridPlaceHolder.add(nextButton);
 
 	pauseButton = new JButton("Pause");
 	pauseButton.addActionListener(new MouseListener());
@@ -69,16 +71,20 @@ public class Sudoku{
 	
 	choco3Button = new JButton("Choco3 Solve");
 	choco3Button.addActionListener(new MouseListener());
-	theGridPlaceHolder.add(choco3Button);
+	//theGridPlaceHolder.add(choco3Button);
 	
 	printButton = new JButton("Print statement");
 	printButton.addActionListener(new MouseListener());
-	theGridPlaceHolder.add(printButton);
+	//theGridPlaceHolder.add(printButton);
 
-	solveFFButton = new JButton("Solve FF");
+	solveFFButton = new JButton("AllDifferent");
 	solveFFButton.addActionListener(new MouseListener());
 	theGridPlaceHolder.add(solveFFButton);
-	
+
+	unselectButton = new JButton("Unselect row/column/block");
+	unselectButton.addActionListener(new MouseListener());
+	theGridPlaceHolder.add(unselectButton);
+
 	//theModel.setGrid(theGrid);
 	
 	mainFrame.setVisible(true);
@@ -202,11 +208,26 @@ public class Sudoku{
 				e.printStackTrace();
 			    }
 
+			     try{
+				SwingUtilities.invokeAndWait(new Runnable() {
+					public void run() {
+					    //theModel.moveColumn(0, false);
+					    //theModel.moveRow(8, false);
+					    //theModel.fadeOutAllExceptRow(8);
+					    //theModel.solve();
+					    //theModel.moveBlock(7, false); ///// EWW it's in gridview
+					}
+				    });
+			    } catch (Exception e){
+				e.printStackTrace();
+			    }
+			     
 			    try{
 				SwingUtilities.invokeAndWait(new Runnable() {
 					public void run() {
 					    //theModel.moveColumn(0, false);
-					    //theModel.moveRow(0, false);
+					    //theModel.moveRow(8, false);
+					    //theModel.fadeOutAllExceptRow(8);
 					    //theModel.moveBlock(7, false); ///// EWW it's in gridview
 					}
 				    });
@@ -214,7 +235,28 @@ public class Sudoku{
 				e.printStackTrace();
 			    }
 
-			   
+			    try{
+				SwingUtilities.invokeAndWait(new Runnable() {
+					public void run() {
+					    //theModel.moveColumn(0, false);
+					    //theModel.moveRow(8, false);
+					    //theModel.fadeOutAllExceptRow(8);
+					    //theModel.moveBlock(7, false); ///// EWW it's in gridview
+					}
+				    });
+			    } catch (Exception e){
+				e.printStackTrace();
+			    }
+
+			    try{
+				SwingUtilities.invokeAndWait(new Runnable() {
+					public void run() {
+					    //theModel.fadeIn(); ///// EWW it's in gridview
+					}
+				    });
+			    } catch (Exception e){
+				e.printStackTrace();
+			    }
 			}
 			
 		    });
@@ -253,104 +295,48 @@ public class Sudoku{
 
 	    // Handle solve button
 	    if (e.getSource() == solveFFButton){
-		  try{
-				SwingUtilities.invokeLater(new Runnable() {
-					public void run() {
-					    Object nodes[] = new Object[20];
+		/*
+		SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>(){
+			protected Boolean doInBackground() throws Exception{
+			    theModel.solve();
+			    return true;
+			}
+		    };
+		worker.execute();
+		*/
+		
+		Thread th = new Thread(new Runnable() {
+			@Override
+			public void run() {
+			    SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>(){
+				    protected Boolean doInBackground() throws Exception{
+					//System.out.println("Is solve EDT?" + SwingUtilities.isEventDispatchThread());
+					theModel.solveFF();
+					return true;
+				    }
+				};
+			    worker.execute();
+			}});
+		
+		th.start();
+	    }
 
-					    nodes[0] = theModel.theGrid.valueCircles[0];
-					    nodes[19] = theModel.theGrid.valueCircles[10];
-					    
-					    Graph graph = new Graph();
-
-					    graph.addNode(nodes[0]);
-					    graph.addNode(nodes[19]);
-
-					    int edges = 0;
-
-					    int row = 8;
-					    
-					    for(int i=0; i<9; i++){
-						// add 9 vars for row
-						nodes[i+1] = theModel.worldPeek().grid[row][i];
-						graph.addNode(nodes[i+1]);
-					    }
-					    
-					    for(int i=1; i<10; i++){
-						// add 9 values for row
-						nodes[i+8+1] = theModel.theGrid.valueCircles[i];
-						graph.addNode(nodes[i+8+1]);
-					    }
-					    
-					    for(int i=0; i<9; i++){
-						for(int j=0; j<9; j++){
-						    // from VAR i to VALUE j
-						    //int shown_x = theModel.theGrid.sudokuCells3Now[i].x;
-						    //int shown_y = theModel.theGrid.sudokuCells3Now[i].y;
-						    int shown_x = row;
-						    int shown_y = i;
-						    
-						    if(!theModel.worldPeek().grid[shown_x][shown_y].hasValue(j + 1)){
-							continue;
-						    }
-
-						    edges++;
-						    graph.addEdge(nodes[i + 1], nodes[j+9 + 1]);
-						}
-					    }
-					    
-					    
-					    //need to be greedy?
-					    /*
-					    for(int i=0; i<9; i++){
-						for(int j=0; j<9; j++){
-						    List<Edge> edgeList = graph.edgesFrom(nodes[j+9+1]);
-
-						    int shown_x = row;
-						    int shown_y = i;
-						    
-						    if(theModel.worldPeek().grid[shown_x][shown_y].hasValue(j + 1) && edgeList.size() == 0){
-							edges++;
-							graph.addEdge(nodes[i + 1], nodes[j+9+1]);
-							System.out.println("ADDED EDGE from:" + (i+1) + " to:"+(j+9+1));
-							//i += 1;
-							break;
-						    }
-						}
-					    }
-					    */
-					    for(int i=0; i<9; i++){
-						//edges left source
-						edges++;
-						graph.addEdge(nodes[0], nodes[i+1]);
-					    }
-
-					    for(int i=0; i<9; i++){
-						//edges right target
-						edges++;
-						graph.addEdge(nodes[19], nodes[i+10]);
-					    }
-
-					    /*
-					    for(int i=0; i<20; i++){
-						System.out.println("Node" + i + " " + nodes[i]);
-					    }
-					    */
-
-					    int total = 0;
-					    for (List<Edge> edgeList : graph.graph.values()) {
-						total += edgeList.size();
-					    }
-
-					    System.out.println("Visual edges:"+edges + " in graph:"+total);
-					    
-					    FordFulkerson ff = new FordFulkerson(graph);
-					    double value = ff.maxFlow(nodes[0], nodes[19]);
-					    System.out.println("HOLY ANSWER " + value);
-					}});
-			    } catch (Exception e4){
-				e4.printStackTrace();
-			    }
+	    // Handle solve button
+	    if (e.getSource() == unselectButton){
+		Thread th = new Thread(new Runnable() {
+			@Override
+			public void run() {
+			    SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>(){
+				    protected Boolean doInBackground() throws Exception{
+					//System.out.println("Is solve EDT?" + SwingUtilities.isEventDispatchThread());
+					theModel.moveLeft();
+					return true;
+				    }
+				};
+			    worker.execute();
+			}});
+		
+		th.start();
 	    }
 	}
     }

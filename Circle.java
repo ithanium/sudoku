@@ -20,6 +20,8 @@ public class Circle extends JPanel implements ActionListener{
     private float alpha = 1f;
     private float fadeOutMinimum = 0f;
 
+    JLabel textLabel;
+
     public SudokuModel theModel;
 
     public String value;
@@ -31,36 +33,14 @@ public class Circle extends JPanel implements ActionListener{
 
 	this.theModel = theModel;
 	
-	//this.setPreferredSize(new Dimension(256, 96));
         this.setOpaque(false); // don't know why
-        //this.setBackground(Color.WHITE);
 
 	this.value = value;
 	
-	JLabel textLabel = new JLabel();
+	textLabel = new JLabel();
 	textLabel.setFont(new Font("Serif", Font.PLAIN, 30));
-	//textLabel.setVerticalAlignment(SwingConstants.CENTER);
-	//textLabel.setSize(new Dimension(50, 50));
 	textLabel.setText("<html><div style=\"text-align: center; padding-top: 5px; padding-left: 2px;\"><font color='white'>"+ value +"</font></div></html>");
-	add(textLabel);
-
-	// remove strange top padding
-	//setLayout(new FlowLayout(FlowLayout.LEADING, 0, 0));
-	//setLayout(new GridBagLayout());
-	//setMinimumSize(new Dimension(50, 50));
-	//setBackground(Color.WHITE);
-	//setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.BLACK));
-	/*
-	Box box = new Box(BoxLayout.Y_AXIS);
-	box.setMinimumSize(new Dimension(50, 50));
-	box.add(Box.createVerticalGlue());
-	//textLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-	//textLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
-	box.add(textLabel);
-	box.add(Box.createVerticalGlue());	
-	add(box);
-	*/
-	
+	add(textLabel);	
     }
     
     @Override
@@ -71,10 +51,22 @@ public class Circle extends JPanel implements ActionListener{
 	g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
 	g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 	g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-	
+
+	// for circle
 	Color prevColor = new Color(Color.BLACK.getRed(), Color.BLACK.getGreen(), Color.BLACK.getBlue(), (int)(alpha*255));
 	
 	g2d.setColor(prevColor);
+	
+	////////// do not show any lines as we do not have any
+	////////// row column or block selected
+	
+	if(theModel.theGrid.sudokuCells3Now[0] == null){
+	    textLabel.setVisible(false);
+	    return;
+	} else {
+	    textLabel.setVisible(true);
+	}
+
 	g2d.fillOval(0, 0, getWidth(), getHeight());
     }
 
