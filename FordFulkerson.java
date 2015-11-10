@@ -14,6 +14,9 @@ public class FordFulkerson {
     SudokuModel theModel;
     ArrayList<TripletIIB> moveSteps;
 
+    boolean finishedGreedyMatch = false;
+    int lastCircleVisited = 0;
+    
     FordFulkerson (SudokuModel theModel, int[][] A, int[][] R, int n){
 	this.theModel = theModel;
 
@@ -76,17 +79,32 @@ public class FordFulkerson {
 	
 	while (pred[v] != -1){
 	    int u = pred[v];
+
+	    // BEGIN GREEDY MATCH CODE
+	    if(u>9 && u<19){
+		if(u < lastCircleVisited && !finishedGreedyMatch){
+		    finishedGreedyMatch = true;
+		    theModel.viewController.theEdges.drawMovesNow();
+		    theModel.viewController.theEdges.drawPath(displayPath());
+		} else {
+		    lastCircleVisited = u;
+		}
+	    }
+	    // END GREEDY MATCH CODE
+	    
 	    R[u][v] = R[u][v] - f; // residual capacity
 	    R[v][u] = R[v][u] + f; // augmented flow
-
+		    
 	    if(u<v){
-		//theModel.viewController.theEdges.drawGreen(u, v);
-		moveSteps.add(new TripletIIB(u, v, Color.GREEN));
+		if(finishedGreedyMatch){
+		    moveSteps.add(new TripletIIB(u, v, Color.GREEN));
+		}
 	    } else {
-		//theModel.viewController.theEdges.drawRed(v, u);
-		moveSteps.add(new TripletIIB(v, u, Color.RED));
+		if(finishedGreedyMatch){
+		    moveSteps.add(new TripletIIB(v, u, Color.RED));
+		}
 	    }
-	    
+
 	    v = u;
 	}
 
@@ -100,7 +118,11 @@ public class FordFulkerson {
     void fordFulkerson(){
 	while (bfs()){
 	    if (trace){
-		theModel.viewController.theEdges.drawPath(displayPath()); //////////
+		if(finishedGreedyMatch){
+		    theModel.viewController.theEdges.drawPath(displayPath()); //////////
+		} else {
+		    theModel.viewController.theEdges.drawPathNow(displayPath()); //////////		    
+		}
 		//System.out.println(" cost: "+ minCost());
 	    }
 

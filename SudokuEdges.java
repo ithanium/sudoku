@@ -34,8 +34,7 @@ public class SudokuEdges extends JPanel implements ActionListener {
     private int offset_y;
     private int distanceBetweenCells_y;
 
-    private static final int SLEEP = 5; // THREAD SLEEP BETWEEN EDGE DRAWING
-    
+    private static final int SLEEP = 500; // THREAD SLEEP BETWEEN EDGE DRAWING
     public Color[][] edgeColors;
 
     public Color prevColor;
@@ -396,6 +395,26 @@ public class SudokuEdges extends JPanel implements ActionListener {
 	//System.out.println();
     }
 
+    public void drawPathNow(ArrayList<Integer> path){
+
+	for(int i=0; i<path.size()-1; i++){
+	    //System.out.print(path.get(i) + " ");
+	    if(path.get(i) < path.get(i+1)){
+		moves.add(new TripletIIB(path.get(i), path.get(i+1), Color.BLACK));
+		//drawBlue(path.get(i), path.get(i+1));
+		//drawBlack(path.get(i), path.get(i+1));
+	    } else {
+		moves.add(new TripletIIB(path.get(i+1), path.get(i), Color.BLACK));
+		//drawBlue(path.get(i+1), path.get(i));
+		//drawBlack(path.get(i+1), path.get(i));
+	    }
+	}
+    }
+
+    public void drawBlack(int u, int v){ // special as it doesn't repaint/sleep
+	edgeColors[u][v] = Color.BLACK;
+    }
+    
     public void drawRed(int u, int v){
 	//System.out.println("Draw red u:" + u + " v:" + v);
 	edgeColors[u][v] = Color.RED;
@@ -465,6 +484,29 @@ public class SudokuEdges extends JPanel implements ActionListener {
 	}
 		    
 	applyDrawing();
+    }
+
+    public void drawMovesNow(){
+	for(TripletIIB t:this.moves){
+	    //System.out.println("Drawing move");
+	    if(t.getC() == Color.BLACK){
+		drawBlack(t.getA(), t.getB());
+	    }
+	    
+	    //prevColor = Color.BLUE; // TODO: try to remove this?
+	}
+		    
+	//applyDrawing(); // TODO: try to remove this?
+
+	moves = new ArrayList<TripletIIB>();
+
+	try{
+	    repaint();
+		
+	    Thread.sleep(SLEEP);
+	} catch (Exception e){
+	    e.printStackTrace();
+	}
     }
 
     public Color drawColor(int u, int v){
