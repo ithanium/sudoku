@@ -40,10 +40,10 @@ public class SudokuEdges extends JPanel implements ActionListener {
     public Color prevColor;
 
     public ArrayList<TripletIIB> moves = new ArrayList<TripletIIB>();
-    
+
     public SudokuEdges(SudokuModel theModel){
 	super();
-
+	
 	this.theModel = theModel;
 
 	edgeColors  = new Color[20][20];
@@ -174,7 +174,7 @@ public class SudokuEdges extends JPanel implements ActionListener {
 	    if(drawColor(u, v) == Color.WHITE){
 		//continue;
 	    }
-	    
+
 	    g2d.setColor(drawColor(u, v));
 	    g2d.draw(new Line2D.Float(x1, y1, x2, y2));
 	}
@@ -503,7 +503,7 @@ public class SudokuEdges extends JPanel implements ActionListener {
 	try{
 	    repaint();
 		
-	    Thread.sleep(SLEEP);
+	    Thread.sleep(3000);
 	} catch (Exception e){
 	    e.printStackTrace();
 	}
@@ -549,7 +549,7 @@ public class SudokuEdges extends JPanel implements ActionListener {
 	}
 
 	if(edgeColors[u][v] == Color.WHITE){
-	    //System.out.println("Returning invisible");
+	    //System.out.println("Returning invisible for u: " + u + " v: " + v);
 	    return invisibleColor;
 	}
 	
@@ -578,15 +578,33 @@ public class SudokuEdges extends JPanel implements ActionListener {
 	}
     }
 
-    public void finishDrawing(){
-	for(int i=0; i<20; i++){
-	    for(int j=0; j<20; j++){
-		if(j<10 || i>9 || edgeColors[i][j] == Color.LIGHT_GRAY){
-		    edgeColors[i][j] = Color.WHITE;
+    public void finishDrawing(boolean alsoDeleteUnmatched){
+	if(alsoDeleteUnmatched){
+	    for(int i=0; i<20; i++){
+		for(int j=0; j<20; j++){
+		    if(j<10 || i>9 || edgeColors[i][j] == Color.LIGHT_GRAY){
+			edgeColors[i][j] = Color.WHITE;
+		    }
 		}
 	    }
 	}
+	int u = 0;
+	int v = 0;
+	
+	for(int i =0; i<9; i++){
+	    // from S to vars
+	    u = 0;
+	    v = i + 1;
+	    edgeColors[u][v] = Color.WHITE;
+	}
 
+	for(int i =0; i<9; i++){
+	    // from values to T
+	    u = i + 9 + 1;
+	    v = 19;
+	    edgeColors[u][v] = Color.WHITE;
+	}
+	
 	try{
 	    repaint();
 		
@@ -594,6 +612,22 @@ public class SudokuEdges extends JPanel implements ActionListener {
 	} catch (Exception e){
 	    e.printStackTrace();
 	}
+    }
+
+    public void makeAllEdgesGray(){
+	// make all edges gray
+	// i.e. remove black edges representing maximum matching
+	// so we can continue with tarjan
+	
+	for(int i=0; i<20; i++){
+	    for(int j=0; j<20; j++){
+		if(/*j<10 || i>9 || */edgeColors[i][j] == Color.BLACK){
+		    edgeColors[i][j] = Color.LIGHT_GRAY;
+		}
+	    }
+	}
+
+	repaint();
     }
 
     public Timer getTimerSolve(){

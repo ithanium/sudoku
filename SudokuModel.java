@@ -184,7 +184,7 @@ public class SudokuModel {
 	
 	viewController.theEdges.drawMoves();
 	
-	viewController.theEdges.finishDrawing(); // hide unmatched paths
+	viewController.theEdges.finishDrawing(false); // hide unmatched paths
 	viewController.theGrid.finishDrawing(); // hide S/T + S/T edges
 
 	System.out.println("Printing R");
@@ -287,9 +287,23 @@ public class SudokuModel {
 
        	System.out.println("\nStep 2 finished");
 
+	try{
+	    Thread.sleep(3000);
+	} catch (Exception e){
+	    e.printStackTrace();
+	}
+	
+	viewController.theEdges.makeAllEdgesGray();
+	
 	Tarjan tarjan = new Tarjan(this, newA2, 18);
 	ArrayList<ArrayList<Integer>> components = tarjan.run();
-
+	/*
+	try{
+	    Thread.sleep(3000);
+	} catch (Exception e){
+	    e.printStackTrace();
+	}
+	*/
 	System.out.println("Step 3 - Tarjan finished");
 
 	int newA3[][] = new int[18][18];
@@ -319,6 +333,40 @@ public class SudokuModel {
 		}
 
 		if(u<9){
+		    //System.out.println("Delete u: " + u + " v:" + v);
+		    
+		    int shown_x = theGrid.sudokuCells3Before[u].x;
+		    int shown_y = theGrid.sudokuCells3Before[u].y;
+
+		    viewController.theEdges.edgeColors[u+1][v+1] = Color.RED;
+
+		} else if(u>8){
+		    //System.out.println("Assign v: " + v + " u:" + u); // switch
+		    
+		    int shown_x = theGrid.sudokuCells3Before[v].x;
+		    int shown_y = theGrid.sudokuCells3Before[v].y;
+
+		    viewController.theEdges.edgeColors[v+1][u+1] = Color.BLUE;
+
+		}
+	    }
+	}
+
+	viewController.theEdges.repaint();
+
+	try{
+	    Thread.sleep(2000);
+	} catch (Exception e){
+	    e.printStackTrace();
+	}
+
+	for(int u=0; u<18; u++){
+	    for(int v=0; v<18; v++){
+		if(newA3[u][v] == 0){
+		    continue;
+		}
+
+		if(u<9){
 		    System.out.println("Delete u: " + u + " v:" + v);
 		    
 		    int shown_x = theGrid.sudokuCells3Before[u].x;
@@ -327,14 +375,11 @@ public class SudokuModel {
 		    // delete from sudoku
 		    worldPeek().grid[shown_x][shown_y].eliminateValue(v - (9-1));
 
-		    // repaint
-		    //theGrid.sudokuCells3Now[u].repaint();
-		    // TODO do it in one call in SudokuCell
+		    // TODO: in one call
 		    theGrid.sudokuCells3Now[u].setValuesLabel(theGrid.sudokuCells3Now[u].formatPossibleValues());
 		    theGrid.sudokuCells3Before[u].setValuesLabel(theGrid.sudokuCells3Before[u].formatPossibleValues());
 
 		} else if(u>8){
-		    //System.out.println("Assign u: " + u + " v:" + v);
 		    System.out.println("Assign v: " + v + " u:" + u); // switch
 		    
 		    int shown_x = theGrid.sudokuCells3Before[v].x;
@@ -342,19 +387,21 @@ public class SudokuModel {
 
 		    // delete from sudoku
 		    worldPeek().grid[shown_x][shown_y].setValue(u - (9-1));
-		    
-		    // repaint
-		    //theGrid.sudokuCells3Now[v].repaint();
-		    // TODO do it in one call in SudokuCell
+
+		    // TODO: in one call
 		    theGrid.sudokuCells3Now[v].setValuesLabel(theGrid.sudokuCells3Now[v].formatPossibleValues());
 		    theGrid.sudokuCells3Before[v].setValuesLabel(theGrid.sudokuCells3Before[v].formatPossibleValues());
 
-		    // propagating on the assignment
-		    //propagateOnAssignment(shown_x, shown_y);
 		}
 	    }
 	}
 
+	// WANT TO REMOVE THE RED EDGES? THEN UNCOMMENT
+	//viewController.theEdges.repaint(); // VERY INTERESTING, KEEP THIS COMMENT
+	
+	//viewController.theEdges.makeAllEdgesGray();
+		
+	
 	System.out.println("Step 4 finished");
 
 	//propagate();
@@ -1002,6 +1049,20 @@ public class SudokuModel {
 	    for(int j=0; j<20; j++){
 		//initially all edges are gray
 		viewController.theEdges.edgeColors[i][j] = Color.LIGHT_GRAY;
+	    }
+	}
+
+	for(int i=1; i<10; i++){
+	    // initially all circles have a black background with white text
+	    theGrid.valueCircles[i].setCircleColor(Color.BLACK);
+	    theGrid.valueCircles[i].setFontColor(Color.WHITE);
+	}
+
+	for(int i=0; i<9; i++){
+	    for(int j=0; j<9; j++){
+		// initially all vars have no background with black text
+		theGrid.sudokuCells2[i][j].setBackground(null);
+		theGrid.sudokuCells2[i][j].setFontColor(Color.BLACK);
 	    }
 	}
 	

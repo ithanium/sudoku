@@ -15,7 +15,9 @@ public class FordFulkerson {
     ArrayList<TripletIIB> moveSteps;
 
     boolean finishedGreedyMatch = false;
-    int lastCircleVisited = 0;
+    int lastVarVisited = 0;
+
+    int skippedTwoGreensCount = 0;
     
     FordFulkerson (SudokuModel theModel, int[][] A, int[][] R, int n){
 	this.theModel = theModel;
@@ -81,23 +83,31 @@ public class FordFulkerson {
 	    int u = pred[v];
 
 	    // BEGIN GREEDY MATCH CODE
-	    if(u>9 && u<19){
-		if(u < lastCircleVisited && !finishedGreedyMatch){
+	    if(u>0 && u<10){
+		if((u < lastVarVisited && !finishedGreedyMatch) || u == 9){
 		    finishedGreedyMatch = true;
+		    System.out.println("FINISHED GREEDY");
 		    theModel.viewController.theEdges.drawMovesNow();
-		    theModel.viewController.theEdges.drawPath(displayPath());
+		    if(u!=9){
+			//theModel.viewController.theEdges.drawPath(displayPath());
+		    }
 		} else {
-		    lastCircleVisited = u;
+		    lastVarVisited = u;
+		    System.out.println("lastVarVisited: " + lastVarVisited);
 		}
 	    }
+	    System.out.println("u: " + u);
 	    // END GREEDY MATCH CODE
 	    
 	    R[u][v] = R[u][v] - f; // residual capacity
 	    R[v][u] = R[v][u] + f; // augmented flow
 		    
 	    if(u<v){
-		if(finishedGreedyMatch){
+		if(finishedGreedyMatch && skippedTwoGreensCount>1){
+		    System.out.println("Draw u:"+u + " v:"+v);
 		    moveSteps.add(new TripletIIB(u, v, Color.GREEN));
+		} else {
+		    System.out.println("Skip draw u:"+u + " v:"+v);
 		}
 	    } else {
 		if(finishedGreedyMatch){
@@ -105,6 +115,10 @@ public class FordFulkerson {
 		}
 	    }
 
+	    if(finishedGreedyMatch){
+		skippedTwoGreensCount++;
+	    }
+	    
 	    v = u;
 	}
 

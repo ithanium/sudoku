@@ -1,3 +1,4 @@
+/*
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -113,3 +114,4 @@ public class Square extends JPanel implements ActionListener{
 	this.setOpaque(false);
     }
 }
+*/

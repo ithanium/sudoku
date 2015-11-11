@@ -29,6 +29,8 @@ public class SudokuCell extends JPanel implements ActionListener{
     private boolean noBoldBorder = false;
 
     public boolean notInTheGrid = false;
+
+    public Color fontColor = Color.BLACK;
         
     public SudokuCell(int x, int y){
 	super();
@@ -47,6 +49,7 @@ public class SudokuCell extends JPanel implements ActionListener{
 	*/
 	
 	valuesLabel.setFont(new Font("Serif", Font.PLAIN, 14));
+	valuesLabel.setForeground(fontColor);
 	//valuesLabel.setVerticalAlignment(SwingConstants.CENTER);
 	//valuesLabel.setSize(new Dimension(50, 50));
 	//valuesLabel.setText("<html><div style=\"text-align: center; padding-top: 3px; padding-left: 1px;\"><font color='BLACK'>1 2 3<br>4 5 6<br>7 8 9</font></div></html>");
@@ -101,7 +104,7 @@ public class SudokuCell extends JPanel implements ActionListener{
 
 	StringBuilder sb = new StringBuilder();
 	//sb.append("<html><div style=\"text-align: center;\">");
-	sb.append("<html><div style=\"text-align: center; padding-top: 3px; padding-left: 4px;\"><font color='BLACK'>");
+	sb.append("<html><div style=\"text-align: center; padding-top: 3px; padding-left: 4px;\">");
 	for(int i=1; i<=9; i++){
 	    if(possibleValues.contains(i)){
 		sb.append(i + "&nbsp;");
@@ -113,7 +116,7 @@ public class SudokuCell extends JPanel implements ActionListener{
 		sb.append("<br>");
 	    }
 	}
-	sb.append("</font></div></html>");
+	sb.append("</div></html>");
 
 	return sb.toString();
     }
@@ -301,5 +304,16 @@ public class SudokuCell extends JPanel implements ActionListener{
 	fadeInTimers.add(timer2);
 	
 	return timer2;	
+    }
+
+    public void setFontColor(Color color){
+	this.fontColor = color;
+
+	//System.out.println("SudokuCell setting font color: " + colorName);
+	valuesLabel.setForeground(fontColor);
+	// TODO: in one call
+	setValuesLabel(formatPossibleValues());
+	//valuesLabel.repaint();
+	//repaint();
     }
 }

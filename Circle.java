@@ -27,19 +27,23 @@ public class Circle extends JPanel implements ActionListener{
     public String value;
 
     private boolean fadingOut = true;
+
+    public Color fontColor = Color.WHITE;
+    public Color circleColor = Color.BLACK;
     
     public Circle(SudokuModel theModel, String value){
 	super();
 
 	this.theModel = theModel;
 	
-        this.setOpaque(false); // don't know why
+        this.setOpaque(false);
 
 	this.value = value;
 	
 	textLabel = new JLabel();
 	textLabel.setFont(new Font("Serif", Font.PLAIN, 30));
-	textLabel.setText("<html><div style=\"text-align: center; padding-top: 5px; padding-left: 2px;\"><font color='white'>"+ value +"</font></div></html>");
+	textLabel.setForeground(fontColor);
+	textLabel.setText("<html><div style=\"text-align: center; padding-top: 5px; padding-left: 2px;\">"+ value +"</div></html>");
 	add(textLabel);	
     }
     
@@ -53,10 +57,7 @@ public class Circle extends JPanel implements ActionListener{
 	g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
 	// for circle
-	Color prevColor = new Color(Color.BLACK.getRed(), Color.BLACK.getGreen(), Color.BLACK.getBlue(), (int)(alpha*255));
-	
-	g2d.setColor(prevColor);
-	
+
 	////////// do not show any lines as we do not have any
 	////////// row column or block selected
 	
@@ -67,7 +68,21 @@ public class Circle extends JPanel implements ActionListener{
 	    textLabel.setVisible(true);
 	}
 
+	Color prevColor = new Color(circleColor.getRed(), circleColor.getGreen(), circleColor.getBlue(), (int)(alpha*255));
+	
+	g2d.setColor(prevColor);
+	
 	g2d.fillOval(0, 0, getWidth(), getHeight());
+
+	prevColor = new Color(Color.BLACK.getRed(), Color.BLACK.getGreen(), Color.BLACK.getBlue(), (int)(alpha*255));
+	g2d.setColor(prevColor);
+	g2d.fillOval(0, 0, getWidth(), getHeight());
+
+	prevColor = new Color(circleColor.getRed(), circleColor.getGreen(), circleColor.getBlue(), (int)(alpha*255));
+	
+	g2d.setColor(prevColor);
+	
+	g2d.fillOval(1, 1, getWidth()-2, getHeight()-2);
     }
 
     @Override
@@ -176,5 +191,16 @@ public class Circle extends JPanel implements ActionListener{
 	fadeInTimers.add(timer2);
 	
 	return timer2;	
+    }
+
+    public void setCircleColor(Color theColor){
+	this.circleColor = theColor;
+
+	repaint();
+    }
+
+    public void setFontColor(Color colorName){
+	this.fontColor = colorName;
+	textLabel.setForeground(fontColor);
     }
 }
