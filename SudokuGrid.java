@@ -52,7 +52,7 @@ class SudokuGrid extends JPanel implements ActionListener{
 	//setBackground(new Color(0,0,0,0));
 	//this.setBackground(Color.RED);
 	// 4 is because I want the distanceBetweenCells_y to be in line with last
-	this.setPreferredSize(new Dimension(950, 550-4)); ///!!!! not minimum sau size
+	this.setPreferredSize(new Dimension(1150, 550-4)); ///!!!! not minimum sau size
         //this.setOpaque(false); // don't know why
 	//this.setVisible(true);
 	
@@ -133,7 +133,7 @@ class SudokuGrid extends JPanel implements ActionListener{
 
 	for(int i=0; i<11; i++){
 	    String value = Integer.toString(i);
-	    int circle_x = 800;
+	    int circle_x = 1000;
 	    int circle_y = (i-1) * 50 + (i-1)*distanceBetweenCells_y;
 	    if(i == 0){
 		value = "S";
@@ -141,7 +141,7 @@ class SudokuGrid extends JPanel implements ActionListener{
 		circle_y = (5-1) * 50 + (5-1)*distanceBetweenCells_y;
 	    } else if(i == 10){
 		value = "T";
-		circle_x = 900;
+		circle_x = 1100;
 		circle_y = (5-1) * 50 + (5-1)*distanceBetweenCells_y;
 	    }
 	    valueCircles[i] = new Circle(theModel, value);

@@ -28,13 +28,13 @@ public class Sudoku{
     public static void showGUI(){
 	JFrame mainFrame = new JFrame("sudo ku");
         mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        mainFrame.setSize(1000, 675);
+        mainFrame.setSize(1250, 675);
         mainFrame.setLocationRelativeTo(null);
 
 	Box box = new Box(BoxLayout.Y_AXIS);
 	
 	JPanel theGridPlaceHolder = new JPanel();
-	theGridPlaceHolder.setSize(1000,675); /////// CHECK THE SIZES
+	theGridPlaceHolder.setSize(1250,975); /////// CHECK THE SIZES
 	//theGridPlaceHolder.setBackground(Color.WHITE);////////////////////////
 	//SudokuGrid theGrid = new SudokuGrid(theModel, SIZE, SIZE);
 	//theGrid.setModel(theModel);

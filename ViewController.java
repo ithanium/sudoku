@@ -16,13 +16,13 @@ public class ViewController extends JLayeredPane { // or JLayerPane?
 	
 	//System.out.println("View controller made");
 
-	setPreferredSize(new Dimension(950, 550-4));
+	setPreferredSize(new Dimension(1200, 550-4));
 	//this.layeredPane.setBackground(Color.ORANGE);
 	//this.layeredPane.setLayout(new LayeredPaneLayout(layeredPane));
 	setLayout(new BorderLayout());
 	
 	theEdges = new SudokuEdges(theModel);
-	theEdges.setPreferredSize(new Dimension(950, 550-4));
+	theEdges.setPreferredSize(new Dimension(1200, 550-4));
 	
 	theGrid = new SudokuGrid(theModel, SIZE, SIZE);
 	//theEdges.setPreferredSize(new Dimension(950, 550));
@@ -42,8 +42,8 @@ public class ViewController extends JLayeredPane { // or JLayerPane?
 	*/
 	theEdges.setOpaque(false);
 	theGrid.setOpaque(false);
-	add(theEdges, 0, 0, 0, 950, 550-4);
-	add(theGrid, 0, 0, 1, 950, 550-4);
+	add(theEdges, 0, 0, 0, 1150, 550-4);////////////////////////////
+	add(theGrid, 0, 0, 1, 1150, 550-4); ///////////////////////////
 	//this.layeredPane.validate();
     }
 

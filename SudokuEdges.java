@@ -59,7 +59,7 @@ public class SudokuEdges extends JPanel implements ActionListener {
 	
 	//System.out.println("SudokuEdges made");
 
-	setPreferredSize(new Dimension(950, 550-4));
+	setPreferredSize(new Dimension(1200, 550-4));
 	setLayout(null);
 	//setOpaque(false);
 
@@ -69,7 +69,7 @@ public class SudokuEdges extends JPanel implements ActionListener {
 	statusLabel.setFont(new Font("Serif", Font.PLAIN, 14));
 	statusLabel.setText("<html><div align=center>Please select a row, column<br> or block</div></html>");
 	statusLabel.setSize(new Dimension(200, 50));
-	add(statusLabel, 650, getPreferredSize().height/2 - 25, statusLabel.getWidth(), statusLabel.getHeight());
+	add(statusLabel, 750, getPreferredSize().height/2 - 25, statusLabel.getWidth(), statusLabel.getHeight());
 	/*
 	printButton = new JButton("Print statement");
 	printButton.addActionListener(new MouseListener());
@@ -163,8 +163,9 @@ public class SudokuEdges extends JPanel implements ActionListener {
 	    x2 = 600;
 	    y2 = (i) * 50 + (i)*distanceBetweenCells_y;
 
-	    x1 += 25; // was 25 all four
-	    x2 += 25;
+	    // was 25 all four
+	    x1 += 50; 
+	    x2 += 0;
 	    y1 += 25;
 	    y2 += 25;
 
@@ -181,14 +182,15 @@ public class SudokuEdges extends JPanel implements ActionListener {
 
 	for(int i =0; i<9; i++){
 	    // from values to T
-	    x1 = 800;
+	    x1 = 1000;
 	    y1 = (i) * 50 + (i)*distanceBetweenCells_y;
 
-	    x2 = 900;
+	    x2 = 1100;
 	    y2 = (5-1) * 50 + (5-1)*distanceBetweenCells_y;
-	    
-	    x1 += 25;
-	    x2 += 25;
+
+	    // was 25 all four
+	    x1 += 50;
+	    x2 += 0;
 	    y1 += 25;
 	    y2 += 25;
 
@@ -216,11 +218,12 @@ public class SudokuEdges extends JPanel implements ActionListener {
 		x1 = 600;
 		y1 = (i) * 50 + (i)*distanceBetweenCells_y;
 		
-		x2 = 800;
+		x2 = 1000; // was 800
 		y2 = (j) * 50 + (j)*distanceBetweenCells_y;
-		
-		x1 += 25;
-		x2 += 25;
+
+		// was 25 all four
+		x1 += 50;
+		x2 += 0;
 		y1 += 25;
 		y2 += 25;
 
