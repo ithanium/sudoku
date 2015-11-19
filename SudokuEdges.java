@@ -9,7 +9,9 @@ import java.awt.geom.Line2D;
 
 public class SudokuEdges extends JPanel implements ActionListener {
 
-    private float DELTA = 0.01f;
+    public boolean DO_NOT_REFRESH = false;
+    
+    public float DELTA = 0.01f;
     public ArrayList<Timer> fadeOutTimers = new ArrayList<Timer>(); //fadeOut
     public ArrayList<Timer> fadeInTimers = new ArrayList<Timer>(); //fadeIn
 
@@ -34,7 +36,9 @@ public class SudokuEdges extends JPanel implements ActionListener {
     private int offset_y;
     private int distanceBetweenCells_y;
 
-    private static final int SLEEP = 500; // THREAD SLEEP BETWEEN EDGE DRAWING
+    public int SLEEP = 500; // THREAD SLEEP BETWEEN EDGE DRAWING
+    public int SLEEP_BETWEEN_STEPS = 3000;
+    
     public Color[][] edgeColors;
 
     public Color prevColor;
@@ -139,7 +143,11 @@ public class SudokuEdges extends JPanel implements ActionListener {
 
 	////////// do not show any lines as we do not have any
 	////////// row column or block selected
-	
+
+	if(DO_NOT_REFRESH == true){
+	    return;
+	}
+
 	if(theModel.theGrid.sudokuCells3Now[0] == null){
 	    return;
 	}
@@ -506,7 +514,7 @@ public class SudokuEdges extends JPanel implements ActionListener {
 	try{
 	    repaint();
 		
-	    Thread.sleep(3000);
+	    Thread.sleep(SLEEP_BETWEEN_STEPS);
 	} catch (Exception e){
 	    e.printStackTrace();
 	}

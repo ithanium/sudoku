@@ -6,11 +6,11 @@ import java.awt.event.*;
 import java.util.ArrayList;
 
 class SudokuGrid extends JPanel implements ActionListener{
-    private  float DELTA = 5f; //// WAS 1
+    public  float DELTA = 5f; //// WAS 1
     //private  Timer timer = new Timer(5, null);
     public ArrayList<Timer> timersToTheRight = new ArrayList<Timer>(); // to the right
     public ArrayList<Timer> timersToTheLeft = new ArrayList<Timer>(); // to the left
-    private float alpha = 1f;
+    public float alpha = 1f;
     private float fadeOutMinimum = 0f;
 
     private int square_x = 0;

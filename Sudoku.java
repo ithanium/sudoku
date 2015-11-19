@@ -24,6 +24,18 @@ public class Sudoku{
 
     public static JButton solveFFButton;
     public static JButton unselectButton;
+
+    //
+
+    public static JMenuBar jMenuBar;
+    
+    public static JMenu fileMenu;
+    public static JMenuItem openMenuItem;
+    public static JMenuItem exitMenuItem;
+
+    public static JMenu settingsMenu;
+    public static JMenuItem setNormalSpeedMenuItem;
+    public static JMenuItem setHighSpeedMenuItem;
     
     public static void showGUI(){
 	JFrame mainFrame = new JFrame("sudo ku");
@@ -31,6 +43,35 @@ public class Sudoku{
         mainFrame.setSize(1250, 675);
         mainFrame.setLocationRelativeTo(null);
 
+	jMenuBar = new javax.swing.JMenuBar();
+	
+        fileMenu = new javax.swing.JMenu("File");
+        openMenuItem = new javax.swing.JMenuItem("Open");
+	exitMenuItem = new javax.swing.JMenuItem("Exit");
+	exitMenuItem.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
+	fileMenu.add(openMenuItem);
+	fileMenu.add(exitMenuItem);
+
+	settingsMenu = new javax.swing.JMenu("Settings");
+        setNormalSpeedMenuItem = new javax.swing.JMenuItem("Set normal speed");
+	setHighSpeedMenuItem = new javax.swing.JMenuItem("Set high speed");
+	settingsMenu.add(setNormalSpeedMenuItem);
+	settingsMenu.add(setHighSpeedMenuItem);
+
+	jMenuBar.add(fileMenu);
+	jMenuBar.add(settingsMenu);
+
+	openMenuItem.addActionListener(new MouseListener());
+        setNormalSpeedMenuItem.addActionListener(new MouseListener());
+        setHighSpeedMenuItem.addActionListener(new MouseListener());
+	
+	mainFrame.setJMenuBar(jMenuBar);
+	
 	Box box = new Box(BoxLayout.Y_AXIS);
 	
 	JPanel theGridPlaceHolder = new JPanel();
@@ -51,7 +92,7 @@ public class Sudoku{
 
 	openFileButton = new JButton("Open");
 	openFileButton.addActionListener(new MouseListener());
-	//theGridPlaceHolder.add(openFileButton);
+	theGridPlaceHolder.add(openFileButton);
 
 	backtrackButton = new JButton("Backtrack Solve");
 	backtrackButton.addActionListener(new MouseListener());
@@ -85,6 +126,9 @@ public class Sudoku{
 	unselectButton.addActionListener(new MouseListener());
 	theGridPlaceHolder.add(unselectButton);
 
+	solveFFButton.setEnabled(true); //// TODO
+	unselectButton.setEnabled(false);
+		
 	//theModel.setGrid(theGrid);
 	
 	mainFrame.setVisible(true);
@@ -133,9 +177,49 @@ public class Sudoku{
     private static class MouseListener implements ActionListener{
 
 	public void actionPerformed(ActionEvent e) {
+	    
+	    // Handle set normal speed  menu item
+	    if (e.getSource() == setNormalSpeedMenuItem) {
+		System.out.println("Set normal speed  menu item clicked");
+
+		theModel.SLEEP = 1;
+		theModel.SLEEP_BETWEEN_STEPS = 3000;
+		
+		theModel.viewController.theGrid.DELTA = 5f; // was 1f, 5f, for movement
+
+		for(int i=0; i<11; i++){
+		    theModel.viewController.theGrid.valueCircles[i].DELTA = 0.01f; // forfade in out
+		}
+
+		theModel.viewController.theEdges.DELTA = 0.01f; // for fade out/fade in
+		// TODO: SHOULD TWEAK THIS AS SLEEP 0 doesn't mean
+		// no sleep at all
+		theModel.viewController.theEdges.SLEEP = 500;  // between drawing
+		theModel.viewController.theEdges.SLEEP_BETWEEN_STEPS = 3000;  // between drawing
+	    }
+
+	    // Handle set high speed menu item
+	    if (e.getSource() == setHighSpeedMenuItem) {
+		System.out.println("Set high speed menu item clicked");
+
+		theModel.SLEEP = 0;
+		theModel.SLEEP_BETWEEN_STEPS = 0;
+		
+		theModel.viewController.theGrid.DELTA = 1000f; // was 1f, 5f, for movement
+
+		for(int i=0; i<11; i++){
+		    theModel.viewController.theGrid.valueCircles[i].DELTA = 1f; // forfade in out
+		}
+
+		theModel.viewController.theEdges.DELTA = 1f; // for fade out/fade in
+		// TODO: SHOULD TWEAK THIS AS SLEEP 0 doesn't mean
+		// no sleep at all
+		theModel.viewController.theEdges.SLEEP = 0;  // between drawing
+		theModel.viewController.theEdges.SLEEP_BETWEEN_STEPS = 0;  // between drawing
+	    }
 
 	    // Handle open button action
-	    if (e.getSource() == openFileButton) {
+	    if (e.getSource() == openFileButton || e.getSource() == openMenuItem) {
 
 		JFileChooser fc = new JFileChooser();
         
@@ -304,6 +388,9 @@ public class Sudoku{
 		    };
 		worker.execute();
 		*/
+
+		solveFFButton.setEnabled(false);
+		unselectButton.setEnabled(true);
 		
 		Thread th = new Thread(new Runnable() {
 			@Override
@@ -323,6 +410,9 @@ public class Sudoku{
 
 	    // Handle solve button
 	    if (e.getSource() == unselectButton){
+		solveFFButton.setEnabled(true);
+		unselectButton.setEnabled(false);
+		
 		Thread th = new Thread(new Runnable() {
 			@Override
 			public void run() {

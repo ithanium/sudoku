@@ -14,6 +14,7 @@ public class SudokuModel {
     public SudokuGrid theGrid; // TODO update the name // GUI
     public static int SIZE;
     public static int SLEEP;
+    public static int SLEEP_BETWEEN_STEPS = 3000;
     
     private static Stack<SudokuWorld> worldStack = new Stack<SudokuWorld>();
 
@@ -118,6 +119,8 @@ public class SudokuModel {
     }
 
     public boolean solveFF(){
+	//viewController.theEdges.DO_NOT_REFRESH = false; ////// !!!!!
+	viewController.theEdges.setIgnoreRepaint(false);
 	
 	System.out.println("Solving using FF");
 	System.out.println("Is solveFF EDT? " + SwingUtilities.isEventDispatchThread());
@@ -288,7 +291,7 @@ public class SudokuModel {
        	System.out.println("\nStep 2 finished");
 
 	try{
-	    Thread.sleep(3000);
+	    Thread.sleep(SLEEP_BETWEEN_STEPS);
 	} catch (Exception e){
 	    e.printStackTrace();
 	}
@@ -299,7 +302,7 @@ public class SudokuModel {
 	ArrayList<ArrayList<Integer>> components = tarjan.run();
 	/*
 	try{
-	    Thread.sleep(3000);
+	    Thread.sleep(SLEEP_BETWEEN_STEPS);
 	} catch (Exception e){
 	    e.printStackTrace();
 	}
@@ -325,7 +328,13 @@ public class SudokuModel {
 		}
 	    }
 	}
-
+		
+	try{
+	    Thread.sleep(200);
+	} catch (Exception e){
+	    e.printStackTrace();
+	}
+	
 	for(int u=0; u<18; u++){
 	    for(int v=0; v<18; v++){
 		if(newA3[u][v] == 0){
@@ -337,7 +346,7 @@ public class SudokuModel {
 		    
 		    int shown_x = theGrid.sudokuCells3Before[u].x;
 		    int shown_y = theGrid.sudokuCells3Before[u].y;
-
+		    System.out.println("REDDD");
 		    viewController.theEdges.edgeColors[u+1][v+1] = Color.RED;
 
 		} else if(u>8){
@@ -345,17 +354,26 @@ public class SudokuModel {
 		    
 		    int shown_x = theGrid.sudokuCells3Before[v].x;
 		    int shown_y = theGrid.sudokuCells3Before[v].y;
-
+		    System.out.println("BLUUU");
 		    viewController.theEdges.edgeColors[v+1][u+1] = Color.BLUE;
 
 		}
 	    }
 	}
-
+	
 	viewController.theEdges.repaint();
 
 	try{
-	    Thread.sleep(2000);
+	    Thread.sleep(200);
+	} catch (Exception e){
+	    e.printStackTrace();
+	}
+	
+	//viewController.theEdges.DO_NOT_REFRESH = true; ////// !!!!!
+	viewController.theEdges.setIgnoreRepaint(true);
+	
+	try{
+	    Thread.sleep(SLEEP_BETWEEN_STEPS);
 	} catch (Exception e){
 	    e.printStackTrace();
 	}

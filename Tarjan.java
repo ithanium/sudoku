@@ -108,38 +108,25 @@ public class Tarjan {
 	low[u] = pre;
 	pre = pre + 1;
 	int min = low[u];
-
-	//System.out.println("low["+u+"]: " + min);
 	
 	S.push(u);
-	//System.out.println("Stacked: " + u);
-	//System.out.print("A["+u+"]: ");
 	
 	for(int i=0; i<A[u].length; i++){
 	    int w = A[u][i];
-	    //System.out.print(w + " VS " + i);
 
 	    if(w == 1 && u!=i){ //// u!=i !!!!
 		if(!stacked[i]){
-		    //System.out.print("A["+u+"]"+i + " ");
 		    dfs(i);
-		} else if (u != w){ /// !!!!!!!! https://www.seas.gwu.edu/~simhaweb/alg/lectures/module7/module7.html
-		    //System.out.println("u != w");
 		}
 		
 		if(low[i] < min){
 		    min = low[i];
-		    //System.out.println("\nlow[" + i + "]: " + min);
 		}
 	    }
 	}
 
-	//System.out.println();
-	
 	if(min < low[u]){
-	    //System.out.println("min " + min + " < low["+u+"] " + low[u]);
 	    low[u] = min;
-	    //System.out.println("\nlow[" + u + "]: " + low[u] + "(min) RETURN");
 	    return;
 	}
 	
@@ -147,16 +134,11 @@ public class Tarjan {
 	
 	do{
 	    w = S.pop();
-	    //stacked[w] = false; /////////////// ?
-	    //System.out.println("Popped: " + w + " when u: " + u);
 	    id[w] = count;
 	    low[w] = n;
-	    //System.out.println("low[" + w + "]: " + n + " DO/WHILE");
 	} while (w != u);
 	
 	count = count + 1;
-	//System.out.println("Count now: " + count);
-    
     }
 
     // Returns the number of strongly connected components

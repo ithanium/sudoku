@@ -14,7 +14,7 @@ import java.awt.event.*;
 import java.util.ArrayList;
 
 public class Circle extends JPanel implements ActionListener{
-    private float DELTA = 0.01f;
+    public float DELTA = 0.01f;
     public ArrayList<Timer> fadeOutTimers = new ArrayList<Timer>(); //fadeOut
     public ArrayList<Timer> fadeInTimers = new ArrayList<Timer>(); //fadeIn
     private float alpha = 1f;
