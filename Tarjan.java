@@ -62,28 +62,7 @@ public class Tarjan {
 	universityFontColors.add(Color.WHITE); // Sandstone
 	universityFontColors.add(Color.WHITE); // University Blue
 	universityFontColors.add(Color.WHITE); // Heather
-	
-	/*
-	universityColors.add(Color.decode("#84BD00")); // Lawn
-	universityColors.add(Color.decode("#009DEC")); // Cobalt
-	universityColors.add(Color.decode("#00B5D1")); // Turquoise
-	universityColors.add(Color.decode("#FFDC36")); // Sunshine
-	universityColors.add(Color.decode("#FFB948")); // Pumpkin
-	universityColors.add(Color.decode("#951272")); // Thistle
-	universityColors.add(Color.decode("#B30C00")); // Pillarbox
-	universityColors.add(Color.decode("#5B4D94")); // Lavender
-	universityColors.add(Color.decode("#5B537D")); // Heather
 
-	universityColors.add(Color.decode("#9AB9AD")); // Aquamarine
-	universityColors.add(Color.decode("#4F5961")); // Slate
-	universityColors.add(Color.decode("#D278AB")); // Rose
-	universityColors.add(Color.decode("#B59079")); // Mocha
-	universityColors.add(Color.decode("#005133")); // Forest
-	universityColors.add(Color.decode("#7D2239")); // Burgundy
-	universityColors.add(Color.decode("#9A3A06")); // Rust
-	universityColors.add(Color.decode("#52473B")); // Sandstone
-	universityColors.add(Color.decode("#003865")); // University Blue
-	*/
 	// END INIT UNIVERSITY COLORS
 	
 	this.A = A;
@@ -159,7 +138,7 @@ public class Tarjan {
     public ArrayList<ArrayList<Integer>> run() {
 	// number of strongly connected components
         int scc_count = count();
-        System.out.println(scc_count + " strongly connected components");
+        System.out.println("\t" + scc_count + " strongly connected components");
 
 	ArrayList<ArrayList<Integer>> components = new ArrayList<ArrayList<Integer>>();
 
@@ -173,7 +152,7 @@ public class Tarjan {
 	
 	// Print the strongly connected components
         for (int i = 0; i < scc_count; i++) {
-	    System.out.print("Component " + i + ": ");
+	    System.out.print("\tComponent " + i + ": ");
 	    
             for (int v : components.get(i)) {
                 System.out.print(v + " ");

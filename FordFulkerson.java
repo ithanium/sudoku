@@ -9,7 +9,6 @@ public class FordFulkerson {
     int[] pred;        // predecessor of a vertex, describes augmented path
     boolean[] visited; // visited?, used in bfs
     Queue<Integer> Q;  // for bfs
-    boolean trace;     // want a trace?
 
     SudokuModel theModel;
     ArrayList<TripletIIB> moveSteps;
@@ -83,20 +82,17 @@ public class FordFulkerson {
 	    int u = pred[v];
 
 	    // BEGIN GREEDY MATCH CODE
+	    
 	    if(u>0 && u<10){
 		if((u < lastVarVisited && !finishedGreedyMatch) || u == 9){
 		    finishedGreedyMatch = true;
-		    System.out.println("FINISHED GREEDY");
+		    System.out.println("\tGreedy matched finished");
 		    theModel.viewController.theEdges.drawMovesNow();
-		    if(u!=9){
-			//theModel.viewController.theEdges.drawPath(displayPath());
-		    }
 		} else {
 		    lastVarVisited = u;
-		    System.out.println("lastVarVisited: " + lastVarVisited);
 		}
 	    }
-	    System.out.println("u: " + u);
+
 	    // END GREEDY MATCH CODE
 	    
 	    R[u][v] = R[u][v] - f; // residual capacity
@@ -104,10 +100,7 @@ public class FordFulkerson {
 		    
 	    if(u<v){
 		if(finishedGreedyMatch && skippedTwoGreensCount>1){
-		    System.out.println("Draw u:"+u + " v:"+v);
 		    moveSteps.add(new TripletIIB(u, v, Color.GREEN));
-		} else {
-		    System.out.println("Skip draw u:"+u + " v:"+v);
 		}
 	    } else {
 		if(finishedGreedyMatch){
@@ -131,21 +124,13 @@ public class FordFulkerson {
 
     void fordFulkerson(){
 	while (bfs()){
-	    if (trace){
-		if(finishedGreedyMatch){
-		    theModel.viewController.theEdges.drawPath(displayPath()); //////////
-		} else {
-		    theModel.viewController.theEdges.drawPathNow(displayPath()); //////////		    
-		}
-		//System.out.println(" cost: "+ minCost());
+	    if(finishedGreedyMatch){
+		theModel.viewController.theEdges.drawPath(displayPath());
+	    } else {
+		theModel.viewController.theEdges.drawPathNow(displayPath());
 	    }
 
 	    updateR();
-
-	    if (trace){
-		//display();
-		//System.out.println();
-	    }
 	}
     }
     //
@@ -153,36 +138,11 @@ public class FordFulkerson {
     // update the residual graph
     //
 
-    void display(){
-	for (int i=0;i<n;i++){
-	    System.out.print(i +": ");
-	    for (int j=0;j<n;j++) System.out.print(R[i][j] + " ");
-	    System.out.println();
-	}
-    }
-    //
-    // display residual graph R
-    //
-
-    void displayFlows(){
-	System.out.println("flows");
-	for (int i=0;i<n;i++){
-	    System.out.print(i +": ");
-	    for (int j=0;j<n;j++)
-		System.out.print((A[i][j] * R[j][i]) + " ");
-	    System.out.println();
-	}
-    }
-    //
-    // if there is an edge A[u][v] then its flow is R[v][u]
-    //
-
     ArrayList<Integer> displayPath(){
         ArrayList<Integer> path = new ArrayList<Integer>();
 	
 	int i = n-1;
 	while (i != -1){
-	    //System.out.print(i + " ");
 	    path.add(i);
 	    i = pred[i];
 	}
@@ -196,20 +156,6 @@ public class FordFulkerson {
     //
     
     public void run() {
-	this.trace = true; ////////
-	//this.display();
-	//System.out.println();
 	this.fordFulkerson();
-	//this.displayFlows();
-
-	for(int i=0; i<n; i++){
-	    for(int j=0; j<n; j++){
-		if(i > 0 && i < 10 && A[i][j] == 1){
-		    if(A[i][j] * R[j][i] == 1){
-			//System.out.println("Edge between i:" + i + " j:" + j);
-		    }
-		}
-	    }
-	}
     }
 }
