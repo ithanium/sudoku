@@ -330,47 +330,45 @@ public class SudokuModel {
 	}
 		
 	try{
-	    Thread.sleep(200);
-	} catch (Exception e){
-	    e.printStackTrace();
-	}
-	
-	for(int u=0; u<18; u++){
-	    for(int v=0; v<18; v++){
-		if(newA3[u][v] == 0){
-		    continue;
-		}
-
-		if(u<9){
-		    //System.out.println("Delete u: " + u + " v:" + v);
-		    
-		    int shown_x = theGrid.sudokuCells3Before[u].x;
-		    int shown_y = theGrid.sudokuCells3Before[u].y;
-		    System.out.println("REDDD");
-		    viewController.theEdges.edgeColors[u+1][v+1] = Color.RED;
-
-		} else if(u>8){
-		    //System.out.println("Assign v: " + v + " u:" + u); // switch
-		    
-		    int shown_x = theGrid.sudokuCells3Before[v].x;
-		    int shown_y = theGrid.sudokuCells3Before[v].y;
-		    System.out.println("BLUUU");
-		    viewController.theEdges.edgeColors[v+1][u+1] = Color.BLUE;
-
-		}
-	    }
-	}
-	
-	viewController.theEdges.repaint();
-
-	try{
-	    Thread.sleep(200);
+	    SwingUtilities.invokeAndWait(new Runnable() {
+		    public void run() {
+			/////////////////
+			for(int u=0; u<18; u++){
+			    for(int v=0; v<18; v++){
+				if(newA3[u][v] == 0){
+				    continue;
+				}
+				
+				if(u<9){
+				    //System.out.println("Delete u: " + u + " v:" + v);
+				    
+				    int shown_x = theGrid.sudokuCells3Before[u].x;
+				    int shown_y = theGrid.sudokuCells3Before[u].y;
+				    System.out.println("REDDD");
+				    viewController.theEdges.edgeColors[u+1][v+1] = Color.RED;
+				    
+				} else if(u>8){
+				    //System.out.println("Assign v: " + v + " u:" + u); // switch
+				    
+				    int shown_x = theGrid.sudokuCells3Before[v].x;
+				    int shown_y = theGrid.sudokuCells3Before[v].y;
+				    System.out.println("BLUUU");
+				    viewController.theEdges.edgeColors[v+1][u+1] = Color.BLUE;
+				    
+				}
+			    }
+			}
+			
+			viewController.theEdges.repaint();
+			/////////////////
+		    }
+		});
 	} catch (Exception e){
 	    e.printStackTrace();
 	}
 	
 	//viewController.theEdges.DO_NOT_REFRESH = true; ////// !!!!!
-	viewController.theEdges.setIgnoreRepaint(true);
+	//viewController.theEdges.setIgnoreRepaint(true);
 	
 	try{
 	    Thread.sleep(SLEEP_BETWEEN_STEPS);
@@ -378,46 +376,58 @@ public class SudokuModel {
 	    e.printStackTrace();
 	}
 
-	for(int u=0; u<18; u++){
-	    for(int v=0; v<18; v++){
-		if(newA3[u][v] == 0){
-		    continue;
-		}
-
-		if(u<9){
-		    System.out.println("Delete u: " + u + " v:" + v);
-		    
-		    int shown_x = theGrid.sudokuCells3Before[u].x;
-		    int shown_y = theGrid.sudokuCells3Before[u].y;
-
-		    // delete from sudoku
-		    worldPeek().grid[shown_x][shown_y].eliminateValue(v - (9-1));
-
-		    // TODO: in one call
-		    theGrid.sudokuCells3Now[u].setValuesLabel(theGrid.sudokuCells3Now[u].formatPossibleValues());
-		    theGrid.sudokuCells3Before[u].setValuesLabel(theGrid.sudokuCells3Before[u].formatPossibleValues());
-
-		} else if(u>8){
-		    System.out.println("Assign v: " + v + " u:" + u); // switch
-		    
-		    int shown_x = theGrid.sudokuCells3Before[v].x;
-		    int shown_y = theGrid.sudokuCells3Before[v].y;
-
-		    // delete from sudoku
-		    worldPeek().grid[shown_x][shown_y].setValue(u - (9-1));
-
-		    // TODO: in one call
-		    theGrid.sudokuCells3Now[v].setValuesLabel(theGrid.sudokuCells3Now[v].formatPossibleValues());
-		    theGrid.sudokuCells3Before[v].setValuesLabel(theGrid.sudokuCells3Before[v].formatPossibleValues());
-
-		}
-	    }
+	try{
+	    SwingUtilities.invokeAndWait(new Runnable() {
+		    public void run() {
+			////////////////
+			for(int u=0; u<18; u++){
+			    for(int v=0; v<18; v++){
+				if(newA3[u][v] == 0){
+				    continue;
+				}
+				
+				if(u<9){
+				    System.out.println("Delete u: " + u + " v:" + v);
+				    
+				    int shown_x = theGrid.sudokuCells3Before[u].x;
+				    int shown_y = theGrid.sudokuCells3Before[u].y;
+				    
+				    // delete from sudoku
+				    worldPeek().grid[shown_x][shown_y].eliminateValue(v - (9-1));
+				    
+				    // TODO: in one call
+				    theGrid.sudokuCells3Now[u].setValuesLabel(theGrid.sudokuCells3Now[u].formatPossibleValues());
+				    theGrid.sudokuCells3Before[u].setValuesLabel(theGrid.sudokuCells3Before[u].formatPossibleValues());
+				    
+				} else if(u>8){
+				    System.out.println("Assign v: " + v + " u:" + u); // switch
+				    
+				    int shown_x = theGrid.sudokuCells3Before[v].x;
+				    int shown_y = theGrid.sudokuCells3Before[v].y;
+				    
+				    // delete from sudoku
+				    worldPeek().grid[shown_x][shown_y].setValue(u - (9-1));
+				    
+				    // TODO: in one call
+				    theGrid.sudokuCells3Now[v].setValuesLabel(theGrid.sudokuCells3Now[v].formatPossibleValues());
+				    theGrid.sudokuCells3Before[v].setValuesLabel(theGrid.sudokuCells3Before[v].formatPossibleValues());
+				    
+				}
+			    }
+			}
+			
+			// WANT TO REMOVE THE RED EDGES? THEN UNCOMMENT
+			//viewController.theEdges.repaint(); // VERY INTERESTING, KEEP THIS COMMENT
+			
+			//viewController.theEdges.makeAllEdgesGray();
+			////////////////
+		    }
+		});
+	} catch (Exception e){
+	    e.printStackTrace();
 	}
 
-	// WANT TO REMOVE THE RED EDGES? THEN UNCOMMENT
-	//viewController.theEdges.repaint(); // VERY INTERESTING, KEEP THIS COMMENT
 	
-	//viewController.theEdges.makeAllEdgesGray();
 		
 	
 	System.out.println("Step 4 finished");
