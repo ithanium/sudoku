@@ -119,16 +119,10 @@ public class SudokuModel {
     }
 
     public boolean solveFF(){
-	//viewController.theEdges.DO_NOT_REFRESH = false; ////// !!!!!
-	viewController.theEdges.setIgnoreRepaint(false);
+	System.out.println("\nStarted running the all-different implementation");
 	
-	System.out.println("Solving using FF");
-	System.out.println("Is solveFF EDT? " + SwingUtilities.isEventDispatchThread());
-	/*
-	try{
-	    SwingUtilities.invokeLater(new Runnable() {
-		    public void run() {
-	*/
+	System.out.println("\nDoes the all-different implementation run on the EDT? (should be false) " + SwingUtilities.isEventDispatchThread());
+
 	int edges = 0;
 	int n = 20; // we have 20 vertices
 	int[][] A = new int[n][n];
@@ -155,34 +149,25 @@ public class SudokuModel {
 		// from VAR i to VALUE j
 		int shown_x = theGrid.sudokuCells3Now[i].x;
 		int shown_y = theGrid.sudokuCells3Now[i].y;
-		//int shown_x = row;
-		//int shown_y = i;
+
 		int capacity = 0;
 		if(worldPeek().grid[shown_x][shown_y].hasValue(j + 1)){
 		    capacity = 1;
 		}
 		
 		edges++;
-		A[i+1][j + 9 + 1] = capacity; ///////////// WAS 1 and it was working
+		A[i+1][j + 9 + 1] = capacity;
 		R[i+1][j + 9 + 1] = capacity;
 	    }
 	}
-
-	System.out.println("Printing A");
-	for(int i=0; i<20; i++){
-	    for(int j=0; j<20; j++){
-		System.out.print(A[i][j] + " ");
-	    }
-	    System.out.println();
-	}
-	System.out.println("Ended printing A");
-
 	
-	System.out.println("Edges " + edges);
+	System.out.println("\nStep 1 - Ford Fulkerson - started");
+	
 	FordFulkerson ff = new FordFulkerson(super_getThis(), A, R, 20);
-	System.out.println("FF started");
 	ff.run();
-	System.out.println("Step 1 - FF finished");
+
+	System.out.println("\nStep 1 - Ford Fulkerson - finished");
+	
 	//viewController.theEdges.applyDrawing(); // apply last green/red
 	
 	viewController.theEdges.drawMoves();
@@ -190,14 +175,7 @@ public class SudokuModel {
 	viewController.theEdges.finishDrawing(false); // hide unmatched paths
 	viewController.theGrid.finishDrawing(); // hide S/T + S/T edges
 
-	System.out.println("Printing R");
-	for(int i=0; i<20; i++){
-	    for(int j=0; j<20; j++){
-		System.out.print(R[i][j] + " ");
-	    }
-	    System.out.println();
-	}
-	System.out.println("Ended printing R");
+	System.out.println("\nStep 2 - add arrows after maximum matching - started");
 	
 	int newA[][] = new int[20][20];
 	int newA2[][] = new int[18][18];
@@ -210,17 +188,6 @@ public class SudokuModel {
 		}
 	    }
 	}
-
-	System.out.println("printing newA");
-
-       	for(int i=0; i<20; i++){
-	    for(int j=0; j<20; j++){
-		System.out.print(newA[i][j] + " ");
-	    }
-	    System.out.println();
-	}
-
-	System.out.println("finished printing newA");
 
 	for(int i=0; i<18; i++){
 	    for(int j=0; j<18; j++){
@@ -236,79 +203,40 @@ public class SudokuModel {
 		}
 	    }
 	}
-	/*
-	//PRESENTATION EXAMPLE
-	for(int i=0; i<18; i++){
-	    for(int j=0; j<18; j++){
-		newA2[i][j] = 0;
-		// wasted right to left
-		if(i == 0 && j == 16) newA2[i][j] = 1;
-		if(i == 1 && j == 10) newA2[i][j] = 1;
-		if(i == 2 && j == 11) newA2[i][j] = 1;
-		if(i == 3 && j == 10) newA2[i][j] = 1;
-		if(i == 3 && j == 13) newA2[i][j] = 1;
-		if(i == 4 && j == 12) newA2[i][j] = 1;
-		if(i == 4 && j == 13) newA2[i][j] = 1;
-		if(i == 5 && j == 12) newA2[i][j] = 1;
-		if(i == 5 && j == 14) newA2[i][j] = 1;
-		if(i == 6 && j == 10) newA2[i][j] = 1;
-		if(i == 6 && j == 17) newA2[i][j] = 1;
-		if(i == 7 && j == 11) newA2[i][j] = 1;
-		if(i == 7 && j == 15) newA2[i][j] = 1;
-		if(i == 8 && j == 10) newA2[i][j] = 1;
-		if(i == 8 && j == 11) newA2[i][j] = 1;
-		if(i == 8 && j == 13) newA2[i][j] = 1;
-		if(i == 8 && j == 16) newA2[i][j] = 1;
-		
-		// assignments left to right
-		if(i == 9 && j == 0) newA2[i][j] = 1;
-		if(i == 10 && j == 2) newA2[i][j] = 1;
-		if(i == 11 && j == 1) newA2[i][j] = 1;
-		if(i == 12 && j == 3) newA2[i][j] = 1;
-		if(i == 13 && j == 5) newA2[i][j] = 1;
-		if(i == 14 && j == 4) newA2[i][j] = 1;
-		if(i == 15 && j == 6) newA2[i][j] = 1;
-		if(i == 16 && j == 7) newA2[i][j] = 1;
-		if(i == 17 && j == 8) newA2[i][j] = 1;
-	    }
-	}
-	*/
-	System.out.println("Printing step 2 arrow flows after maximum matching\n");
-	
-	for(int i=0; i<18; i++){
-	    System.out.print(i+": ");
-	    for(int j=0; j<18; j++){
-		if(newA2[i][j] == 1){
-		    System.out.print(j + " ");
-		    //System.out.print(newA2[i][j] + " ");
-		} else {
-		    //System.out.print("0 ");
-		}
-	    }
-	    System.out.println();
-	}
 
-       	System.out.println("\nStep 2 finished");
+	////////////////////////////////////////////////////
+	//Printing step 2 arrow flows after maximum matching
+	//newA2
+
+       	System.out.println("\nStep 2 - add arrows after maximum matching - finished");
+
+	if(SLEEP_BETWEEN_STEPS > 0){
+	    try{
+		Thread.sleep(SLEEP_BETWEEN_STEPS);
+	    } catch (Exception e){
+		e.printStackTrace();
+	    }
+	}
 
 	try{
-	    Thread.sleep(SLEEP_BETWEEN_STEPS);
+	    SwingUtilities.invokeAndWait(new Runnable() {
+		    public void run() {
+			viewController.theEdges.makeAllEdgesGray();
+		    }
+		});
 	} catch (Exception e){
 	    e.printStackTrace();
 	}
-	
-	viewController.theEdges.makeAllEdgesGray();
+
+	System.out.println("\nStep 3 - Tarjan -  started");
 	
 	Tarjan tarjan = new Tarjan(this, newA2, 18);
 	ArrayList<ArrayList<Integer>> components = tarjan.run();
-	/*
-	try{
-	    Thread.sleep(SLEEP_BETWEEN_STEPS);
-	} catch (Exception e){
-	    e.printStackTrace();
-	}
-	*/
-	System.out.println("Step 3 - Tarjan finished");
 
+	System.out.println("\nStep 3 - Tarjan - finished");
+
+	System.out.println("\nStep 4 - Apply knowledge after running Tartajn - started");
+	
 	int newA3[][] = new int[18][18];
 	
 	for(int u=0; u<18; u++){
@@ -320,10 +248,8 @@ public class SudokuModel {
 		int start_component_id = tarjan.id(u);
 		int finish_component_id = tarjan.id(v);
 		
-		//System.out.println("u: " + u + " v: " + v + " sC: " + start_component_id + " fC: " + finish_component_id);
-
 		if(start_component_id != finish_component_id){
-		    System.out.println("Considering u: " + u + " v: " + v + " sC: " + start_component_id + " fC: " + finish_component_id);
+		    System.out.println("Considering u: " + u + " v: " + v + " start comp: " + start_component_id + " finish comp: " + finish_component_id);
 		    newA3[u][v] = 1;
 		}
 	    }
@@ -344,7 +270,7 @@ public class SudokuModel {
 				    
 				    int shown_x = theGrid.sudokuCells3Before[u].x;
 				    int shown_y = theGrid.sudokuCells3Before[u].y;
-				    System.out.println("REDDD");
+
 				    viewController.theEdges.edgeColors[u+1][v+1] = Color.RED;
 				    
 				} else if(u>8){
@@ -352,7 +278,7 @@ public class SudokuModel {
 				    
 				    int shown_x = theGrid.sudokuCells3Before[v].x;
 				    int shown_y = theGrid.sudokuCells3Before[v].y;
-				    System.out.println("BLUUU");
+
 				    viewController.theEdges.edgeColors[v+1][u+1] = Color.BLUE;
 				    
 				}
@@ -366,14 +292,14 @@ public class SudokuModel {
 	} catch (Exception e){
 	    e.printStackTrace();
 	}
-	
-	//viewController.theEdges.DO_NOT_REFRESH = true; ////// !!!!!
-	//viewController.theEdges.setIgnoreRepaint(true);
-	
-	try{
-	    Thread.sleep(SLEEP_BETWEEN_STEPS);
-	} catch (Exception e){
-	    e.printStackTrace();
+      
+
+	if(SLEEP_BETWEEN_STEPS > 0){
+	    try{
+		Thread.sleep(SLEEP_BETWEEN_STEPS);
+	    } catch (Exception e){
+		e.printStackTrace();
+	    }
 	}
 
 	try{
@@ -427,20 +353,9 @@ public class SudokuModel {
 	    e.printStackTrace();
 	}
 
-	
-		
-	
-	System.out.println("Step 4 finished");
-
-	//propagate();
-	
-	// END
-	/*
-	  }});
-	  } catch (Exception e4){
-	  e4.printStackTrace();
-	  }
-	*/
+	System.out.println("\nStep 4 - Apply knowledge after running Tartajn - finished");
+	System.out.println();
+	    
 	return true; // not important yet
     }
     

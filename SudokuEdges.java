@@ -8,30 +8,21 @@ import java.awt.geom.Line2D;
 //import java.awt.geom.Line2D;
 
 public class SudokuEdges extends JPanel implements ActionListener {
+    public SudokuModel theModel;
 
-    public boolean DO_NOT_REFRESH = false;
-    
     public float DELTA = 0.01f;
     public ArrayList<Timer> fadeOutTimers = new ArrayList<Timer>(); //fadeOut
     public ArrayList<Timer> fadeInTimers = new ArrayList<Timer>(); //fadeIn
 
-    public Timer timerSolve;
+    public Timer timerSolve; // I THINK WE DO NOT NEED THIS
     
     private float alpha = 1f;
     private float fadeOutMinimum = 0f;
 
     private boolean fadingOut = true;
     
-    //private JLayeredPane layeredPane;
-
-    public SudokuModel theModel;
-    //public SudokuEdges theEdges; // 1st layer with edges between cells and values
-    //public SudokuGrid theGrid; // 2nd layer with the SudokuCells and Circles
-
     JLabel statusLabel;
     public static JButton printButton;
-
-    //public Line lines[];
 
     private int offset_y;
     private int distanceBetweenCells_y;
@@ -59,27 +50,15 @@ public class SudokuEdges extends JPanel implements ActionListener {
 	    }
 	}
 	
-	//lines = new Line[9*9 + 9+9];
-	
-	//System.out.println("SudokuEdges made");
-
 	setPreferredSize(new Dimension(1200, 550-4));
 	setLayout(null);
-	//setOpaque(false);
 
-	//setBackground(Color.BLUE);
-	
 	statusLabel = new JLabel();
 	statusLabel.setFont(new Font("Serif", Font.PLAIN, 14));
 	statusLabel.setText("<html><div align=center>Please select a row, column<br> or block</div></html>");
 	statusLabel.setSize(new Dimension(200, 50));
 	add(statusLabel, 750, getPreferredSize().height/2 - 25, statusLabel.getWidth(), statusLabel.getHeight());
-	/*
-	printButton = new JButton("Print statement");
-	printButton.addActionListener(new MouseListener());
-	printButton.setBounds(600, 300, 200, 50);
-	add(printButton);
-	*/
+
     }
 
     public void setModel(SudokuModel theModel){
@@ -124,16 +103,7 @@ public class SudokuEdges extends JPanel implements ActionListener {
 	g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
 	g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 	g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-	/*
-	//black
-	Color prevColor = new Color(Color.BLACK.getRed(), Color.BLACK.getGreen(), Color.BLACK.getBlue(), (int)(alpha*255));
-
-	Color blueColor = new Color(Color.BLUE.getRed(), Color.BLUE.getGreen(), Color.BLUE.getBlue(), (int)(alpha*255));
-	Color redColor = new Color(Color.RED.getRed(), Color.RED.getGreen(), Color.RED.getBlue(), (int)(alpha*255));
-	Color greenColor = new Color(Color.GREEN.getRed(), Color.GREEN.getGreen(), Color.GREEN.getBlue(), (int)(alpha*255));
-	
-	g2d.setColor(prevColor);
-	*/
+        
 	offset_y = (getPreferredSize().height - 9 * 50)/2;
 	distanceBetweenCells_y = (getPreferredSize().height - 9 * 50)/(9-1);
 
@@ -141,14 +111,9 @@ public class SudokuEdges extends JPanel implements ActionListener {
 	    return;
 	}
 
-	////////// do not show any lines as we do not have any
-	////////// row column or block selected
-
-	if(DO_NOT_REFRESH == true){
-	    return;
-	}
-
 	if(theModel.theGrid.sudokuCells3Now[0] == null){
+	    // do not show any lines as we do not have any
+	    // row column or block selected
 	    return;
 	}
 
@@ -322,45 +287,37 @@ public class SudokuEdges extends JPanel implements ActionListener {
 
 
     public void setAlphaZero(){
-	//System.out.println("SET ALPHA ZERO");
 	alpha = 0;
 
         repaint();
     }
 
     public void setAlphaOne(){
-	//System.out.println("SET ALPHA ONE");
 	alpha = 1;
 
         repaint();
     }
     
     public void setOpaqueOn(){
-	//System.out.println("SET ALPHA ON");
 	this.setOpaque(true);
     }
 
     public void setOpaqueOff(){
-	//System.out.println("SET ALPHA OFF");
 	this.setOpaque(false);
     }
     
     public void fadeOut(){
-	//System.out.println("FADE OUT LINE");
 	fadingOut = true;
 	fadeOutMinimum = 0f;
 	//timer1.start(); KEEP IT DELETED	
     }
 
     public void fadeOutALittle(){
-	//System.out.println("FADE OUT A LITTLE");
 	fadeOutMinimum = 0.30f;
-	//theModel.timers.add(timer);/////////////////////////////////
 	//timer1.start(); KEEP IT DELETED
     }
     
     public void fadeIn(){
-	//System.out.println("line fading in");
 	fadingOut = false;
         //timer2.start(); KEEP IT DELETED
     }
@@ -388,36 +345,22 @@ public class SudokuEdges extends JPanel implements ActionListener {
     }
 
     public void drawPath(ArrayList<Integer> path){
-	//applyDrawing();
-	
-	//System.out.print("Draw path: ");
-
 	for(int i=0; i<path.size()-1; i++){
-	    //System.out.print(path.get(i) + " ");
 	    if(path.get(i) < path.get(i+1)){
 		moves.add(new TripletIIB(path.get(i), path.get(i+1), Color.BLUE));
-		//drawBlue(path.get(i), path.get(i+1));
 	    } else {
 		moves.add(new TripletIIB(path.get(i+1), path.get(i), Color.BLUE));
-		//drawBlue(path.get(i+1), path.get(i));
 	    }
 	}
-
-	//System.out.println();
     }
 
     public void drawPathNow(ArrayList<Integer> path){
 
 	for(int i=0; i<path.size()-1; i++){
-	    //System.out.print(path.get(i) + " ");
 	    if(path.get(i) < path.get(i+1)){
 		moves.add(new TripletIIB(path.get(i), path.get(i+1), Color.BLACK));
-		//drawBlue(path.get(i), path.get(i+1));
-		//drawBlack(path.get(i), path.get(i+1));
 	    } else {
 		moves.add(new TripletIIB(path.get(i+1), path.get(i), Color.BLACK));
-		//drawBlue(path.get(i+1), path.get(i));
-		//drawBlack(path.get(i+1), path.get(i));
 	    }
 	}
     }
@@ -427,7 +370,6 @@ public class SudokuEdges extends JPanel implements ActionListener {
     }
     
     public void drawRed(int u, int v){
-	//System.out.println("Draw red u:" + u + " v:" + v);
 	edgeColors[u][v] = Color.RED;
 
 	try{
@@ -440,11 +382,8 @@ public class SudokuEdges extends JPanel implements ActionListener {
     }
 
     public void drawGreen(int u, int v){
-	//System.out.println("Draw green u:" + u + " v:" + v);
 	edgeColors[u][v] = Color.GREEN;
 
-
-	//System.out.println("Is drawGreen EDT? 1" + SwingUtilities.isEventDispatchThread());
 	try{
 	    repaint();
 	    
@@ -455,7 +394,6 @@ public class SudokuEdges extends JPanel implements ActionListener {
     }
 
     public void drawBlue(int u, int v){
-	//System.out.println("Draw blue u:" + u + " v:" + v);
 	edgeColors[u][v] = Color.BLUE;
 
 	try{
@@ -475,8 +413,6 @@ public class SudokuEdges extends JPanel implements ActionListener {
     }
 
     public void drawMoves(){
-	//System.out.println("Drawing moves");
-	//System.out.println("Is drawing moves EDT? " + SwingUtilities.isEventDispatchThread());
 	for(TripletIIB t:this.moves){
 	    //System.out.println("Drawing move");
 	    if(t.getC() == Color.GREEN){
@@ -499,16 +435,11 @@ public class SudokuEdges extends JPanel implements ActionListener {
 
     public void drawMovesNow(){
 	for(TripletIIB t:this.moves){
-	    //System.out.println("Drawing move");
 	    if(t.getC() == Color.BLACK){
 		drawBlack(t.getA(), t.getB());
 	    }
-	    
-	    //prevColor = Color.BLUE; // TODO: try to remove this?
 	}
 		    
-	//applyDrawing(); // TODO: try to remove this?
-
 	moves = new ArrayList<TripletIIB>();
 
 	try{
@@ -535,32 +466,26 @@ public class SudokuEdges extends JPanel implements ActionListener {
 	Color greenColor = new Color(Color.GREEN.getRed(), Color.GREEN.getGreen(), Color.GREEN.getBlue(), (int)(alpha*255));	
 
 	if(edgeColors[u][v] == Color.LIGHT_GRAY){
-	    //System.out.println("Returning gray");
 	    return grayColor;
 	}
 
 	if(edgeColors[u][v] == Color.BLACK){
-	    //System.out.println("Returning black");
 	    return prevColor;
 	}
 
 	if(edgeColors[u][v] == Color.BLUE){
-	    //System.out.println("Returning blue");
 	    return blueColor;
 	}
 
 	if(edgeColors[u][v] == Color.RED){
-	    //System.out.println("Returning red");
 	    return redColor;
 	}
 
 	if(edgeColors[u][v] == Color.GREEN){
-	    //System.out.println("Returning green");
 	    return greenColor;
 	}
 
 	if(edgeColors[u][v] == Color.WHITE){
-	    //System.out.println("Returning invisible for u: " + u + " v: " + v);
 	    return invisibleColor;
 	}
 	
