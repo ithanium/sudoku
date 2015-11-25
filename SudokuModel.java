@@ -28,6 +28,8 @@ public class SudokuModel {
 
     public ViewController viewController;
 
+    public static final Object WAIT_FOR_TIMER = new Object();
+
     public void SudokuModel(){
 	worldStack = new Stack<SudokuWorld>();
     }
@@ -884,6 +886,14 @@ public class SudokuModel {
 	    //System.out.println("Fade in blocked by other animation");
 	}
     }
+
+    public void fadeInGraphNow(){ ///////// COMASEAZA ASTA
+	for(int i = 0; i <11; i++){
+	    theGrid.valueCircles[i].setAlphaOne();
+	}
+	
+	viewController.theEdges.setAlphaOne();
+    }
     
     // NOTE: USES WORLDPEEK() ; DO YOU WANT OLDER ONES?
     public ArrayList<Integer> getPossibleValues(int i, int j){
@@ -1008,6 +1018,8 @@ public class SudokuModel {
 	    theGrid.moveBlock(theGrid.lastSelectionNumber, false);
 	}
 
+	viewController.theEdges.setVisible(false);
+	
 	viewController.theEdges.edgeColors  = new Color[20][20];
 
 	for(int i=0; i<20; i++){
@@ -1034,40 +1046,11 @@ public class SudokuModel {
 	viewController.theEdges.moves = new ArrayList<TripletIIB>();
 	this.timers = new ArrayList<ArrayList<Timer>>();
 	theGrid.removedCellGoingToTheLeft = new int[9];
+
+	viewController.theEdges.setVisible(true);
     }
 
     public boolean propagateOnAssignment(int shown_x, int shown_y){
-	/*
-	ArrayList<Constraint> constraints = worldPeek().grid[shown_x][shown_y].constraints; // participating constaints
-	
-	boolean consistent = true;
-	Stack<Constraint> S = new Stack<Constraint>();
-	for (Constraint c : constraints){ // add all the constraints on the stack
-	    //System.out.println("Push " + c.name);
-	    S.push(c); c.flag = true;
-	}
-	
-	while (consistent && !S.isEmpty()){
-	    Constraint c = S.pop();
-	    //System.out.println("Pop " + c.name);
-	    c.flag = false;
-	    if (c.revise()){
-		redraw();
-		consistent = c.v1.domain.cardinality() > 0;
-		///////
-		for (Constraint cv1 : c.v1.constraints){
-		    if (!cv1.flag){
-			//System.out.println("Push from var " + cv1.name);
-			S.push(cv1); cv1.flag = true;
-		    }
-		}
-		///////
-	    }
-	}
-	
-	return consistent;
-	*/
-	
 	return propagate();
     }
 }

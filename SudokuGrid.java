@@ -294,9 +294,12 @@ class SudokuGrid extends JPanel implements ActionListener{
 	theModel.timers.add(timers1);
 	if(theModel.timers.size() == 1){
 	    // otherwise let another timer start this one when it finishes
-	    //System.out.println("Move ROW model timers = 1, start level");
+	    System.out.println("Move ROW model timers = 1, start level");
 	    for(Timer t:theModel.timers.get(0)){
+		
 		t.start();
+
+			
 	    }
 	} else {
 	    //System.out.println("Move ROW blocked by other animation");
@@ -407,7 +410,7 @@ class SudokuGrid extends JPanel implements ActionListener{
     }
     
     @Override
-    public synchronized void actionPerformed(ActionEvent e) {
+    public synchronized void actionPerformed(ActionEvent e) { // TRY REMOVING SYNC?
 	if(theModel.isAnimationPaused){
 	    return;
 	}
@@ -467,8 +470,11 @@ class SudokuGrid extends JPanel implements ActionListener{
 			timersToTheRight.remove(thisTimer);
 			
 			thisTimer.stop(); // STOP IT, START THE NEXT ONE IN QUEUE
+			synchronized (theModel.WAIT_FOR_TIMER) {
+                            theModel.WAIT_FOR_TIMER.notifyAll();
+                        }
 			theModel.removeTimer(thisTimer);
-			//System.out.println("Move column finished, wake up next timers");
+			System.out.println("Move column finished, wake up next timers");
 			setAlphaOneEdgesCircles();
 			
 			theModel.startNextTimers();

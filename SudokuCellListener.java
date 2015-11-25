@@ -115,15 +115,15 @@ public class SudokuCellListener extends MouseAdapter {
     public void selected(SudokuModel theModel, int number, int selectionType){
 	Thread t = new Thread(new Runnable() {
 		@Override
-		public void run(){
-	SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>(){
-		protected Boolean doInBackground() throws Exception{
+		public void run() {
 		    try{
 			SwingUtilities.invokeAndWait(new Runnable() {
 				public void run() {
 				    if(selectionType == 0){ //row
 					//theModel.fadeOutAllExceptRow(number);
+				
 					theModel.moveRow(number, true);
+		        
 				    }
 								    
 				    if(selectionType == 1){ //column
@@ -138,24 +138,42 @@ public class SudokuCellListener extends MouseAdapter {
 
 				    //theModel.viewController.theEdges.setAlphaOne();
 				    //theModel.viewController.theEdges.repaint();
-				    theModel.fadeInGraph();
+				}
+			    });
+		    } catch (Exception e2){
+			e2.printStackTrace();
+		    }
 
+		    synchronized (theModel.WAIT_FOR_TIMER) {
+			try {
+			    theModel.WAIT_FOR_TIMER.wait();
+			} catch (InterruptedException ex) {
+			}
+		    }
+		    
+		    System.out.println("Moving row finished");
+
+		    try{
+			SwingUtilities.invokeAndWait(new Runnable() {
+				public void run() {
+				    System.out.println("Fading started - fake");
+				    if(theModel.SLEEP == 0 && theModel.SLEEP_BETWEEN_STEPS == 0){
+					theModel.fadeInGraphNow();
+				    } else {
+					theModel.fadeInGraph();
+				    }
+				    System.out.println("Fading ended - fake");
 				    //theModel.scheduleSolveFF();
 				}
 			    });
 		    } catch (Exception e2){
 			e2.printStackTrace();
 		    }
+
+		    System.out.println("Finished selecting row");
 		    
-		    return true;
-		}
-	    
-	    };
-		
-	worker.execute();
-		}
-	    });
-	    
+		}});
 	t.start();
+	
     }
 }
