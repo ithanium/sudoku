@@ -56,7 +56,7 @@ class SudokuGrid extends JPanel implements ActionListener{
         //this.setOpaque(false); // don't know why
 	//this.setVisible(true);
 	
-        //this.setBackground(Color.black);
+        this.setBackground(Color.black);
 	/*
         timer.setInitialDelay(10);
         timer.addActionListener(this);
@@ -235,7 +235,7 @@ class SudokuGrid extends JPanel implements ActionListener{
 	
     }
 
-    public void moveRow(int row, boolean movingToTheRight){
+    public Timer moveRow(int row, boolean movingToTheRight){
 	this.lastSelectionWasRow = true;
 	this.lastSelectionWasColumn = false;
 	this.lastSelectionWasBlock = false;
@@ -296,14 +296,21 @@ class SudokuGrid extends JPanel implements ActionListener{
 	    // otherwise let another timer start this one when it finishes
 	    System.out.println("Move ROW model timers = 1, start level");
 	    for(Timer t:theModel.timers.get(0)){
-		
 		t.start();
-
-			
+		return t; //////////////////
+		///////////////////////////
+		//////////////////////////
+		//////////////////////////
+		// DO IT FOR ALL THE LEVEL, NOT ONLY THIS TIMER
+		// ArrayList<Timer>
 	    }
 	} else {
 	    //System.out.println("Move ROW blocked by other animation");
 	}
+
+	System.out.println("Move row timer start setting ended");
+
+	return null;
     }
 
     public void moveBlock(int block, boolean movingToTheRight){
@@ -470,8 +477,8 @@ class SudokuGrid extends JPanel implements ActionListener{
 			timersToTheRight.remove(thisTimer);
 			
 			thisTimer.stop(); // STOP IT, START THE NEXT ONE IN QUEUE
-			synchronized (theModel.WAIT_FOR_TIMER) {
-                            theModel.WAIT_FOR_TIMER.notifyAll();
+			synchronized (thisTimer) {
+                            thisTimer.notifyAll();
                         }
 			theModel.removeTimer(thisTimer);
 			System.out.println("Move column finished, wake up next timers");

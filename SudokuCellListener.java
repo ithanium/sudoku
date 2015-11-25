@@ -114,15 +114,21 @@ public class SudokuCellListener extends MouseAdapter {
 
     public void selected(SudokuModel theModel, int number, int selectionType){
 	Thread t = new Thread(new Runnable() {
+		
+		Timer WAIT_FOR_TIMER = null;
+		
 		@Override
 		public void run() {
 		    try{
 			SwingUtilities.invokeAndWait(new Runnable() {
+				// THIS IS NOW THE EDT
+				// CAN'T WAIT FOR TIMER HERE
+				// AS TIMER ALSO RUNS ON EDT
 				public void run() {
 				    if(selectionType == 0){ //row
 					//theModel.fadeOutAllExceptRow(number);
 				
-					theModel.moveRow(number, true);
+					WAIT_FOR_TIMER = theModel.moveRow(number, true);
 		        
 				    }
 								    
@@ -143,14 +149,15 @@ public class SudokuCellListener extends MouseAdapter {
 		    } catch (Exception e2){
 			e2.printStackTrace();
 		    }
-
-		    synchronized (theModel.WAIT_FOR_TIMER) {
+		    /*
+		    // MAKE IT FOR UPPER LEVEL
+		    synchronized (WAIT_FOR_TIMER) {
 			try {
-			    theModel.WAIT_FOR_TIMER.wait();
+			    WAIT_FOR_TIMER.wait();
 			} catch (InterruptedException ex) {
 			}
 		    }
-		    
+		    */
 		    System.out.println("Moving row finished");
 
 		    try{
@@ -159,6 +166,18 @@ public class SudokuCellListener extends MouseAdapter {
 				    System.out.println("Fading started - fake");
 				    if(theModel.SLEEP == 0 && theModel.SLEEP_BETWEEN_STEPS == 0){
 					theModel.fadeInGraphNow();
+					// UN WAIT ON THE LEVEL VA CHEMA
+					// TREZIREA DE DOUA ORI PE ACEST
+					// THREAD
+					// SAU MAI BINE FACEM TREZIREA
+					// DOAR CAND TERMINA NIVELUL
+					//
+					// DA
+					//
+					// TREZESTE DOAR CAND TERMINA NIVELUL
+					//
+					// CREAD CA ASTA SE FACE DIN
+					// MODEL: START NEXT TIMERS
 				    } else {
 					theModel.fadeInGraph();
 				    }
@@ -170,7 +189,7 @@ public class SudokuCellListener extends MouseAdapter {
 			e2.printStackTrace();
 		    }
 
-		    System.out.println("Finished selecting row");
+		    System.out.println("Finished  row");
 		    
 		}});
 	t.start();

@@ -942,6 +942,20 @@ public class SudokuModel {
 
 	//System.out.println("Inside start next timers, timers.size():" + timers.size());
 	timers.removeAll(valuesToRemove);
+	///
+	///
+	///
+	///
+	///
+	/// NOTIFY ON EACH ONE OF THEM
+	///
+	///
+	/// PRINT HOW MANY IT REMOVED... IT SHOULD REMOVE ONLY 1
+	/// OTHERWISE WE MAY RUN IN MULTITHREADING ISSUES
+	///
+	/// SYNCHRONIZE ON MODEL.TIMERS?
+	///
+	///
 	if(valuesToRemove.size() == 0){
 	    //System.out.println("Return");
 	    // we have removed a fading cell for example, but others still exist
@@ -957,6 +971,7 @@ public class SudokuModel {
 	}
 	*/
 	if(!timers.isEmpty()){
+	    System.out.println("Start next level timer");
 	    for(Timer t:timers.get(0)){
 		t.start();
 	    }
@@ -993,8 +1008,8 @@ public class SudokuModel {
 	theGrid.moveColumn(column, movingToTheRight); // i don't like this
     }
 
-    public void moveRow(int row, boolean movingToTheRight){
-	theGrid.moveRow(row, movingToTheRight); // i don't like this
+    public Timer moveRow(int row, boolean movingToTheRight){
+	return theGrid.moveRow(row, movingToTheRight); // i don't like this
     }
 
     public void moveBlock(int block, boolean movingToTheRight){
