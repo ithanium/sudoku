@@ -30,8 +30,16 @@ public class SudokuModel {
 
     public static final Object WAIT_FOR_TIMER = new Object();
 
+    public Sudoku referenceToMain;
+
     public void SudokuModel(){
 	worldStack = new Stack<SudokuWorld>();
+    }
+    
+    public void SudokuModel(Sudoku referenceToMain){
+	worldStack = new Stack<SudokuWorld>();
+
+	this.referenceToMain = referenceToMain;
     }
 
     public void worldPush(SudokuWorld world){
@@ -615,7 +623,7 @@ public class SudokuModel {
 	///////////////////////////////////////
     }
 
-    public void fadeOutAllExceptRow(int row){
+    public ArrayList<Timer> fadeOutAllExceptRow(int row){
 	ArrayList<Timer> timers81 = new ArrayList<Timer>();
 
 	viewController.hideWelcomeScreen();
@@ -662,9 +670,11 @@ public class SudokuModel {
 	} else {
 	    // System.out.println("Fadeout blocked by other animation");
 	}
+
+	return timers81;
     }
 
-        public void fadeOutAllExceptColumn(int column){
+    public ArrayList<Timer> fadeOutAllExceptColumn(int column){
 	ArrayList<Timer> timers81 = new ArrayList<Timer>();
 
 	viewController.hideWelcomeScreen();
@@ -711,9 +721,11 @@ public class SudokuModel {
 	} else {
 	    // System.out.println("Fadeout blocked by other animation");
 	}
+
+	return timers81;
     }
 
-    public void fadeOutAllExceptBlock(int block){
+    public ArrayList<Timer> fadeOutAllExceptBlock(int block){
 	ArrayList<Timer> timers81 = new ArrayList<Timer>();
 
 	viewController.hideWelcomeScreen();
@@ -799,9 +811,11 @@ public class SudokuModel {
 	} else {
 	    // System.out.println("Fadeout blocked by other animation");
 	}
+
+	return timers81;
     }    
 
-    public void fadeIn(){
+    public ArrayList<Timer> fadeIn(){
 	ArrayList<Timer> timers81 = new ArrayList<Timer>();
 	
 	// wait for it to finish
@@ -842,9 +856,19 @@ public class SudokuModel {
 	} else {
 	    //System.out.println("Fade in blocked by other animation");
 	}
+
+	return timers81;
     }
 
-    public void fadeInGraph(){ ///////// COMASEAZA ASTA
+    public void fadeInGridNow(){
+	for(int i=0; i<9; i++){
+	    for(int j=0; j<9; j++){
+		theGrid.sudokuCells[i][j].setAlphaOne();
+	    }
+	}
+    }
+    
+    public ArrayList<Timer> fadeInGraph(){ ///////// COMASEAZA ASTA
 	ArrayList<Timer> timers81 = new ArrayList<Timer>();
 	/*
 	// wait for it to finish
@@ -885,6 +909,8 @@ public class SudokuModel {
 	} else {
 	    //System.out.println("Fade in blocked by other animation");
 	}
+
+	return timers81;
     }
 
     public void fadeInGraphNow(){ ///////// COMASEAZA ASTA
@@ -946,6 +972,13 @@ public class SudokuModel {
 	///
 	///
 	///
+	//System.out.println("Will remove: " + valuesToRemove.size() + " (pls no more than 1)");
+
+	for(ArrayList<Timer> sameTimeTimers : valuesToRemove){
+	    synchronized (sameTimeTimers) {
+		sameTimeTimers.notifyAll();
+	    }
+	}
 	///
 	/// NOTIFY ON EACH ONE OF THEM
 	///
@@ -1004,68 +1037,265 @@ public class SudokuModel {
 	}
     }
 
-    public void moveColumn(int column, boolean movingToTheRight){
-	theGrid.moveColumn(column, movingToTheRight); // i don't like this
+    public ArrayList<Timer> moveColumn(int column, boolean movingToTheRight){
+	return theGrid.moveColumn(column, movingToTheRight); // i don't like this
     }
 
-    public Timer moveRow(int row, boolean movingToTheRight){
+    public ArrayList<Timer> moveRow(int row, boolean movingToTheRight){
 	return theGrid.moveRow(row, movingToTheRight); // i don't like this
     }
 
-    public void moveBlock(int block, boolean movingToTheRight){
-	theGrid.moveBlock(block, movingToTheRight); // i don't like this
+    public ArrayList<Timer> moveBlock(int block, boolean movingToTheRight){
+	return theGrid.moveBlock(block, movingToTheRight); // i don't like this
     }
 
     public void setViewController(ViewController vc){
 	this.viewController = vc;
     }
 
-    public void moveLeft(){
-	if(theGrid.lastSelectionWasRow){
-	    theGrid.moveRow(theGrid.lastSelectionNumber, false);
-	}
-
-	if(theGrid.lastSelectionWasColumn){
-	    theGrid.moveColumn(theGrid.lastSelectionNumber, false);
-	}
-	
-	if(theGrid.lastSelectionWasBlock){
-	    theGrid.moveBlock(theGrid.lastSelectionNumber, false);
-	}
-
-	viewController.theEdges.setVisible(false);
-	
-	viewController.theEdges.edgeColors  = new Color[20][20];
-
-	for(int i=0; i<20; i++){
-	    for(int j=0; j<20; j++){
-		//initially all edges are gray
-		viewController.theEdges.edgeColors[i][j] = Color.LIGHT_GRAY;
-	    }
-	}
-
-	for(int i=1; i<10; i++){
-	    // initially all circles have a black background with white text
-	    theGrid.valueCircles[i].setCircleColor(Color.BLACK);
-	    theGrid.valueCircles[i].setFontColor(Color.WHITE);
-	}
-
-	for(int i=0; i<9; i++){
-	    for(int j=0; j<9; j++){
-		// initially all vars have no background with black text
-		theGrid.sudokuCells2[i][j].setBackground(null);
-		theGrid.sudokuCells2[i][j].setFontColor(Color.BLACK);
-	    }
-	}
-	
-	viewController.theEdges.moves = new ArrayList<TripletIIB>();
-	this.timers = new ArrayList<ArrayList<Timer>>();
-	theGrid.removedCellGoingToTheLeft = new int[9];
-
-	viewController.theEdges.setVisible(true);
-    }
-
     public boolean propagateOnAssignment(int shown_x, int shown_y){
 	return propagate();
+    }
+
+    public void selected(int number, int selectionType){
+
+	Thread t = new Thread(new Runnable() {
+		
+		ArrayList<Timer> sameLevelTimers;
+		
+		@Override
+		public void run() {
+		    
+		    try{
+			SwingUtilities.invokeAndWait(new Runnable() {
+				// THIS IS NOW THE EDT
+				// CAN'T WAIT FOR TIMER HERE
+				// AS TIMER ALSO RUNS ON EDT
+				public void run() {
+
+				    if(selectionType == 0){ //row
+					sameLevelTimers = fadeOutAllExceptRow(number);
+				    }
+								    
+				    if(selectionType == 1){ //column
+					sameLevelTimers = fadeOutAllExceptColumn(number);
+				    }
+				    
+				    if(selectionType == 2){ //block
+					sameLevelTimers = fadeOutAllExceptBlock(number);
+				    }
+				}
+			    });
+		    } catch (Exception e2){
+			e2.printStackTrace();
+		    }
+
+		    synchronized (sameLevelTimers) {
+			try {
+			    sameLevelTimers.wait();
+			} catch (InterruptedException ex) {
+			}
+		    }
+		    
+		    System.out.println("Faded out before actually moving to the right");
+		    
+		    try{
+			SwingUtilities.invokeAndWait(new Runnable() {
+				// THIS IS NOW THE EDT
+				// CAN'T WAIT FOR TIMER HERE
+				// AS TIMER ALSO RUNS ON EDT
+				public void run() {
+				    if(selectionType == 0){ //row
+					//theModel.fadeOutAllExceptRow(number);
+				
+					sameLevelTimers = moveRow(number, true);
+		        
+				    }
+								    
+				    if(selectionType == 1){ //column
+					//theModel.fadeOutAllExceptColumn(number);
+					sameLevelTimers = moveColumn(number, true);
+				    }
+				    
+				    if(selectionType == 2){ //block
+					//theModel.fadeOutAllExceptBlock(number);
+					sameLevelTimers = moveBlock(number, true);
+				    }
+
+				    //theModel.viewController.theEdges.setAlphaOne();
+				    //theModel.viewController.theEdges.repaint();
+				}
+			    });
+		    } catch (Exception e2){
+			e2.printStackTrace();
+		    }
+
+		    synchronized (sameLevelTimers) {
+			try {
+			    sameLevelTimers.wait();
+			} catch (InterruptedException ex) {
+			}
+		    }
+
+		    System.out.println("Moving row, column or block to the right finished");
+
+		    try{
+			SwingUtilities.invokeAndWait(new Runnable() {
+				public void run() {
+				    if(SLEEP == 0 && SLEEP_BETWEEN_STEPS == 0){
+					// notice that now doesn't return a timer level
+					// therefore don't synchronize below
+				        fadeInGraphNow();
+
+				    } else {
+					sameLevelTimers = fadeInGraph();
+				    }
+
+				    //theModel.scheduleSolveFF();
+				}
+			    });
+		    } catch (Exception e2){
+			e2.printStackTrace();
+		    }
+
+		    if(!(SLEEP == 0 && SLEEP_BETWEEN_STEPS == 0)){
+			// notice that now doesn't return a timer level
+			// therefore don't sync on it
+			synchronized (sameLevelTimers) {
+			    try {
+				sameLevelTimers.wait();
+			    } catch (InterruptedException ex) {
+			    }
+			}
+		    }
+		    
+		    System.out.println("Fading graph finished");
+
+		}});
+	
+	t.start();
+
+	try{
+	    t.join();
+	} catch (InterruptedException e){
+	    e.printStackTrace();
+	}
+    }
+
+    // TODO: new name: unselect()
+    public void moveLeft(){
+	Thread t = new Thread(new Runnable() {
+		
+		ArrayList<Timer> sameLevelTimers;
+		
+		@Override
+		public void run() {
+		    try{
+			SwingUtilities.invokeAndWait(new Runnable() {
+				// THIS IS NOW THE EDT
+				// CAN'T WAIT FOR TIMER HERE
+				// AS TIMER ALSO RUNS ON EDT
+				public void run() {
+				    for(int i=0; i<9; i++){
+					for(int j=0; j<9; j++){
+					    // initially all vars have no background with black text
+					    theGrid.sudokuCells2[i][j].setBackground(null);
+					    theGrid.sudokuCells2[i][j].setFontColor(Color.BLACK);
+					}
+				    }
+								    
+				    if(theGrid.lastSelectionWasRow){
+					sameLevelTimers = theGrid.moveRow(theGrid.lastSelectionNumber, false);
+				    }
+				    
+				    if(theGrid.lastSelectionWasColumn){
+					sameLevelTimers = theGrid.moveColumn(theGrid.lastSelectionNumber, false);
+				    }
+				    
+				    if(theGrid.lastSelectionWasBlock){
+					sameLevelTimers = theGrid.moveBlock(theGrid.lastSelectionNumber, false);
+				    }
+				}});
+
+		    } catch (Exception e2){
+			e2.printStackTrace();
+		    }
+
+		    synchronized (sameLevelTimers) {
+			try {
+			    sameLevelTimers.wait();
+			} catch (InterruptedException ex) {
+			}
+		    }
+
+		    System.out.println("Moving row, column or block to the left finished");
+		    try{
+			SwingUtilities.invokeAndWait(new Runnable() {
+				// THIS IS NOW THE EDT
+				// CAN'T WAIT FOR TIMER HERE
+				// AS TIMER ALSO RUNS ON EDT
+				public void run() {
+				    sameLevelTimers = fadeIn();
+				}
+			    });
+		    } catch (Exception e2){
+			e2.printStackTrace();
+		    }
+
+		    synchronized (sameLevelTimers) {
+			try {
+			    sameLevelTimers.wait();
+			} catch (InterruptedException ex) {
+			}
+		    }
+
+		    System.out.println("Faded in after moving left");
+		    
+		    try{
+			SwingUtilities.invokeAndWait(new Runnable() {
+				// THIS IS NOW THE EDT
+				// CAN'T WAIT FOR TIMER HERE
+				// AS TIMER ALSO RUNS ON EDT
+				public void run() {
+				    
+				    viewController.theEdges.setVisible(false);
+	
+				    viewController.theEdges.edgeColors  = new Color[20][20];
+
+				    for(int i=0; i<20; i++){
+					for(int j=0; j<20; j++){
+					    //initially all edges are gray
+					    viewController.theEdges.edgeColors[i][j] = Color.LIGHT_GRAY;
+					}
+				    }
+				    
+				    for(int i=1; i<10; i++){
+					// initially all circles have a black background with white text
+					theGrid.valueCircles[i].setCircleColor(Color.BLACK);
+					theGrid.valueCircles[i].setFontColor(Color.WHITE);
+				    }
+				    
+				    viewController.theEdges.moves = new ArrayList<TripletIIB>();
+				    timers = new ArrayList<ArrayList<Timer>>();
+				    theGrid.removedCellGoingToTheLeft = new int[9];
+				    
+				    viewController.theEdges.setVisible(true);
+				}
+			    });
+		    } catch (Exception e2){
+			e2.printStackTrace();
+		    }
+
+		    System.out.println("Finished cleaning after moving left");
+
+		}});
+	
+	t.start();
+
+	try{
+	    t.join();
+	} catch (InterruptedException e){
+	    e.printStackTrace();
+	}
     }
 }

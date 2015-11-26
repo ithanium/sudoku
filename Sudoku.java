@@ -13,6 +13,7 @@ import java.util.List;
 
 import java.util.Hashtable;
 import java.util.Dictionary;
+import java.util.ArrayList;
 
 public class Sudoku{
     public static final int SIZE = 9;
@@ -29,6 +30,8 @@ public class Sudoku{
     public static JButton printButton;
 
     public static JButton nextStepButton;    
+
+    public static JButton showDemoButton;
     
     public static JButton solveFFButton;
     public static JButton unselectButton;
@@ -46,12 +49,16 @@ public class Sudoku{
     public static JMenuItem solveInStepsFalseMenuItem;
     public static JMenuItem setNormalSpeedMenuItem;
     public static JMenuItem setHighSpeedMenuItem;
-
+    
     public static JLabel currentStepStatusLabel;
 
     //
 
     public static JSlider speedSlider;
+
+    public Sudoku(){
+	
+    }
     
     public static void showGUI(){
 	JFrame mainFrame = new JFrame("sudo ku");
@@ -158,11 +165,16 @@ public class Sudoku{
 	unselectButton = new JButton("Unselect row/column/block");
 	unselectButton.addActionListener(new MouseListener());
 	buttonHolders.add(unselectButton);
-
+	
+	showDemoButton = new JButton("Show demo");
+	showDemoButton.addActionListener(new MouseListener());
+	buttonHolders.add(showDemoButton);
+	    
     	currentStepStatusLabel = new JLabel();
-	currentStepStatusLabel.setPreferredSize(new Dimension(1215, 15));
+	currentStepStatusLabel.setPreferredSize(new Dimension(1215, 25));
 	currentStepStatusLabel.setFont(new Font("Serif", Font.PLAIN, 14));
 	currentStepStatusLabel.setForeground(Color.BLACK);
+	currentStepStatusLabel.setVerticalAlignment(SwingConstants.BOTTOM);
 	currentStepStatusLabel.setHorizontalAlignment(SwingConstants.CENTER);
 	currentStepStatusLabel.setText("Please select a row, column or block");
 	theGridPlaceHolder.add(currentStepStatusLabel);
@@ -226,6 +238,7 @@ public class Sudoku{
 	try{
 	    SwingUtilities.invokeAndWait(new Runnable() {
 		    public void run() {
+			//new Sudoku();
 			showGUI();
 		    }
 		});
@@ -239,6 +252,12 @@ public class Sudoku{
     public static void setAnimationSpeed(int speed){
 	if(speed <= 50){
 	    System.out.println("Set normal speed  menu item clicked");
+
+	    for(int i=0; i<9; i++){
+		for(int j=0; j<9; j++){
+		    theModel.viewController.theGrid.sudokuCells[i][j].DELTA = 0.01f;
+		}
+	    }
 
 	    theModel.SLEEP = 1;
 	    theModel.SLEEP_BETWEEN_STEPS = 3000;
@@ -257,6 +276,12 @@ public class Sudoku{
 	} else {
 	    System.out.println("Set high speed menu item clicked");
 
+	    for(int i=0; i<9; i++){
+		for(int j=0; j<9; j++){
+		    theModel.viewController.theGrid.sudokuCells[i][j].DELTA = 1f;
+		}
+	    }
+	    
 	    theModel.SLEEP = 0;
 	    theModel.SLEEP_BETWEEN_STEPS = 0;
 	    
@@ -364,77 +389,6 @@ public class Sudoku{
 				e.printStackTrace();
 			    }
 			    
-			    try{
-				SwingUtilities.invokeAndWait(new Runnable() {
-					public void run() {
-					    //theModel.moveColumn(0, true);
-					    theModel.moveRow(8, true);
-					    //theModel.moveBlock(7, true); ///// EWW it's in gridview
-					}
-				    });
-			    } catch (Exception e){
-				e.printStackTrace();
-			    }
-
-			    try{
-				SwingUtilities.invokeAndWait(new Runnable() {
-					public void run() {
-					    theModel.fadeIn(); ///// EWW it's in gridview
-					}
-				    });
-			    } catch (Exception e){
-				e.printStackTrace();
-			    }
-
-			     try{
-				SwingUtilities.invokeAndWait(new Runnable() {
-					public void run() {
-					    //theModel.moveColumn(0, false);
-					    //theModel.moveRow(8, false);
-					    //theModel.fadeOutAllExceptRow(8);
-					    //theModel.solve();
-					    //theModel.moveBlock(7, false); ///// EWW it's in gridview
-					}
-				    });
-			    } catch (Exception e){
-				e.printStackTrace();
-			    }
-			     
-			    try{
-				SwingUtilities.invokeAndWait(new Runnable() {
-					public void run() {
-					    //theModel.moveColumn(0, false);
-					    //theModel.moveRow(8, false);
-					    //theModel.fadeOutAllExceptRow(8);
-					    //theModel.moveBlock(7, false); ///// EWW it's in gridview
-					}
-				    });
-			    } catch (Exception e){
-				e.printStackTrace();
-			    }
-
-			    try{
-				SwingUtilities.invokeAndWait(new Runnable() {
-					public void run() {
-					    //theModel.moveColumn(0, false);
-					    //theModel.moveRow(8, false);
-					    //theModel.fadeOutAllExceptRow(8);
-					    //theModel.moveBlock(7, false); ///// EWW it's in gridview
-					}
-				    });
-			    } catch (Exception e){
-				e.printStackTrace();
-			    }
-
-			    try{
-				SwingUtilities.invokeAndWait(new Runnable() {
-					public void run() {
-					    //theModel.fadeIn(); ///// EWW it's in gridview
-					}
-				    });
-			    } catch (Exception e){
-				e.printStackTrace();
-			    }
 			}
 			
 		    });
@@ -523,7 +477,7 @@ public class Sudoku{
 		
 		th.start();
 	    }
-
+	    
 	    // Handle unselect button
 	    if (e.getSource() == unselectButton){
 		solveFFButton.setEnabled(true);
@@ -536,6 +490,64 @@ public class Sudoku{
 				    protected Boolean doInBackground() throws Exception{
 					//System.out.println("Is solve EDT?" + SwingUtilities.isEventDispatchThread());
 					theModel.moveLeft();
+					return true;
+				    }
+				};
+			    worker.execute();
+			}});
+		
+		th.start();
+	    }
+
+	    // Handle showDemoButton button
+	    if (e.getSource() == showDemoButton){
+		
+		Thread th = new Thread(new Runnable() {
+			@Override
+			public void run() {
+			    
+			    SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>(){
+				    ArrayList<Timer> sameLevelTimers;
+				    
+				    protected Boolean doInBackground() throws Exception{
+					System.out.println("Started running demo");
+					
+					solveFFButton.setEnabled(false);
+					unselectButton.setEnabled(false);
+					showDemoButton.setEnabled(false);
+
+					// sequence of steps to show the demo
+					theModel.selected(0, 1); // 1st column
+					System.out.println("Should start solveFF");
+					theModel.solveFF();
+					theModel.moveLeft(); // NEW NAME: unselect!
+
+					theModel.selected(4, 0); // 5th row
+					theModel.solveFF();
+					theModel.moveLeft();
+
+					//
+					// make buttons selectable/unselectable
+					//
+					
+					theModel.selected(5, 0); // 6th row
+					theModel.solveFF();
+					theModel.moveLeft();
+					
+					theModel.selected(3, 2); // 4th block
+					theModel.solveFF();
+					theModel.moveLeft();
+					
+					theModel.selected(0, 1); // 1st column
+					theModel.solveFF();
+					//theModel.moveLeft();
+
+					theModel.fadeInGridNow();
+
+					unselectButton.setEnabled(true);
+
+					System.out.println("Finished running demo");
+					
 					return true;
 				    }
 				};

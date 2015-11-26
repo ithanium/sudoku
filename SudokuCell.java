@@ -5,7 +5,7 @@ import java.awt.event.*;
 import java.util.ArrayList;
 
 public class SudokuCell extends JPanel implements ActionListener{
-    private float DELTA = 0.01f; // delete one zero
+    public float DELTA = 0.01f; // delete one zero
     public ArrayList<Timer> fadeOutTimers = new ArrayList<Timer>(); //fadeOut
     public ArrayList<Timer> fadeInTimers = new ArrayList<Timer>(); //fadeIn
     private float alpha = 1f;

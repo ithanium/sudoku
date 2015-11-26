@@ -56,7 +56,7 @@ class SudokuGrid extends JPanel implements ActionListener{
         //this.setOpaque(false); // don't know why
 	//this.setVisible(true);
 	
-        this.setBackground(Color.black);
+        //this.setBackground(Color.black);
 	/*
         timer.setInitialDelay(10);
         timer.addActionListener(this);
@@ -164,7 +164,7 @@ class SudokuGrid extends JPanel implements ActionListener{
 	this.theModel = model;
     }
 
-    public void moveColumn(int column, boolean movingToTheRight){
+    public ArrayList<Timer> moveColumn(int column, boolean movingToTheRight){
 	this.lastSelectionWasRow = false;
 	this.lastSelectionWasColumn = true;
 	this.lastSelectionWasBlock = false;
@@ -232,10 +232,11 @@ class SudokuGrid extends JPanel implements ActionListener{
 	} else {
 	    //System.out.println("Move column blocked by other animation");
 	}
-	
+
+	return timers1;
     }
 
-    public Timer moveRow(int row, boolean movingToTheRight){
+    public ArrayList<Timer> moveRow(int row, boolean movingToTheRight){
 	this.lastSelectionWasRow = true;
 	this.lastSelectionWasColumn = false;
 	this.lastSelectionWasBlock = false;
@@ -297,12 +298,6 @@ class SudokuGrid extends JPanel implements ActionListener{
 	    System.out.println("Move ROW model timers = 1, start level");
 	    for(Timer t:theModel.timers.get(0)){
 		t.start();
-		return t; //////////////////
-		///////////////////////////
-		//////////////////////////
-		//////////////////////////
-		// DO IT FOR ALL THE LEVEL, NOT ONLY THIS TIMER
-		// ArrayList<Timer>
 	    }
 	} else {
 	    //System.out.println("Move ROW blocked by other animation");
@@ -310,10 +305,10 @@ class SudokuGrid extends JPanel implements ActionListener{
 
 	System.out.println("Move row timer start setting ended");
 
-	return null;
+	return timers1;
     }
 
-    public void moveBlock(int block, boolean movingToTheRight){
+    public ArrayList<Timer> moveBlock(int block, boolean movingToTheRight){
 	this.lastSelectionWasRow = false;
 	this.lastSelectionWasColumn = false;
 	this.lastSelectionWasBlock = true;
@@ -413,7 +408,8 @@ class SudokuGrid extends JPanel implements ActionListener{
 	} else {
 	    //System.out.println("Move (BLOCK) blocked by other animation");
 	}
-	    
+
+	return timers1;
     }
     
     @Override
@@ -429,17 +425,6 @@ class SudokuGrid extends JPanel implements ActionListener{
 	theModel.lastRunningTimer = thisTimer;
 	
 	for(int i=0; i<9; i++){
-	    //sudokuCells3Now[i].setAlphaOne(); /////////////// !!!!! only call once
-	    /*
-	    float x1 = sudokuCells3Before[i].getX(); //from
-	    float x2 = 600; //to
-	    
-	    float y1 = sudokuCells3Before[i].getY(); //from
-	    float y2 = i * 50 + i * distanceBetweenCells_y; //to
-
-	    float m = (y2-y1)/(x2-x1);
-	    float x = 0; // fake value, see below
-	    */
 
 	    float x1,x2,y1,y2,m,x;
 	    x1 = x2 = y1 = y2 = m = x = 0;
@@ -477,11 +462,8 @@ class SudokuGrid extends JPanel implements ActionListener{
 			timersToTheRight.remove(thisTimer);
 			
 			thisTimer.stop(); // STOP IT, START THE NEXT ONE IN QUEUE
-			synchronized (thisTimer) {
-                            thisTimer.notifyAll();
-                        }
 			theModel.removeTimer(thisTimer);
-			System.out.println("Move column finished, wake up next timers");
+			//System.out.println("Move column to the right finished, wake up next timers");
 			setAlphaOneEdgesCircles();
 			
 			theModel.startNextTimers();
@@ -531,23 +513,22 @@ class SudokuGrid extends JPanel implements ActionListener{
 			}
 		    }
 		    
-		    if(count == 9){
-			//System.out.println("COUNT IS 9");
-			timersToTheLeft.remove(thisTimer);
-					
-			thisTimer.stop(); // STOP IT, START THE NEXT ONE IN QUEUE
-			theModel.removeTimer(thisTimer);
-			//System.out.println("Move column finished, wake up next timers");
+		    if(count == 9){ // same as didAllFinish above
 
 			for(int i3=0; i3<9; i3++){
 			    sudokuCells3Before[i3] = null;
 			    sudokuCells3Now[i3] = null;
 			}
 
-			///////////////////
-			//theModel.viewController.theEdges.drawMoves();
+			timersToTheLeft.remove(thisTimer);
 			
+			thisTimer.stop(); // STOP IT, START THE NEXT ONE IN QUEUE
+			theModel.removeTimer(thisTimer);
+			
+			//System.out.println("Move column to the left finished, wake up next timers");
+
 			theModel.startNextTimers();
+			
 		    }
 		}
 	    }

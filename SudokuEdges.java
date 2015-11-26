@@ -463,8 +463,10 @@ public class SudokuEdges extends JPanel implements ActionListener {
 
 	Color blueColor = new Color(Color.BLUE.getRed(), Color.BLUE.getGreen(), Color.BLUE.getBlue(), (int)(alpha*255));
 	Color redColor = new Color(Color.RED.getRed(), Color.RED.getGreen(), Color.RED.getBlue(), (int)(alpha*255));
-	Color greenColor = new Color(Color.GREEN.getRed(), Color.GREEN.getGreen(), Color.GREEN.getBlue(), (int)(alpha*255));	
+	Color greenColor = new Color(Color.GREEN.getRed(), Color.GREEN.getGreen(), Color.GREEN.getBlue(), (int)(alpha*255));
 
+	greenColor = greenColor.darker();
+	
 	if(edgeColors[u][v] == Color.LIGHT_GRAY){
 	    return grayColor;
 	}
