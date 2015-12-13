@@ -216,11 +216,11 @@ public class Sudoku{
 		    
 		    try {
 			// easy file
-			//theModel.readFromFile(workingDirectory.getAbsolutePath() + "/herald20061222E.txt");
+			//theModel.readFromFile(workingDirectory.getAbsolutePath() + "/puzzles/herald20061222E.txt");
 			// hard file
-			//theModel.readFromFile(workingDirectory.getAbsolutePath() + "/herald20061222H.txt");
+			//theModel.readFromFile(workingDirectory.getAbsolutePath() + "/puzzles/herald20061222H.txt");
 			// demo file
-			theModel.readFromFile(workingDirectory.getAbsolutePath() + "/lockedset.txt");
+			theModel.readFromFile(workingDirectory.getAbsolutePath() + "/puzzles/lockedset.txt");
 		    } catch (FileNotFoundException ex) {
 			ex.printStackTrace();
 		    }
