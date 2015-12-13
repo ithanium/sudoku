@@ -8,6 +8,8 @@ import java.awt.geom.Line2D;
 //import java.awt.geom.Line2D;
 
 public class SudokuEdges extends JPanel implements ActionListener {
+    public static MutableBoolean DEBUG;
+
     public SudokuModel theModel;
 
     public float DELTA = 0.01f;
@@ -177,9 +179,18 @@ public class SudokuEdges extends JPanel implements ActionListener {
 	    g2d.setColor(drawColor(u, v));
 	    g2d.draw(new Line2D.Float(x1, y1, x2, y2));
 	}
-		
+	
 	for(int i=0; i<9; i++){
 	    for(int j=0; j<9; j++){
+		if(theModel.theGrid.sudokuCells3Now[i] == null){
+		    // TODO
+		    // I used this because sometimes on high speed
+		    // we get an exception below due to null pointer
+		    //
+		    // CHECK
+		    return;
+		}
+		
 		// from VAR i to VALUE j
 	        int shown_x = theModel.theGrid.sudokuCells3Now[i].x;
 		int shown_y = theModel.theGrid.sudokuCells3Now[i].y;

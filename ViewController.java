@@ -2,7 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 
 public class ViewController extends JLayeredPane { // or JLayerPane?
-
+    public static MutableBoolean DEBUG;
+    
     public SudokuModel theModel;
     public SudokuEdges theEdges; // 1st layer with edges between cells and values
     public SudokuGrid theGrid; // 2nd layer with the SudokuCells and Circles
@@ -26,6 +27,9 @@ public class ViewController extends JLayeredPane { // or JLayerPane?
 	
 	theGrid = new SudokuGrid(theModel, SIZE, SIZE);
 	//theEdges.setPreferredSize(new Dimension(950, 550));
+
+	theEdges.DEBUG = theModel.DEBUG;
+	theGrid.DEBUG = theModel.DEBUG;
 
 	theModel.setGrid(theGrid);
 

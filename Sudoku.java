@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.logging.*;
 
 public class Sudoku{
-    public static final boolean DEBUG = true;
+    public static MutableBoolean DEBUG = new MutableBoolean(false);
     
     public static final int SIZE = 9;
     public static final int SLEEP = 1;
@@ -40,8 +40,6 @@ public class Sudoku{
     public static JButton solveFFButton;
     public static JButton unselectButton;
 
-    //
-
     public static JMenuBar jMenuBar;
     
     public static JMenu fileMenu;
@@ -55,8 +53,6 @@ public class Sudoku{
     public static JMenuItem setHighSpeedMenuItem;
     
     public static JLabel currentStepStatusLabel;
-
-    //
 
     public static JSlider speedSlider;
 
@@ -108,23 +104,12 @@ public class Sudoku{
 	
 	mainFrame.setJMenuBar(jMenuBar);
 	
-	//Box box = new Box(BoxLayout.Y_AXIS);
-	
 	JPanel theGridPlaceHolder = new JPanel();
 	theGridPlaceHolder.setSize(1250, 725); /////// CHECK THE SIZES
-	//theGridPlaceHolder.setBackground(Color.WHITE);////////////////////////
-	//SudokuGrid theGrid = new SudokuGrid(theModel, SIZE, SIZE);
-	//theGrid.setModel(theModel);
+
 	ViewController vc = new ViewController(theModel);
-	//vc.setModel(theModel);
 	
-	//theGridPlaceHolder.add(theGrid);
 	theGridPlaceHolder.add(vc);
-	//box.add(Box.createVerticalGlue());
-	//box.add(theGridPlaceHolder);
-	//box.add(Box.createVerticalGlue());
-	
-	//mainFrame.add(box);
 	mainFrame.add(theGridPlaceHolder);
 
 	JPanel buttonHolders = new JPanel();
@@ -206,20 +191,21 @@ public class Sudoku{
 	solveFFButton.setEnabled(true); //// TODO
 	unselectButton.setEnabled(false);
 		
-	//theModel.setGrid(theGrid);
-	
 	mainFrame.setVisible(true);
-	//System.out.println("TEST0");
-	//System.out.println("Should be true " + SwingUtilities.isEventDispatchThread());
     }
     
     public static void main(String args[]){
+	if(args.length > 0){
+	    if(args[0].compareTo("debug") == 0 || args[0].compareTo("DEBUG") == 0){
+		DEBUG.setValue(true);
+		if(DEBUG.getValue()){System.out.println("Debug enabled");}	
+	    }
+	}
+		
 	theModel = new SudokuModel();
 	theModel.DEBUG = DEBUG;
 	theModel.SIZE = SIZE;
 	theModel.SLEEP = SLEEP;
-
-	if(DEBUG){System.out.println("hello, world");}
 	
 	Runnable r = new Runnable() {
 		public void run() {
@@ -258,7 +244,7 @@ public class Sudoku{
 
     public static void setAnimationSpeed(int speed){
 	if(speed <= 50){
-	    System.out.println("Set normal speed  menu item clicked");
+	    if(DEBUG.getValue()){System.out.println("Set normal speed  menu item clicked");}
 
 	    for(int i=0; i<9; i++){
 		for(int j=0; j<9; j++){
@@ -281,7 +267,7 @@ public class Sudoku{
 	    theModel.viewController.theEdges.SLEEP = 500;  // between drawing
 	    theModel.viewController.theEdges.SLEEP_BETWEEN_STEPS = 3000;  // between drawing
 	} else {
-	    System.out.println("Set high speed menu item clicked");
+	    if(DEBUG.getValue()){System.out.println("Set high speed menu item clicked");}
 
 	    for(int i=0; i<9; i++){
 		for(int j=0; j<9; j++){
@@ -326,12 +312,12 @@ public class Sudoku{
 
 	    // Handle set normal speed  menu item
 	    if (e.getSource() == solveInStepsTrueMenuItem) {
-		System.out.println("solveInStepsTrueMenuItem");
+		if(DEBUG.getValue()){System.out.println("solveInStepsTrueMenuItem");}
 	    }
 
 	    // Handle set high speed menu item
 	    if (e.getSource() == solveInStepsFalseMenuItem) {
-		System.out.println("solveInStepsFalseMenuItem");
+		if(DEBUG.getValue()){System.out.println("solveInStepsFalseMenuItem");}
 	    }
 
 	    // Handle set normal speed  menu item
@@ -363,7 +349,7 @@ public class Sudoku{
 			ex.printStackTrace();
 		    }
 		} else {
-		    System.out.println("Open command canceled by the user");
+		    if(DEBUG.getValue()){System.out.println("Open command canceled by the user");}
 		}
 	    }
 
@@ -450,7 +436,7 @@ public class Sudoku{
 		Thread t = new Thread(new Runnable() {
 			@Override
 			public void run() {
-			    System.out.println("Next step button pressed");
+			    if(DEBUG.getValue()){System.out.println("Next step button pressed");}
 			    //theModel.fadeOutAllExceptColumn(0);
 			    //theModel.fadeOutAllExceptRow(8);
 			    //theModel.fadeOutAllExceptBlock(7); //// ew it's in sudokucell
@@ -498,7 +484,7 @@ public class Sudoku{
 		Thread th = new Thread(new Runnable() {
 			@Override
 			public void run() {
-			    System.out.println("Started running demo");
+			    if(DEBUG.getValue()){System.out.println("Started running demo");}
 
 			    solveFFButton.setEnabled(false);
 			    unselectButton.setEnabled(false);
@@ -534,7 +520,7 @@ public class Sudoku{
 			    
 			    unselectButton.setEnabled(true);
 			    
-			    System.out.println("Finished running demo");
+			    if(DEBUG.getValue()){System.out.println("Finished running demo");}
 			    
 			}});
 		

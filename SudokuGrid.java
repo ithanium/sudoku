@@ -6,6 +6,8 @@ import java.awt.event.*;
 import java.util.ArrayList;
 
 class SudokuGrid extends JPanel implements ActionListener{
+    public static MutableBoolean DEBUG;
+    
     public  float DELTA = 5f; //// WAS 1
     //private  Timer timer = new Timer(5, null);
     public ArrayList<Timer> timersToTheRight = new ArrayList<Timer>(); // to the right
@@ -295,7 +297,7 @@ class SudokuGrid extends JPanel implements ActionListener{
 	theModel.timers.add(timers1);
 	if(theModel.timers.size() == 1){
 	    // otherwise let another timer start this one when it finishes
-	    System.out.println("Move ROW model timers = 1, start level");
+	    if(DEBUG.getValue()){System.out.println("Move ROW model timers = 1, start level");}
 	    for(Timer t:theModel.timers.get(0)){
 		t.start();
 	    }
@@ -303,7 +305,7 @@ class SudokuGrid extends JPanel implements ActionListener{
 	    //System.out.println("Move ROW blocked by other animation");
 	}
 
-	System.out.println("Move row timer start setting ended");
+	if(DEBUG.getValue()){System.out.println("Move row timer start setting ended");}
 
 	return timers1;
     }

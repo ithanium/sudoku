@@ -2,6 +2,7 @@ import java.util.*;
 import java.awt.Color;
 
 public class Tarjan {
+    public static MutableBoolean DEBUG;
     
     SudokuModel theModel;
     int[][] A;         // adjacency matrix, will be used only for displaying output
@@ -138,7 +139,7 @@ public class Tarjan {
     public ArrayList<ArrayList<Integer>> run() {
 	// number of strongly connected components
         int scc_count = count();
-        System.out.println("\t" + scc_count + " strongly connected components");
+        if(DEBUG.getValue()){System.out.println("\t" + scc_count + " strongly connected components");}
 
 	ArrayList<ArrayList<Integer>> components = new ArrayList<ArrayList<Integer>>();
 
@@ -152,10 +153,10 @@ public class Tarjan {
 	
 	// Print the strongly connected components
         for (int i = 0; i < scc_count; i++) {
-	    System.out.print("\tComponent " + i + ": ");
+	    if(DEBUG.getValue()){System.out.print("\tComponent " + i + ": ");}
 	    
             for (int v : components.get(i)) {
-                System.out.print(v + " ");
+                if(DEBUG.getValue()){System.out.print(v + " ");}
 		if(v < 9){
 		    // dealing with a var on the left
 		    theModel.theGrid.sudokuCells3Now[v].setBackground(universityColors.get(i));
@@ -169,7 +170,7 @@ public class Tarjan {
 		theModel.viewController.theEdges.repaint(); // !! otherwise we get strange background
 	    }
 	    
-            System.out.println();
+            if(DEBUG.getValue()){System.out.println();}
         }
 
 	return components;

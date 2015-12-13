@@ -2,7 +2,8 @@ import java.util.*;
 import java.awt.Color;
 
 public class FordFulkerson {
-
+    public static MutableBoolean DEBUG;
+    
     int[][] A;         // adjacency matrix, will be used only for displaying output
     int[][] R;         //  residual graph
     int n;             // order of graph
@@ -86,7 +87,7 @@ public class FordFulkerson {
 	    if(u>0 && u<10){
 		if((u < lastVarVisited && !finishedGreedyMatch) || u == 9){
 		    finishedGreedyMatch = true;
-		    System.out.println("\tGreedy matched finished");
+		    if(DEBUG.getValue()){System.out.println("\tGreedy matched finished");}
 		    theModel.viewController.theEdges.drawMovesNow();
 		} else {
 		    lastVarVisited = u;

@@ -11,7 +11,7 @@ import org.chocosolver.solver.constraints.*;
 import org.chocosolver.solver.exception.ContradictionException;
 
 public class SudokuModel {
-    public static boolean DEBUG = true;
+    public static MutableBoolean DEBUG;
     
     public SudokuGrid theGrid; // TODO update the name // GUI
     public static int SIZE;
@@ -133,7 +133,7 @@ public class SudokuModel {
     }
 
     public boolean solveFF(){
-	System.out.println("Started running the all-different implementation");
+	if(DEBUG.getValue()){System.out.println("Started running the all-different implementation");}
 	
 	//System.out.println("Does the all-different implementation run on the EDT? (should be false) " + SwingUtilities.isEventDispatchThread());
 
@@ -175,9 +175,10 @@ public class SudokuModel {
 	    }
 	}
 	
-	System.out.println("Step 1 - Ford Fulkerson - started");
+	if(DEBUG.getValue()){System.out.println("Step 1 - Ford Fulkerson - started");}
 
 	FordFulkerson ff = new FordFulkerson(super_getThis(), A, R, 20);
+	ff.DEBUG = DEBUG;
 	ff.run();
 
 	//viewController.theEdges.applyDrawing(); // apply last green/red
@@ -199,9 +200,9 @@ public class SudokuModel {
 	    e.printStackTrace();
 	}
 	*/
-	System.out.println("Step 1 - Ford Fulkerson - finished");
+	if(DEBUG.getValue()){System.out.println("Step 1 - Ford Fulkerson - finished");}
 
-	System.out.println("Step 2 - Add arrows after maximum matching - started");
+	if(DEBUG.getValue()){System.out.println("Step 2 - Add arrows after maximum matching - started");}
 	
 	int newA[][] = new int[20][20];
 	int newA2[][] = new int[18][18];
@@ -209,7 +210,7 @@ public class SudokuModel {
 	for(int i=0; i<20; i++){
 	    for(int j=0; j<20; j++){
 		if(i > 0 && i < 10 && A[i][j] == 1 && A[i][j] * R[j][i] == 1){
-		    System.out.println("\tEdge i: "+(i)+" j:"+(j));
+		    if(DEBUG.getValue()){System.out.println("\tEdge i: "+(i)+" j:"+(j));}
 		    newA[i][j] = 1;
 		}
 	    }
@@ -234,7 +235,7 @@ public class SudokuModel {
 	//Printing step 2 arrow flows after maximum matching
 	//newA2
 
-       	System.out.println("Step 2 - Add arrows after maximum matching - finished");
+       	if(DEBUG.getValue()){System.out.println("Step 2 - Add arrows after maximum matching - finished");}
 
 	if(SLEEP_BETWEEN_STEPS > 0){
 	    try{
@@ -254,14 +255,15 @@ public class SudokuModel {
 	    e.printStackTrace();
 	}
 
-	System.out.println("Step 3 - Tarjan -  started");
+	if(DEBUG.getValue()){System.out.println("Step 3 - Tarjan -  started");}
 	
 	Tarjan tarjan = new Tarjan(this, newA2, 18);
+	tarjan.DEBUG = DEBUG;
 	ArrayList<ArrayList<Integer>> components = tarjan.run();
 
-	System.out.println("Step 3 - Tarjan - finished");
+	if(DEBUG.getValue()){System.out.println("Step 3 - Tarjan - finished");}
 
-	System.out.println("Step 4 - Apply knowledge after running Tartajn - started");
+	if(DEBUG.getValue()){System.out.println("Step 4 - Apply knowledge after running Tartajn - started");}
 	
 	int newA3[][] = new int[18][18];
 	
@@ -275,14 +277,14 @@ public class SudokuModel {
 		int finish_component_id = tarjan.id(v);
 		
 		if(start_component_id != finish_component_id){
-		    System.out.println("\tConsidering u: " + u + " v: " + v + " start comp: " + start_component_id + " finish comp: " + finish_component_id);
+		    if(DEBUG.getValue()){System.out.println("\tConsidering u: " + u + " v: " + v + " start comp: " + start_component_id + " finish comp: " + finish_component_id);}
 		    newA3[u][v] = 1;
 		}
 	    }
 	}
 
-	System.out.println();
-	System.out.println("\tStarting coloring edges in blue & red");
+	if(DEBUG.getValue()){System.out.println();}
+	if(DEBUG.getValue()){System.out.println("\tStarting coloring edges in blue & red");}
 	
 	try{
 	    SwingUtilities.invokeAndWait(new Runnable() {
@@ -295,7 +297,7 @@ public class SudokuModel {
 				}
 				
 				if(u<9){
-				    System.out.println("\t\tColor red for edge u: " + u + " v:" + v + " (cell: " + u + " to number: " + (v-8) + ")");
+				    if(DEBUG.getValue()){System.out.println("\t\tColor red for edge u: " + u + " v:" + v + " (cell: " + u + " to number: " + (v-8) + ")");}
 				    
 				    int shown_x = theGrid.sudokuCells3Before[u].x;
 				    int shown_y = theGrid.sudokuCells3Before[u].y;
@@ -303,7 +305,7 @@ public class SudokuModel {
 				    viewController.theEdges.edgeColors[u+1][v+1] = Color.RED;
 				    
 				} else if(u>8){
-				    System.out.println("\t\tColor blue for edge v: " + v + " u:" + u + " (cell: " + v + " to number: " + (u-8) + ")"); // switch
+				    if(DEBUG.getValue()){System.out.println("\t\tColor blue for edge v: " + v + " u:" + u + " (cell: " + v + " to number: " + (u-8) + ")");}  // switch
 				    
 				    int shown_x = theGrid.sudokuCells3Before[v].x;
 				    int shown_y = theGrid.sudokuCells3Before[v].y;
@@ -322,19 +324,19 @@ public class SudokuModel {
 	    e.printStackTrace();
 	}
       
-	System.out.println("\tFinished coloring edges in blue & red");
+	if(DEBUG.getValue()){System.out.println("\tFinished coloring edges in blue & red");}
 	
 	if(SLEEP_BETWEEN_STEPS > 0){
 	    try{
-		System.out.println("\n\tSleeping between steps for " + SLEEP_BETWEEN_STEPS);
+		if(DEBUG.getValue()){System.out.println("\n\tSleeping between steps for " + SLEEP_BETWEEN_STEPS);}
 		Thread.sleep(SLEEP_BETWEEN_STEPS);
 	    } catch (Exception e){
 		e.printStackTrace();
 	    }
 	}
 	
-	System.out.println();
-	System.out.println("\tStart applying results in the original grid");
+	if(DEBUG.getValue()){System.out.println();}
+	if(DEBUG.getValue()){System.out.println("\tStart applying results in the original grid");}
 	
 	try{
 	    SwingUtilities.invokeAndWait(new Runnable() {
@@ -347,7 +349,7 @@ public class SudokuModel {
 				}
 				
 				if(u<9){
-				    System.out.println("\t\tRemove value u: " + u + " v:" + v + " (cell: " + u + " to number: " + (v-8) + ")");
+				    if(DEBUG.getValue()){System.out.println("\t\tRemove value u: " + u + " v:" + v + " (cell: " + u + " to number: " + (v-8) + ")");}
 				    
 				    int shown_x = theGrid.sudokuCells3Before[u].x;
 				    int shown_y = theGrid.sudokuCells3Before[u].y;
@@ -360,7 +362,7 @@ public class SudokuModel {
 				    theGrid.sudokuCells3Before[u].setValuesLabel(theGrid.sudokuCells3Before[u].formatPossibleValues());
 				    
 				} else if(u>8){
-				    System.out.println("\t\tAssign value v: " + v + " u:" + u + " (cell: " + v + " to number: " + (u-8) + ")"); // switch
+				    if(DEBUG.getValue()){System.out.println("\t\tAssign value v: " + v + " u:" + u + " (cell: " + v + " to number: " + (u-8) + ")");} // switch
 				    
 				    int shown_x = theGrid.sudokuCells3Before[v].x;
 				    int shown_y = theGrid.sudokuCells3Before[v].y;
@@ -387,13 +389,13 @@ public class SudokuModel {
 	    e.printStackTrace();
 	}
 
-	System.out.println("\tFinished applying results in the original grid");
+	if(DEBUG.getValue()){System.out.println("\tFinished applying results in the original grid");}
 
-	System.out.println("Step 4 - Apply knowledge after running Tartajn - finished");
+	if(DEBUG.getValue()){System.out.println("Step 4 - Apply knowledge after running Tartajn - finished");}
 
 	if(SLEEP_BETWEEN_STEPS > 0){
 	    try{
-		System.out.println("\n\tSleeping between steps for " + SLEEP_BETWEEN_STEPS);
+		if(DEBUG.getValue()){System.out.println("\n\tSleeping between steps for " + SLEEP_BETWEEN_STEPS);}
 		Thread.sleep(SLEEP_BETWEEN_STEPS);
 	    } catch (Exception e){
 		e.printStackTrace();
@@ -401,14 +403,14 @@ public class SudokuModel {
 	} else {
 	    // keep this here, as this is the last step
 	    try{
-		System.out.println("\n\tSleeping between steps for " + SLEEP_BETWEEN_STEPS);
+		if(DEBUG.getValue()){System.out.println("\n\tSleeping between steps for " + SLEEP_BETWEEN_STEPS);}
 		Thread.sleep(SLEEP_BETWEEN_STEPS + 1000);
 	    } catch (Exception e){
 		e.printStackTrace();
 	    }
 	}
 		
-	System.out.println("Finished running the all-different implementation");
+	if(DEBUG.getValue()){System.out.println("Finished running the all-different implementation");}
 
 	return true; // not important yet
     }
@@ -1080,244 +1082,166 @@ public class SudokuModel {
     }
 
     public void selected(int number, int selectionType){
-
-	Thread t = new Thread(new Runnable() {
 		
-		ArrayList<Timer> sameLevelTimers;
-		
-		@Override
-		public void run() {
-		    
-		    try{
-			SwingUtilities.invokeAndWait(new Runnable() {
-				// THIS IS NOW THE EDT
-				// CAN'T WAIT FOR TIMER HERE
-				// AS TIMER ALSO RUNS ON EDT
-				public void run() {
-
-				    if(selectionType == 0){ //row
-					sameLevelTimers = fadeOutAllExceptRow(number);
-				    }
-								    
-				    if(selectionType == 1){ //column
-					sameLevelTimers = fadeOutAllExceptColumn(number);
-				    }
-				    
-				    if(selectionType == 2){ //block
-					sameLevelTimers = fadeOutAllExceptBlock(number);
-				    }
-				}
-			    });
-		    } catch (Exception e2){
-			e2.printStackTrace();
-		    }
-
-		    synchronized (sameLevelTimers) {
-			try {
-			    sameLevelTimers.wait();
-			} catch (InterruptedException ex) {
-			}
-		    }
-		    
-		    System.out.println("Faded out before actually moving to the right");
-		    
-		    try{
-			SwingUtilities.invokeAndWait(new Runnable() {
-				// THIS IS NOW THE EDT
-				// CAN'T WAIT FOR TIMER HERE
-				// AS TIMER ALSO RUNS ON EDT
-				public void run() {
-				    if(selectionType == 0){ //row
-					//theModel.fadeOutAllExceptRow(number);
-				
-					sameLevelTimers = moveRow(number, true);
-		        
-				    }
-								    
-				    if(selectionType == 1){ //column
-					//theModel.fadeOutAllExceptColumn(number);
-					sameLevelTimers = moveColumn(number, true);
-				    }
-				    
-				    if(selectionType == 2){ //block
-					//theModel.fadeOutAllExceptBlock(number);
-					sameLevelTimers = moveBlock(number, true);
-				    }
-
-				    //theModel.viewController.theEdges.setAlphaOne();
-				    //theModel.viewController.theEdges.repaint();
-				}
-			    });
-		    } catch (Exception e2){
-			e2.printStackTrace();
-		    }
-
-		    synchronized (sameLevelTimers) {
-			try {
-			    sameLevelTimers.wait();
-			} catch (InterruptedException ex) {
-			}
-		    }
-
-		    System.out.println("Moving row, column or block to the right finished");
-
-		    try{
-			SwingUtilities.invokeAndWait(new Runnable() {
-				public void run() {
-				    if(SLEEP == 0 && SLEEP_BETWEEN_STEPS == 0){
-					// notice that now doesn't return a timer level
-					// therefore don't synchronize below
-				        fadeInGraphNow();
-
-				    } else {
-					sameLevelTimers = fadeInGraph();
-				    }
-
-				    //theModel.scheduleSolveFF();
-				}
-			    });
-		    } catch (Exception e2){
-			e2.printStackTrace();
-		    }
-
-		    if(!(SLEEP == 0 && SLEEP_BETWEEN_STEPS == 0)){
-			// notice that now doesn't return a timer level
-			// therefore don't sync on it
-			synchronized (sameLevelTimers) {
-			    try {
-				sameLevelTimers.wait();
-			    } catch (InterruptedException ex) {
-			    }
-			}
-		    }
-		    
-		    System.out.println("Fading graph finished");
-
-		}});
+	ArrayList<Timer> sameLevelTimers = new ArrayList<Timer>();
 	
-	t.start();
 
-	try{
-	    t.join();
-	} catch (InterruptedException e){
-	    e.printStackTrace();
+	if(selectionType == 0){ //row
+	    sameLevelTimers = fadeOutAllExceptRow(number);
 	}
+	    
+	if(selectionType == 1){ //column
+	    sameLevelTimers = fadeOutAllExceptColumn(number);
+	}
+	    
+	if(selectionType == 2){ //block
+	    sameLevelTimers = fadeOutAllExceptBlock(number);
+	}
+	
+	synchronized (sameLevelTimers) {
+	    try {
+		sameLevelTimers.wait();
+	    } catch (InterruptedException ex) {
+	    }
+	}
+	
+	if(DEBUG.getValue()){System.out.println("Faded out before actually moving to the right");}
+	
+
+	if(selectionType == 0){ //row
+	    //theModel.fadeOutAllExceptRow(number);
+	    sameLevelTimers = moveRow(number, true);
+	}
+	    
+	if(selectionType == 1){ //column
+	    //theModel.fadeOutAllExceptColumn(number);
+	    sameLevelTimers = moveColumn(number, true);
+	}
+	    
+	if(selectionType == 2){ //block
+	    //theModel.fadeOutAllExceptBlock(number);
+	    sameLevelTimers = moveBlock(number, true);
+	}
+	    
+	//theModel.viewController.theEdges.setAlphaOne();
+	//theModel.viewController.theEdges.repaint();
+
+	
+	synchronized (sameLevelTimers) {
+	    try {
+		sameLevelTimers.wait();
+	    } catch (InterruptedException ex) {
+	    }
+	}
+	
+	if(DEBUG.getValue()){System.out.println("Moving row, column or block to the right finished");}
+	
+
+	if(SLEEP == 0 && SLEEP_BETWEEN_STEPS == 0){
+	    // notice that now doesn't return a timer level
+	    // therefore don't synchronize below
+	    fadeInGraphNow();
+		
+	} else {
+	    sameLevelTimers = fadeInGraph();
+	}
+	    
+	//theModel.scheduleSolveFF();
+
+	
+	if(!(SLEEP == 0 && SLEEP_BETWEEN_STEPS == 0)){
+	    // notice that now doesn't return a timer level
+	    // therefore don't sync on it
+	    synchronized (sameLevelTimers) {
+		try {
+		    sameLevelTimers.wait();
+		} catch (InterruptedException ex) {
+		}
+	    }
+	}
+	
+	if(DEBUG.getValue()){System.out.println("Fading graph finished");}
     }
 
     // TODO: new name: unselect()
     public void moveLeft(){
-	Thread t = new Thread(new Runnable() {
 		
-		ArrayList<Timer> sameLevelTimers;
-		
-		@Override
-		public void run() {
-		    try{
-			SwingUtilities.invokeAndWait(new Runnable() {
-				// THIS IS NOW THE EDT
-				// CAN'T WAIT FOR TIMER HERE
-				// AS TIMER ALSO RUNS ON EDT
-				public void run() {
-				    for(int i=0; i<9; i++){
-					for(int j=0; j<9; j++){
-					    // initially all vars have no background with black text
-					    theGrid.sudokuCells2[i][j].setBackground(null);
-					    theGrid.sudokuCells2[i][j].setFontColor(Color.BLACK);
-					}
-				    }
-								    
-				    if(theGrid.lastSelectionWasRow){
-					sameLevelTimers = theGrid.moveRow(theGrid.lastSelectionNumber, false);
-				    }
-				    
-				    if(theGrid.lastSelectionWasColumn){
-					sameLevelTimers = theGrid.moveColumn(theGrid.lastSelectionNumber, false);
-				    }
-				    
-				    if(theGrid.lastSelectionWasBlock){
-					sameLevelTimers = theGrid.moveBlock(theGrid.lastSelectionNumber, false);
-				    }
-				}});
+	ArrayList<Timer> sameLevelTimers = new ArrayList<Timer>();
 
-		    } catch (Exception e2){
-			e2.printStackTrace();
-		    }
-
-		    synchronized (sameLevelTimers) {
-			try {
-			    sameLevelTimers.wait();
-			} catch (InterruptedException ex) {
-			}
-		    }
-
-		    System.out.println("Moving row, column or block to the left finished");
-		    try{
-			SwingUtilities.invokeAndWait(new Runnable() {
-				// THIS IS NOW THE EDT
-				// CAN'T WAIT FOR TIMER HERE
-				// AS TIMER ALSO RUNS ON EDT
-				public void run() {
-				    sameLevelTimers = fadeIn();
-				}
-			    });
-		    } catch (Exception e2){
-			e2.printStackTrace();
-		    }
-
-		    synchronized (sameLevelTimers) {
-			try {
-			    sameLevelTimers.wait();
-			} catch (InterruptedException ex) {
-			}
-		    }
-
-		    System.out.println("Faded in after moving left");
-		    
-		    try{
-			SwingUtilities.invokeAndWait(new Runnable() {
-				// THIS IS NOW THE EDT
-				// CAN'T WAIT FOR TIMER HERE
-				// AS TIMER ALSO RUNS ON EDT
-				public void run() {
-				    
-				    viewController.theEdges.setVisible(false);
-	
-				    viewController.theEdges.edgeColors  = new Color[20][20];
-
-				    for(int i=0; i<20; i++){
-					for(int j=0; j<20; j++){
-					    //initially all edges are gray
-					    viewController.theEdges.edgeColors[i][j] = Color.LIGHT_GRAY;
-					}
-				    }
-				    
-				    for(int i=1; i<10; i++){
-					// initially all circles have a black background with white text
-					theGrid.valueCircles[i].setCircleColor(Color.BLACK);
-					theGrid.valueCircles[i].setFontColor(Color.WHITE);
-				    }
-				    
-				    viewController.theEdges.moves = new ArrayList<TripletIIB>();
-				    timers = new ArrayList<ArrayList<Timer>>();
-				    theGrid.removedCellGoingToTheLeft = new int[9];
-				    
-				    viewController.theEdges.setVisible(true);
-				}
-			    });
-		    } catch (Exception e2){
-			e2.printStackTrace();
-		    }
-
-		    System.out.println("Finished cleaning after moving left");
-
-		}});
-	
-	t.start();
-
-	try{
-	    t.join();
-	} catch (InterruptedException e){
-	    e.printStackTrace();
+			
+	for(int i=0; i<9; i++){
+	    for(int j=0; j<9; j++){
+		// initially all vars have no background with black text
+		theGrid.sudokuCells2[i][j].setBackground(null);
+		theGrid.sudokuCells2[i][j].setFontColor(Color.BLACK);
+	    }
 	}
+			
+	if(theGrid.lastSelectionWasRow){
+	    sameLevelTimers = theGrid.moveRow(theGrid.lastSelectionNumber, false);
+	}
+			
+	if(theGrid.lastSelectionWasColumn){
+	    sameLevelTimers = theGrid.moveColumn(theGrid.lastSelectionNumber, false);
+	}
+			
+	if(theGrid.lastSelectionWasBlock){
+	    sameLevelTimers = theGrid.moveBlock(theGrid.lastSelectionNumber, false);
+	}
+
+
+
+
+	synchronized (sameLevelTimers) {
+	    try {
+		sameLevelTimers.wait();
+	    } catch (InterruptedException ex) {
+	    }
+	}
+
+	if(DEBUG.getValue()){System.out.println("Moving row, column or block to the left finished");}
+	
+
+	sameLevelTimers = fadeIn();
+
+
+	synchronized (sameLevelTimers) {
+	    try {
+		sameLevelTimers.wait();
+	    } catch (InterruptedException ex) {
+	    }
+	}
+
+	if(DEBUG.getValue()){System.out.println("Faded in after moving left");}
+		    
+
+	    	    
+	viewController.theEdges.setVisible(false);
+	
+	viewController.theEdges.edgeColors  = new Color[20][20];
+
+	for(int i=0; i<20; i++){
+	    for(int j=0; j<20; j++){
+		//initially all edges are gray
+		viewController.theEdges.edgeColors[i][j] = Color.LIGHT_GRAY;
+	    }
+	}
+				    
+	for(int i=1; i<10; i++){
+	    // initially all circles have a black background with white text
+	    theGrid.valueCircles[i].setCircleColor(Color.BLACK);
+	    theGrid.valueCircles[i].setFontColor(Color.WHITE);
+	}
+				    
+	viewController.theEdges.moves = new ArrayList<TripletIIB>();
+	timers = new ArrayList<ArrayList<Timer>>();
+	theGrid.removedCellGoingToTheLeft = new int[9];
+				    
+	viewController.theEdges.setVisible(true);
+
+
+	if(DEBUG.getValue()){System.out.println("Finished cleaning after moving left");}
+
+	
     }
 }
