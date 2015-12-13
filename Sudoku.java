@@ -61,6 +61,7 @@ public class Sudoku{
     }
     
     public static void showGUI(){
+
 	JFrame mainFrame = new JFrame("sudo ku");
         mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         mainFrame.setSize(1250, 725);
@@ -203,43 +204,35 @@ public class Sudoku{
 	}
 		
 	theModel = new SudokuModel();
+	//theModel.referenceToMain = this;
 	theModel.DEBUG = DEBUG;
 	theModel.SIZE = SIZE;
 	theModel.SLEEP = SLEEP;
-	
-	Runnable r = new Runnable() {
-		public void run() {
-		    //System.out.println("Should be false " + SwingUtilities.isEventDispatchThread());
-		    
-		    // Begin trick to load the initial file
-		    File workingDirectory = new File(System.getProperty("user.dir"));
-		    
-		    try {
-			// easy file
-			//theModel.readFromFile(workingDirectory.getAbsolutePath() + "/puzzles/herald20061222E.txt");
-			// hard file
-			//theModel.readFromFile(workingDirectory.getAbsolutePath() + "/puzzles/herald20061222H.txt");
-			// demo file
-			theModel.readFromFile(workingDirectory.getAbsolutePath() + "/puzzles/lockedset.txt");
-		    } catch (FileNotFoundException ex) {
-			ex.printStackTrace();
-		    }
-		    // End trick to load the initial file
-		}
-	    };
 
+	/*
 	try{
 	    SwingUtilities.invokeAndWait(new Runnable() {
 		    public void run() {
-			//new Sudoku();
+	*/
 			showGUI();
+	/*
 		    }
 		});
 	} catch (Exception e){
 	    e.printStackTrace();
 	}
+	*/
+			
+	if(DEBUG.getValue()){System.out.println("GUI loaded");}
 	
-	r.run();	
+	File workingDirectory = new File(System.getProperty("user.dir"));
+		    
+	try {
+	    // demo file
+	    theModel.readFromFile(workingDirectory.getAbsolutePath() + "/puzzles/lockedset.txt");
+	} catch (FileNotFoundException ex) {
+	    ex.printStackTrace();
+	}
     }
 
     public static void setAnimationSpeed(int speed){
