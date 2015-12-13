@@ -15,7 +15,11 @@ import java.util.Hashtable;
 import java.util.Dictionary;
 import java.util.ArrayList;
 
+import java.util.logging.*;
+
 public class Sudoku{
+    public static final boolean DEBUG = true;
+    
     public static final int SIZE = 9;
     public static final int SLEEP = 1;
         
@@ -211,8 +215,11 @@ public class Sudoku{
     
     public static void main(String args[]){
 	theModel = new SudokuModel();
+	theModel.DEBUG = DEBUG;
 	theModel.SIZE = SIZE;
 	theModel.SLEEP = SLEEP;
+
+	if(DEBUG){System.out.println("hello, world");}
 	
 	Runnable r = new Runnable() {
 		public void run() {
@@ -362,38 +369,35 @@ public class Sudoku{
 
 	    // Handle backtrack solve button
 	    if (e.getSource() == backtrackButton) {
-		SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>(){
-			protected Boolean doInBackground() throws Exception{
+		//solveFFButton.setEnabled(false);
+		//unselectButton.setEnabled(true);
+
+		// escape from EDT
+		Thread t = new Thread(new Runnable() {
+			@Override
+			public void run() {
 			    theModel.solveUsingBacktracking(theModel.worldPeek());
 			    theModel.redraw();
-			    return true;
-			}
-		    };
-		worker.execute();
+			}			
+		    });
+		t.start();
 	    }
 
 	    // Handle next move button
 	    if (e.getSource() == nextButton) {
+		//solveFFButton.setEnabled(false);
+		//unselectButton.setEnabled(true);
+
+		// escape from EDT
 		Thread t = new Thread(new Runnable() {
 			@Override
 			public void run() {
-			    try{
-				SwingUtilities.invokeAndWait(new Runnable() {
-					public void run() {
-					    //theModel.fadeOutAllExceptColumn(0);
-					    //theModel.fadeOutAllExceptRow(8);
-					    //theModel.fadeOutAllExceptBlock(7); //// ew it's in sudokucell
-					}
-				    });
-			    } catch (Exception e){
-				e.printStackTrace();
-			    }
-			    
-			}
-			
+			    //theModel.fadeOutAllExceptColumn(0);
+			    //theModel.fadeOutAllExceptRow(8);
+			    //theModel.fadeOutAllExceptBlock(7); //// ew it's in sudokucell
+			}			
 		    });
 		t.start();
-		
 	    }
 
 	    // Handle pause button
@@ -408,40 +412,48 @@ public class Sudoku{
 	    
 	    // Handle solve choco3 button
 	    if (e.getSource() == choco3Button) {
-		// GOOD !! otherwise
-		// error
-		SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>(){
-			protected Boolean doInBackground() throws Exception{
+		//solveFFButton.setEnabled(false);
+		//unselectButton.setEnabled(true);
+
+		// escape from EDT
+		Thread th = new Thread(new Runnable() {
+			@Override
+			public void run() {
 			    theModel.solveUsingChoco3();
 			    theModel.redraw();
-			    return true;
-			}
-		    };
-		worker.execute();
+			}});
+		
+		th.start();
 	    }
 
 	    // Handle print button
 	    if (e.getSource() == printButton) {
-		System.out.println("Printing button");
+		//solveFFButton.setEnabled(false);
+		//unselectButton.setEnabled(true);
+
+		// escape from EDT
+		Thread t = new Thread(new Runnable() {
+			@Override
+			public void run() {
+			    System.out.println("Print statement");
+			}});
+
+		t.start();
 	    }
 
 	     // Handle next step button
 	    if (e.getSource() == nextStepButton) {
+		//solveFFButton.setEnabled(false);
+		//unselectButton.setEnabled(true);
+
+		// escape from EDT
 		Thread t = new Thread(new Runnable() {
 			@Override
 			public void run() {
-			    try{
-				SwingUtilities.invokeAndWait(new Runnable() {
-					public void run() {
-					    System.out.println("Next step button pressed");
-					    //theModel.fadeOutAllExceptColumn(0);
-					    //theModel.fadeOutAllExceptRow(8);
-					    //theModel.fadeOutAllExceptBlock(7); //// ew it's in sudokucell
-					}
-				    });
-			    } catch (Exception e){
-				e.printStackTrace();
-			    }
+			    System.out.println("Next step button pressed");
+			    //theModel.fadeOutAllExceptColumn(0);
+			    //theModel.fadeOutAllExceptRow(8);
+			    //theModel.fadeOutAllExceptBlock(7); //// ew it's in sudokucell
 			}});
 
 		t.start();
@@ -449,30 +461,14 @@ public class Sudoku{
 	    
 	    // Handle solve button
 	    if (e.getSource() == solveFFButton){
-		/*
-		SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>(){
-			protected Boolean doInBackground() throws Exception{
-			    theModel.solve();
-			    return true;
-			}
-		    };
-		worker.execute();
-		*/
-
 		solveFFButton.setEnabled(false);
 		unselectButton.setEnabled(true);
-		
+
+		// escape from EDT
 		Thread th = new Thread(new Runnable() {
 			@Override
 			public void run() {
-			    SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>(){
-				    protected Boolean doInBackground() throws Exception{
-					//System.out.println("Is solve EDT?" + SwingUtilities.isEventDispatchThread());
-					theModel.solveFF();
-					return true;
-				    }
-				};
-			    worker.execute();
+			    theModel.solveFF();
 			}});
 		
 		th.start();
@@ -482,18 +478,12 @@ public class Sudoku{
 	    if (e.getSource() == unselectButton){
 		solveFFButton.setEnabled(true);
 		unselectButton.setEnabled(false);
-		
+
+		// escape from EDT
 		Thread th = new Thread(new Runnable() {
 			@Override
 			public void run() {
-			    SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>(){
-				    protected Boolean doInBackground() throws Exception{
-					//System.out.println("Is solve EDT?" + SwingUtilities.isEventDispatchThread());
-					theModel.moveLeft();
-					return true;
-				    }
-				};
-			    worker.execute();
+			    theModel.moveLeft();
 			}});
 		
 		th.start();
@@ -501,57 +491,51 @@ public class Sudoku{
 
 	    // Handle showDemoButton button
 	    if (e.getSource() == showDemoButton){
-		
+
+		//System.out.println("EDT? " + SwingUtilities.isEventDispatchThread() + " " + Thread.currentThread().getId() + " " + new Throwable().getStackTrace()[0].getClassName() + " " + new Throwable().getStackTrace()[0].getLineNumber());
+
+		// escape from EDT
 		Thread th = new Thread(new Runnable() {
 			@Override
 			public void run() {
+			    System.out.println("Started running demo");
+
+			    solveFFButton.setEnabled(false);
+			    unselectButton.setEnabled(false);
+			    showDemoButton.setEnabled(false);
 			    
-			    SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>(){
-				    ArrayList<Timer> sameLevelTimers;
-				    
-				    protected Boolean doInBackground() throws Exception{
-					System.out.println("Started running demo");
-					
-					solveFFButton.setEnabled(false);
-					unselectButton.setEnabled(false);
-					showDemoButton.setEnabled(false);
-
-					// sequence of steps to show the demo
-					theModel.selected(0, 1); // 1st column
-					System.out.println("Should start solveFF");
-					theModel.solveFF();
-					theModel.moveLeft(); // NEW NAME: unselect!
-
-					theModel.selected(4, 0); // 5th row
-					theModel.solveFF();
-					theModel.moveLeft();
-
-					//
-					// make buttons selectable/unselectable
-					//
-					
-					theModel.selected(5, 0); // 6th row
-					theModel.solveFF();
-					theModel.moveLeft();
-					
-					theModel.selected(3, 2); // 4th block
-					theModel.solveFF();
-					theModel.moveLeft();
-					
-					theModel.selected(0, 1); // 1st column
-					theModel.solveFF();
-					//theModel.moveLeft();
-
-					theModel.fadeInGridNow();
-
-					unselectButton.setEnabled(true);
-
-					System.out.println("Finished running demo");
-					
-					return true;
-				    }
-				};
-			    worker.execute();
+			    // sequence of steps to show the demo
+			    theModel.selected(0, 1); // 1st column
+			    System.out.println("Should start solveFF");
+			    theModel.solveFF();
+			    theModel.moveLeft(); // NEW NAME: unselect!
+			    
+			    theModel.selected(4, 0); // 5th row
+			    theModel.solveFF();
+			    theModel.moveLeft();
+			    
+			    //
+			    // make buttons selectable/unselectable
+			    //
+			    
+			    theModel.selected(5, 0); // 6th row
+			    theModel.solveFF();
+			    theModel.moveLeft();
+			    
+			    theModel.selected(3, 2); // 4th block
+			    theModel.solveFF();
+			    theModel.moveLeft();
+			    
+			    theModel.selected(0, 1); // 1st column
+			    theModel.solveFF();
+			    //theModel.moveLeft();
+			    
+			    theModel.fadeInGridNow();
+			    
+			    unselectButton.setEnabled(true);
+			    
+			    System.out.println("Finished running demo");
+			    
 			}});
 		
 		th.start();

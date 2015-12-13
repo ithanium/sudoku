@@ -11,6 +11,8 @@ import org.chocosolver.solver.constraints.*;
 import org.chocosolver.solver.exception.ContradictionException;
 
 public class SudokuModel {
+    public static boolean DEBUG = true;
+    
     public SudokuGrid theGrid; // TODO update the name // GUI
     public static int SIZE;
     public static int SLEEP;
@@ -31,6 +33,8 @@ public class SudokuModel {
     public static final Object WAIT_FOR_TIMER = new Object();
 
     public Sudoku referenceToMain;
+
+    public Thread logicThread;
 
     public void SudokuModel(){
 	worldStack = new Stack<SudokuWorld>();
@@ -386,6 +390,24 @@ public class SudokuModel {
 	System.out.println("\tFinished applying results in the original grid");
 
 	System.out.println("Step 4 - Apply knowledge after running Tartajn - finished");
+
+	if(SLEEP_BETWEEN_STEPS > 0){
+	    try{
+		System.out.println("\n\tSleeping between steps for " + SLEEP_BETWEEN_STEPS);
+		Thread.sleep(SLEEP_BETWEEN_STEPS);
+	    } catch (Exception e){
+		e.printStackTrace();
+	    }
+	} else {
+	    // keep this here, as this is the last step
+	    try{
+		System.out.println("\n\tSleeping between steps for " + SLEEP_BETWEEN_STEPS);
+		Thread.sleep(SLEEP_BETWEEN_STEPS + 1000);
+	    } catch (Exception e){
+		e.printStackTrace();
+	    }
+	}
+		
 	System.out.println("Finished running the all-different implementation");
 
 	return true; // not important yet
