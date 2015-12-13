@@ -17,6 +17,8 @@ import java.util.ArrayList;
 
 import java.util.logging.*;
 
+import javax.swing.filechooser.FileNameExtensionFilter;
+
 public class Sudoku{
     public static MutableBoolean DEBUG = new MutableBoolean(false);
 
@@ -327,6 +329,8 @@ public class Sudoku{
 	    if (e.getSource() == openFileButton || e.getSource() == openMenuItem) {
 
 		JFileChooser fc = new JFileChooser();
+		fc.setAcceptAllFileFilterUsed(false);
+		fc.addChoosableFileFilter(new FileNameExtensionFilter(".txt - plain text files", "txt"));
         
 		File workingDirectory = new File(System.getProperty("user.dir"));
 		fc.setCurrentDirectory(workingDirectory);
