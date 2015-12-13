@@ -19,48 +19,77 @@ import java.util.logging.*;
 
 public class Sudoku{
     public static MutableBoolean DEBUG = new MutableBoolean(false);
-    
-    public static final int SIZE = 9;
-    public static final int SLEEP = 1;
+
+    public final int SIZE = 9;
+    public final int SLEEP = 1;
         
-    public static SudokuModel theModel;
+    public SudokuModel theModel;
 
-    public static JButton openFileButton;
-    public static JButton backtrackButton;
-    public static JButton nextButton;
-    public static JButton pauseButton;
-    public static JButton playButton;
-    public static JButton choco3Button;
-    public static JButton printButton;
+    public JButton openFileButton;
+    public JButton backtrackButton;
+    public JButton nextButton;
+    public JButton pauseButton;
+    public JButton playButton;
+    public JButton choco3Button;
+    public JButton printButton;
 
-    public static JButton nextStepButton;    
+    public JButton nextStepButton;    
 
-    public static JButton showDemoButton;
+    public JButton showDemoButton;
     
-    public static JButton solveFFButton;
-    public static JButton unselectButton;
+    public JButton solveFFButton;
+    public JButton unselectButton;
 
-    public static JMenuBar jMenuBar;
+    public JMenuBar jMenuBar;
     
-    public static JMenu fileMenu;
-    public static JMenuItem openMenuItem;
-    public static JMenuItem exitMenuItem;
+    public JMenu fileMenu;
+    public JMenuItem openMenuItem;
+    public JMenuItem exitMenuItem;
 
-    public static JMenu settingsMenu;
-    public static JMenuItem solveInStepsTrueMenuItem;
-    public static JMenuItem solveInStepsFalseMenuItem;
-    public static JMenuItem setNormalSpeedMenuItem;
-    public static JMenuItem setHighSpeedMenuItem;
+    public JMenu settingsMenu;
+    public JMenuItem solveInStepsTrueMenuItem;
+    public JMenuItem solveInStepsFalseMenuItem;
+    public JMenuItem setNormalSpeedMenuItem;
+    public JMenuItem setHighSpeedMenuItem;
     
-    public static JLabel currentStepStatusLabel;
+    public JLabel currentStepStatusLabel;
 
-    public static JSlider speedSlider;
+    public JSlider speedSlider;
 
-    public Sudoku(){
+    private Sudoku(){
+	theModel = new SudokuModel();
+	theModel.referenceToMain = this;
+	theModel.DEBUG = DEBUG;
+	theModel.SIZE = SIZE;
+	theModel.SLEEP = SLEEP;
+
+	/*
+	try{
+	    SwingUtilities.invokeAndWait(new Runnable() {
+		    public void run() {
+	*/
+			showGUI();
+	/*
+		    }
+		});
+	} catch (Exception e){
+	    e.printStackTrace();
+	}
+	*/
+			
+	if(DEBUG.getValue()){System.out.println("GUI loaded");}
 	
+	File workingDirectory = new File(System.getProperty("user.dir"));
+		    
+	try {
+	    // demo file
+	    theModel.readFromFile(workingDirectory.getAbsolutePath() + "/puzzles/lockedset.txt");
+	} catch (FileNotFoundException ex) {
+	    ex.printStackTrace();
+	}
     }
     
-    public static void showGUI(){
+    public void showGUI(){
 
 	JFrame mainFrame = new JFrame("sudo ku");
         mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -203,39 +232,10 @@ public class Sudoku{
 	    }
 	}
 		
-	theModel = new SudokuModel();
-	//theModel.referenceToMain = this;
-	theModel.DEBUG = DEBUG;
-	theModel.SIZE = SIZE;
-	theModel.SLEEP = SLEEP;
-
-	/*
-	try{
-	    SwingUtilities.invokeAndWait(new Runnable() {
-		    public void run() {
-	*/
-			showGUI();
-	/*
-		    }
-		});
-	} catch (Exception e){
-	    e.printStackTrace();
-	}
-	*/
-			
-	if(DEBUG.getValue()){System.out.println("GUI loaded");}
-	
-	File workingDirectory = new File(System.getProperty("user.dir"));
-		    
-	try {
-	    // demo file
-	    theModel.readFromFile(workingDirectory.getAbsolutePath() + "/puzzles/lockedset.txt");
-	} catch (FileNotFoundException ex) {
-	    ex.printStackTrace();
-	}
+        new Sudoku();
     }
 
-    public static void setAnimationSpeed(int speed){
+    public void setAnimationSpeed(int speed){
 	if(speed <= 50){
 	    if(DEBUG.getValue()){System.out.println("Set normal speed  menu item clicked");}
 
@@ -289,7 +289,7 @@ public class Sudoku{
     // and just write the methods
     // with this as a listener
     
-    private static class MyChangeListener implements ChangeListener{
+    private class MyChangeListener implements ChangeListener{
 	
 	public void stateChanged(ChangeEvent e) {
 	    JSlider slider = (JSlider) e.getSource();
@@ -299,7 +299,7 @@ public class Sudoku{
 	}
     }
     
-    private static class MouseListener implements ActionListener{
+    private class MouseListener implements ActionListener{
 
 	public void actionPerformed(ActionEvent e) {
 
