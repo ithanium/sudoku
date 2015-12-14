@@ -385,12 +385,27 @@ public class Sudoku{
 
 	    // Handle pause button
 	    if (e.getSource() == pauseButton) {
-		theModel.pauseAnimation();
+		// escape from EDT
+		Thread t = new Thread(new Runnable() {
+			@Override
+			public void run() {
+			    theModel.pauseAnimation();
+			}			
+		    });
+		t.start();
 	    }
 
 	    // Handle play button
 	    if (e.getSource() == playButton) {
-		theModel.playAnimation();
+		// escape from EDT
+		Thread t = new Thread(new Runnable() {
+			@Override
+			public void run() {
+			    theModel.playAnimation();
+			}			
+		    });
+		t.start();
+
 	    }
 	    
 	    // Handle solve choco3 button
@@ -489,7 +504,6 @@ public class Sudoku{
 			    
 			    // sequence of steps to show the demo
 			    theModel.selected(0, 1); // 1st column
-			    System.out.println("Should start solveFF");
 			    theModel.solveFF();
 			    theModel.moveLeft(); // NEW NAME: unselect!
 			    

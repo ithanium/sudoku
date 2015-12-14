@@ -12,6 +12,8 @@ import org.chocosolver.solver.exception.ContradictionException;
 
 public class SudokuModel {
     public static MutableBoolean DEBUG;
+
+    public Object animationLock = new Object();
     
     public SudokuGrid theGrid; // TODO update the name // GUI
     public static int SIZE;
@@ -133,9 +135,12 @@ public class SudokuModel {
     }
 
     public boolean solveFF(){
+	ifNotAnimatingThenWait();
+			
 	if(DEBUG.getValue()){System.out.println("Started running the all-different implementation");}
-	
-	//System.out.println("Does the all-different implementation run on the EDT? (should be false) " + SwingUtilities.isEventDispatchThread());
+
+	logicThread = Thread.currentThread();
+	System.out.println("Does the all-different implementation run on the EDT? (should be false) " + SwingUtilities.isEventDispatchThread());
 
 	int edges = 0;
 	int n = 20; // we have 20 vertices
@@ -177,31 +182,36 @@ public class SudokuModel {
 	
 	if(DEBUG.getValue()){System.out.println("Step 1 - Ford Fulkerson - started");}
 
-	FordFulkerson ff = new FordFulkerson(super_getThis(), A, R, 20);
+	FordFulkerson ff = new FordFulkerson(super_getThis(), A, R, 20); //TODO this works with only using "this" !
 	ff.DEBUG = DEBUG;
 	ff.run();
 
-	//viewController.theEdges.applyDrawing(); // apply last green/red
 	
-	viewController.theEdges.drawMoves();
-	
-	viewController.theEdges.finishDrawing(false); // hide unmatched paths
-	viewController.theGrid.finishDrawing(); // hide S/T + S/T edges
 
 	/*
 	try{
 	    SwingUtilities.invokeAndWait(new Runnable() {
-		    public void run() {
-
-
-		    }
+	    public void run() { */
+	//System.out.println("Is invokeandwait EDT " + SwingUtilities.isEventDispatchThread());
+			//viewController.theEdges.applyDrawing(); // apply last green/red
+			
+			viewController.theEdges.drawMoves();
+			
+			viewController.theEdges.finishDrawing(false); // hide unmatched paths
+			ifNotAnimatingThenWait(); //TODO only one or two?
+			
+			viewController.theGrid.finishDrawing(); // hide S/T + S/T edges
+			ifNotAnimatingThenWait(); //TODO only one or two?
+			/*  }
 		});
 	} catch (Exception e){
 	    e.printStackTrace();
 	}
-	*/
+			*/
 	if(DEBUG.getValue()){System.out.println("Step 1 - Ford Fulkerson - finished");}
 
+	ifNotAnimatingThenWait();
+	
 	if(DEBUG.getValue()){System.out.println("Step 2 - Add arrows after maximum matching - started");}
 	
 	int newA[][] = new int[20][20];
@@ -234,7 +244,7 @@ public class SudokuModel {
 	////////////////////////////////////////////////////
 	//Printing step 2 arrow flows after maximum matching
 	//newA2
-
+	
        	if(DEBUG.getValue()){System.out.println("Step 2 - Add arrows after maximum matching - finished");}
 
 	if(SLEEP_BETWEEN_STEPS > 0){
@@ -245,19 +255,24 @@ public class SudokuModel {
 	    }
 	}
 
+	ifNotAnimatingThenWait();
+	
+	/*
 	try{
 	    SwingUtilities.invokeAndWait(new Runnable() {
-		    public void run() {
+	    public void run() {*/
 			viewController.theEdges.makeAllEdgesGray();
-		    }
+
+			ifNotAnimatingThenWait();
+			/*}
 		});
 	} catch (Exception e){
 	    e.printStackTrace();
 	}
-
+			*/
 	if(DEBUG.getValue()){System.out.println("Step 3 - Tarjan -  started");}
 	
-	Tarjan tarjan = new Tarjan(this, newA2, 18);
+	Tarjan tarjan = new Tarjan(super_getThis(), newA2, 18);
 	tarjan.DEBUG = DEBUG;
 	ArrayList<ArrayList<Integer>> components = tarjan.run();
 
@@ -285,16 +300,18 @@ public class SudokuModel {
 
 	if(DEBUG.getValue()){System.out.println();}
 	if(DEBUG.getValue()){System.out.println("\tStarting coloring edges in blue & red");}
-	
+	/*
 	try{
 	    SwingUtilities.invokeAndWait(new Runnable() {
-		    public void run() {
+	    public void run() {*/
 			/////////////////
 			for(int u=0; u<18; u++){
 			    for(int v=0; v<18; v++){
 				if(newA3[u][v] == 0){
 				    continue;
 				}
+
+				ifNotAnimatingThenWait(); //TODO: one or two?
 				
 				if(u<9){
 				    if(DEBUG.getValue()){System.out.println("\t\tColor red for edge u: " + u + " v:" + v + " (cell: " + u + " to number: " + (v-8) + ")");}
@@ -313,17 +330,21 @@ public class SudokuModel {
 				    viewController.theEdges.edgeColors[v+1][u+1] = Color.BLUE;
 				    
 				}
+
+				ifNotAnimatingThenWait(); //TODO: one or two?
 			    }
 			}
 			
-			viewController.theEdges.repaint();
+			viewController.theEdges.repaint(); //TODO: need this?
+
+			ifNotAnimatingThenWait();
 			/////////////////
-		    }
+			/*  }
 		});
 	} catch (Exception e){
 	    e.printStackTrace();
 	}
-      
+			*/
 	if(DEBUG.getValue()){System.out.println("\tFinished coloring edges in blue & red");}
 	
 	if(SLEEP_BETWEEN_STEPS > 0){
@@ -334,19 +355,23 @@ public class SudokuModel {
 		e.printStackTrace();
 	    }
 	}
-	
+
+	ifNotAnimatingThenWait();
+		
 	if(DEBUG.getValue()){System.out.println();}
 	if(DEBUG.getValue()){System.out.println("\tStart applying results in the original grid");}
-	
+	/*
 	try{
 	    SwingUtilities.invokeAndWait(new Runnable() {
-		    public void run() {
+	    public void run() {*/
 			////////////////
 			for(int u=0; u<18; u++){
 			    for(int v=0; v<18; v++){
 				if(newA3[u][v] == 0){
 				    continue;
 				}
+
+				ifNotAnimatingThenWait(); //TODO: one or two?
 				
 				if(u<9){
 				    if(DEBUG.getValue()){System.out.println("\t\tRemove value u: " + u + " v:" + v + " (cell: " + u + " to number: " + (v-8) + ")");}
@@ -375,6 +400,8 @@ public class SudokuModel {
 				    theGrid.sudokuCells3Before[v].setValuesLabel(theGrid.sudokuCells3Before[v].formatPossibleValues());
 				    
 				}
+
+				ifNotAnimatingThenWait(); //TODO: one or two?
 			    }
 			}
 			
@@ -383,12 +410,12 @@ public class SudokuModel {
 			
 			//viewController.theEdges.makeAllEdgesGray();
 			////////////////
-		    }
+			/*}
 		});
 	} catch (Exception e){
 	    e.printStackTrace();
 	}
-
+			*/
 	if(DEBUG.getValue()){System.out.println("\tFinished applying results in the original grid");}
 
 	if(DEBUG.getValue()){System.out.println("Step 4 - Apply knowledge after running Tartajn - finished");}
@@ -412,6 +439,8 @@ public class SudokuModel {
 		
 	if(DEBUG.getValue()){System.out.println("Finished running the all-different implementation");}
 
+	ifNotAnimatingThenWait(); //TODO: one or two?
+	
 	return true; // not important yet
     }
     
@@ -885,6 +914,8 @@ public class SudokuModel {
     }
 
     public void fadeInGridNow(){
+	ifNotAnimatingThenWait();
+	
 	for(int i=0; i<9; i++){
 	    for(int j=0; j<9; j++){
 		theGrid.sudokuCells[i][j].setAlphaOne();
@@ -1035,8 +1066,9 @@ public class SudokuModel {
 	}
     }
 
-    public void pauseAnimation(){
+    public void pauseAnimation(){		
 	isAnimationPaused = true;
+
 	// Pause the concurrentTimers that contain the last running timer
 	System.out.println("Pause");
 	for(ArrayList<Timer> concurrentTimers:timers){
@@ -1050,12 +1082,28 @@ public class SudokuModel {
 
     public void playAnimation(){
 	isAnimationPaused = false;
+	synchronized(animationLock){
+	    animationLock.notify();
+	}
+
 	// Play the concurrentTimers that contain the last running timer that was paused
 	System.out.println("Play");
 	for(ArrayList<Timer> concurrentTimers:timers){
 	    if(concurrentTimers.contains(lastRunningTimer)){
 		for(Timer t:concurrentTimers){
 		    t.start();
+		}
+	    }
+	}
+    }
+
+    public void ifNotAnimatingThenWait(){
+	if(isAnimationPaused){
+	    synchronized(animationLock){
+		try{
+		    animationLock.wait();
+		} catch (Exception e){
+		    e.printStackTrace();
 		}
 	    }
 	}
@@ -1082,22 +1130,24 @@ public class SudokuModel {
     }
 
     public void selected(int number, int selectionType){
-		
+	ifNotAnimatingThenWait();
+	
 	ArrayList<Timer> sameLevelTimers = new ArrayList<Timer>();
 	
-
 	if(selectionType == 0){ //row
 	    sameLevelTimers = fadeOutAllExceptRow(number);
 	}
-	    
+	
 	if(selectionType == 1){ //column
 	    sameLevelTimers = fadeOutAllExceptColumn(number);
 	}
-	    
+	
 	if(selectionType == 2){ //block
 	    sameLevelTimers = fadeOutAllExceptBlock(number);
 	}
-	
+
+	ifNotAnimatingThenWait();
+
 	synchronized (sameLevelTimers) {
 	    try {
 		sameLevelTimers.wait();
@@ -1126,6 +1176,7 @@ public class SudokuModel {
 	//theModel.viewController.theEdges.setAlphaOne();
 	//theModel.viewController.theEdges.repaint();
 
+	ifNotAnimatingThenWait();
 	
 	synchronized (sameLevelTimers) {
 	    try {
@@ -1135,7 +1186,6 @@ public class SudokuModel {
 	}
 	
 	if(DEBUG.getValue()){System.out.println("Moving row, column or block to the right finished");}
-	
 
 	if(SLEEP == 0 && SLEEP_BETWEEN_STEPS == 0){
 	    // notice that now doesn't return a timer level
@@ -1148,6 +1198,7 @@ public class SudokuModel {
 	    
 	//theModel.scheduleSolveFF();
 
+	ifNotAnimatingThenWait();
 	
 	if(!(SLEEP == 0 && SLEEP_BETWEEN_STEPS == 0)){
 	    // notice that now doesn't return a timer level
@@ -1165,7 +1216,8 @@ public class SudokuModel {
 
     // TODO: new name: unselect()
     public void moveLeft(){
-		
+	ifNotAnimatingThenWait();
+	
 	ArrayList<Timer> sameLevelTimers = new ArrayList<Timer>();
 
 			
@@ -1190,7 +1242,7 @@ public class SudokuModel {
 	}
 
 
-
+	ifNotAnimatingThenWait();
 
 	synchronized (sameLevelTimers) {
 	    try {
@@ -1204,7 +1256,8 @@ public class SudokuModel {
 
 	sameLevelTimers = fadeIn();
 
-
+	ifNotAnimatingThenWait();
+	
 	synchronized (sameLevelTimers) {
 	    try {
 		sameLevelTimers.wait();
@@ -1214,8 +1267,6 @@ public class SudokuModel {
 
 	if(DEBUG.getValue()){System.out.println("Faded in after moving left");}
 		    
-
-	    	    
 	viewController.theEdges.setVisible(false);
 	
 	viewController.theEdges.edgeColors  = new Color[20][20];

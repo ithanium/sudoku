@@ -425,6 +425,8 @@ public class SudokuEdges extends JPanel implements ActionListener {
 
     public void drawMoves(){
 	for(TripletIIB t:this.moves){
+	    theModel.ifNotAnimatingThenWait(); //TODO only one or two?
+
 	    //System.out.println("Drawing move");
 	    if(t.getC() == Color.GREEN){
 		drawGreen(t.getA(), t.getB());
@@ -437,8 +439,10 @@ public class SudokuEdges extends JPanel implements ActionListener {
 		
 		drawBlue(t.getA(), t.getB());		
 	    }
-
+	    
 	    prevColor = t.getC();
+
+	    theModel.ifNotAnimatingThenWait(); //TODO only one or two?
 	}
 		    
 	applyDrawing();
