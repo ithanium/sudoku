@@ -195,10 +195,6 @@ public class SudokuEdges extends JPanel implements ActionListener {
 	        int shown_x = theModel.theGrid.sudokuCells3Now[i].x;
 		int shown_y = theModel.theGrid.sudokuCells3Now[i].y;
 		
-		if(!theModel.worldPeek().grid[shown_x][shown_y].hasValue(j + 1)){
-		    continue;
-		}
-		
 		x1 = 600;
 		y1 = (i) * 50 + (i)*distanceBetweenCells_y;
 		

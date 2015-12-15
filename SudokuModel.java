@@ -35,8 +35,6 @@ public class SudokuModel {
 
     public Sudoku referenceToMain;
 
-    public Thread logicThread;
-
     public SudokuModel(){
 	worldStack = new Stack<SudokuWorld>();
     }
@@ -137,9 +135,6 @@ public class SudokuModel {
 	ifNotAnimatingThenWait();
 			
 	if(DEBUG.getValue()){System.out.println("Started running the all-different implementation");}
-
-	logicThread = Thread.currentThread();
-	System.out.println("Does the all-different implementation run on the EDT? (should be false) " + SwingUtilities.isEventDispatchThread());
 
 	int edges = 0;
 	int n = 20; // we have 20 vertices
