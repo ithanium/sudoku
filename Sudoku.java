@@ -17,19 +17,14 @@ public class Sudoku{
     public SudokuModel theModel;
 
     public JButton openFileButton;
-    public JButton backtrackButton;
-    public JButton nextButton;
     public JButton pauseButton;
     public JButton playButton;
-    public JButton choco3Button;
-    public JButton printButton;
-
-    public JButton nextStepButton;    
-
-    public JButton showDemoButton;
-    
+    public JButton nextStepButton;
     public JButton allDifferentButton;
     public JButton deselectButton;
+    public JButton showDemoButton;
+    public JButton backtrackButton;
+    public JButton choco3Button;
 
     public JMenuBar jMenuBar;
     
@@ -169,14 +164,6 @@ public class Sudoku{
 	openFileButton.addActionListener(new MouseListener());
 	buttonHolders.add(openFileButton);
 
-	backtrackButton = new JButton("Backtrack Solve");
-	backtrackButton.addActionListener(new MouseListener());
-	//buttonHolders.add(backtrackButton);
-
-	nextButton = new JButton("Start");
-	nextButton.addActionListener(new MouseListener());
-	//buttonHolders.add(nextButton);
-
 	pauseButton = new JButton("Pause");
 	pauseButton.addActionListener(new MouseListener());
 	buttonHolders.add(pauseButton);
@@ -184,14 +171,6 @@ public class Sudoku{
 	playButton = new JButton("Play");
 	playButton.addActionListener(new MouseListener());
 	buttonHolders.add(playButton);
-	
-	choco3Button = new JButton("Choco3 Solve");
-	choco3Button.addActionListener(new MouseListener());
-	//buttonHolders.add(choco3Button);
-	
-	printButton = new JButton("Print statement");
-	printButton.addActionListener(new MouseListener());
-	//buttonHolders.add(printButton);
 
 	nextStepButton = new JButton("Next step");
 	nextStepButton.addActionListener(new MouseListener());
@@ -208,6 +187,14 @@ public class Sudoku{
 	showDemoButton = new JButton("Show demo");
 	showDemoButton.addActionListener(new MouseListener());
 	buttonHolders.add(showDemoButton);
+
+	backtrackButton = new JButton("Backtrack Solve");
+	backtrackButton.addActionListener(new MouseListener());
+	buttonHolders.add(backtrackButton);
+
+	choco3Button = new JButton("Choco3 Solve");
+	choco3Button.addActionListener(new MouseListener());
+	buttonHolders.add(choco3Button);
 	    
 	currentStepStatusLabel = new JLabel();
 	currentStepStatusLabel.setPreferredSize(new Dimension(1215, 25));
@@ -325,12 +312,14 @@ public class Sudoku{
 
 	    // Handle set normal speed  menu item
 	    if (e.getSource() == solveInStepsTrueMenuItem) {
-		if(DEBUG.getValue()){System.out.println("solveInStepsTrueMenuItem");}
+		if(DEBUG.getValue()){System.out.println("solveInSteps True MenuItem");}
+		theModel.setSolveInSteps(true);
 	    }
 
 	    // Handle set high speed menu item
 	    if (e.getSource() == solveInStepsFalseMenuItem) {
-		if(DEBUG.getValue()){System.out.println("solveInStepsFalseMenuItem");}
+		if(DEBUG.getValue()){System.out.println("solveInSteps False MenuItem");}
+		theModel.setSolveInSteps(false);
 	    }
 
 	    // Handle set normal speed  menu item
@@ -421,7 +410,7 @@ public class Sudoku{
 	    }
 
 	    // Handle next move button
-	    if (e.getSource() == nextButton) {
+	    if (e.getSource() == nextStepButton) {
 		//allDifferentButton.setEnabled(false);
 		//deselectButton.setEnabled(true);
 
@@ -429,9 +418,7 @@ public class Sudoku{
 		Thread t = new Thread(new Runnable() {
 			@Override
 			public void run() {
-			    //theModel.fadeOutAllExceptColumn(0);
-			    //theModel.fadeOutAllExceptRow(8);
-			    //theModel.fadeOutAllExceptBlock(7); //// ew it's in sudokucell
+			    theModel.nextAnimation();
 			}			
 		    });
 		t.start();
@@ -478,40 +465,7 @@ public class Sudoku{
 		th.start();
 	    }
 
-	    // Handle print button
-	    if (e.getSource() == printButton) {
-		//allDifferentButton.setEnabled(false);
-		//deselectButton.setEnabled(true);
-
-		// escape from EDT
-		Thread t = new Thread(new Runnable() {
-			@Override
-			public void run() {
-			    System.out.println("Print statement");
-			}});
-
-		t.start();
-	    }
-
-	    // Handle next step button
-	    if (e.getSource() == nextStepButton) {
-		//allDifferentButton.setEnabled(false);
-		//deselectButton.setEnabled(true);
-
-		// escape from EDT
-		Thread t = new Thread(new Runnable() {
-			@Override
-			public void run() {
-			    if(DEBUG.getValue()){System.out.println("Next step button pressed");}
-			    //theModel.fadeOutAllExceptColumn(0);
-			    //theModel.fadeOutAllExceptRow(8);
-			    //theModel.fadeOutAllExceptBlock(7); //// ew it's in sudokucell
-			}});
-
-		t.start();
-	    }
-	    
-	    // Handle solve button
+	    // Handle allDifferent button
 	    if (e.getSource() == allDifferentButton){
 		allDifferentButton.setEnabled(false);
 		deselectButton.setEnabled(true);

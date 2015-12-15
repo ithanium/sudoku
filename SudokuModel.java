@@ -38,6 +38,7 @@ public class SudokuModel {
     public boolean propagateAfterAllDifferent = false;
     public boolean runAllDifferentOnSelection = false;
     public boolean deselectAfterAllDifferent = false;
+    public boolean solveInSteps = false;
 
     public SudokuModel(){
 	worldStack = new Stack<SudokuWorld>();
@@ -176,6 +177,9 @@ public class SudokuModel {
 		R[i+1][j + 9 + 1] = capacity;
 	    }
 	}
+
+	//if(solveInSteps){pauseAnimation();} //this is not a step
+	ifNotAnimatingThenWait();
 	
 	if(DEBUG.getValue()){System.out.println("Step 1 - Ford Fulkerson - started");}
 
@@ -206,7 +210,8 @@ public class SudokuModel {
 	}
 			*/
 	if(DEBUG.getValue()){System.out.println("Step 1 - Ford Fulkerson - finished");}
-
+	
+	if(solveInSteps){pauseAnimation();}
 	ifNotAnimatingThenWait();
 	
 	if(DEBUG.getValue()){System.out.println("Step 2 - Add arrows after maximum matching - started");}
@@ -252,6 +257,7 @@ public class SudokuModel {
 	    }
 	}
 
+	if(solveInSteps){pauseAnimation();}
 	ifNotAnimatingThenWait();
 	
 	/*
@@ -308,8 +314,6 @@ public class SudokuModel {
 				    continue;
 				}
 
-				ifNotAnimatingThenWait(); //TODO: one or two?
-				
 				if(u<9){
 				    if(DEBUG.getValue()){System.out.println("\t\tColor red for edge u: " + u + " v:" + v + " (cell: " + u + " to number: " + (v-8) + ")");}
 				    
@@ -327,14 +331,10 @@ public class SudokuModel {
 				    viewController.theEdges.edgeColors[v+1][u+1] = Color.BLUE;
 				    
 				}
-
-				ifNotAnimatingThenWait(); //TODO: one or two?
 			    }
 			}
 			
 			viewController.theEdges.repaint(); //TODO: need this?
-
-			ifNotAnimatingThenWait();
 			/////////////////
 			/*  }
 		});
@@ -353,6 +353,7 @@ public class SudokuModel {
 	    }
 	}
 
+	if(solveInSteps){pauseAnimation();}
 	ifNotAnimatingThenWait();
 		
 	if(DEBUG.getValue()){System.out.println();}
@@ -397,8 +398,6 @@ public class SudokuModel {
 				    theGrid.sudokuCells3Before[v].setValuesLabel(theGrid.sudokuCells3Before[v].formatPossibleValues());
 				    
 				}
-
-				ifNotAnimatingThenWait(); //TODO: one or two?
 			    }
 			}
 			
@@ -428,7 +427,8 @@ public class SudokuModel {
 		
 	if(DEBUG.getValue()){System.out.println("Finished running the all-different implementation");}
 
-	ifNotAnimatingThenWait(); //TODO: one or two?
+	if(solveInSteps){pauseAnimation();}
+	ifNotAnimatingThenWait();
 		
 	if(propagateAfterAllDifferent){
 	    //sleep between steps only if actually having a propagation step
@@ -446,6 +446,9 @@ public class SudokuModel {
 	    propagate();
 	    
 	    if(DEBUG.getValue()){System.out.println("\n\tFinished propagating");}
+
+	    if(solveInSteps){pauseAnimation();}
+	    ifNotAnimatingThenWait();
 	}
 
 	if(SLEEP_BETWEEN_STEPS > 0){
@@ -464,8 +467,6 @@ public class SudokuModel {
 		e.printStackTrace();
 	    }
 	}
-		
-	ifNotAnimatingThenWait(); //TODO: one or two?
 		
 	return true; // not important yet
     }
@@ -633,12 +634,6 @@ public class SudokuModel {
 		    } catch (Exception e){
 			e.printStackTrace();
 		    }
-		    
-		    //solver.post(ICF.arithm(rows[i][j],"=", VF.fixed(i+""+j, worldPeek().grid[i][j].getValue(), solver)));
-		    
-		    // WHY ISN'T THIS WORKING?
-		    //rows[i][j] = VF.fixed(i+"fixed"+j, worldPeek().grid[i][j].getValue(), solver);
-
 		}
 	    }
 	}
@@ -900,7 +895,6 @@ public class SudokuModel {
 	// wait for it to finish
 	for(int i=0; i<9; i++){
 	    for(int j=0; j<9; j++){
-		//System.out.println("Is model EDT " + SwingUtilities.isEventDispatchThread());
 		Timer timerFadeIn = theGrid.sudokuCells[i][j].getTimerFadeIn();
 		timers81.add(timerFadeIn); //timer 2 = fadein
 		theGrid.sudokuCells[i][j].fadeIn();
@@ -951,18 +945,7 @@ public class SudokuModel {
     
     public ArrayList<Timer> fadeInGraph(){ ///////// COMASEAZA ASTA
 	ArrayList<Timer> timers81 = new ArrayList<Timer>();
-	/*
-	// wait for it to finish
-	for(int i=0; i<9; i++){
-	    for(int j=0; j<9; j++){
-		//System.out.println("Is model EDT " + SwingUtilities.isEventDispatchThread());
-		Timer timerFadeIn = theGrid.sudokuCells[i][j].getTimerFadeIn();
-		timers81.add(timerFadeIn); //timer 2 = fadein
-		theGrid.sudokuCells[i][j].fadeIn();
-		timerFadeIn.start();
-	    }
-	}
-	*/
+
 	//////// adding the circles
 	for(int i = 0; i <11; i++){
 	    Timer timerFadeIn = theGrid.valueCircles[i].getTimerFadeIn();
@@ -1002,7 +985,7 @@ public class SudokuModel {
 	viewController.theEdges.setAlphaOne();
     }
     
-    // NOTE: USES WORLDPEEK() ; DO YOU WANT OLDER ONES?
+    // TODO: USES WORLDPEEK() ; DO YOU WANT OLDER ONES?
     public ArrayList<Integer> getPossibleValues(int i, int j){
 	ArrayList<Integer> possibleValues = new ArrayList<Integer>();
 	if(worldPeek() != null){
@@ -1041,57 +1024,48 @@ public class SudokuModel {
 	while (it.hasNext()) {
 	    ArrayList<Timer> sameTimeTimers = it.next(); 
 	    if (sameTimeTimers.isEmpty()) {
-		//it.remove();
-		//timers.remove(sameTimeTimers);
 		valuesToRemove.add(sameTimeTimers);
 	    }
 	}
 
-	//System.out.println("Inside start next timers, timers.size():" + timers.size());
 	timers.removeAll(valuesToRemove);
-	///
-	///
-	///
-	///
-	//System.out.println("Will remove: " + valuesToRemove.size() + " (pls no more than 1)");
 
 	for(ArrayList<Timer> sameTimeTimers : valuesToRemove){
 	    synchronized (sameTimeTimers) {
 		sameTimeTimers.notifyAll();
 	    }
 	}
-	///
-	/// NOTIFY ON EACH ONE OF THEM
-	///
-	///
-	/// PRINT HOW MANY IT REMOVED... IT SHOULD REMOVE ONLY 1
-	/// OTHERWISE WE MAY RUN IN MULTITHREADING ISSUES
-	///
-	/// SYNCHRONIZE ON MODEL.TIMERS?
-	///
-	///
+
 	if(valuesToRemove.size() == 0){
-	    //System.out.println("Return");
 	    // we have removed a fading cell for example, but others still exist
 	    // i.e. the level still has something
 	    return;
 	}
-	//System.out.println("After removal timers.size():" + timers.size());
-	/*
-	for(ArrayList sameTimeTimers:timers){
-	    if(sameTimeTimers.isEmpty()){
-		timers.remove(sameTimeTimers);
-	    }
-	}
-	*/
+
 	if(!timers.isEmpty()){
-	    System.out.println("Start next level timer");
 	    for(Timer t:timers.get(0)){
 		t.start();
 	    }
 	}
     }
 
+    public void nextAnimation(){
+	isAnimationPaused = false;
+	synchronized(animationLock){
+	    animationLock.notify();
+	}
+
+	// Play the concurrentTimers that contain the last running timer that was paused
+	System.out.println("Next step play");
+	for(ArrayList<Timer> concurrentTimers:timers){
+	    if(concurrentTimers.contains(lastRunningTimer)){
+		for(Timer t:concurrentTimers){
+		    t.start();
+		}
+	    }
+	}
+    }
+    
     public void pauseAnimation(){		
 	isAnimationPaused = true;
 
@@ -1327,5 +1301,9 @@ public class SudokuModel {
 
     public void setDeselectAfterAllDifferent(boolean value){
 	deselectAfterAllDifferent = value;
+    }
+
+    public void setSolveInSteps(boolean value){
+	solveInSteps = value;
     }
 }
