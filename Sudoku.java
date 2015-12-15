@@ -28,7 +28,7 @@ public class Sudoku{
 
     public JButton showDemoButton;
     
-    public JButton solveFFButton;
+    public JButton allDifferentButton;
     public JButton unselectButton;
 
     public JMenuBar jMenuBar;
@@ -168,9 +168,9 @@ public class Sudoku{
 	nextStepButton.addActionListener(new MouseListener());
 	buttonHolders.add(nextStepButton);
 	    
-	solveFFButton = new JButton("AllDifferent");
-	solveFFButton.addActionListener(new MouseListener());
-	buttonHolders.add(solveFFButton);
+	allDifferentButton = new JButton("AllDifferent");
+	allDifferentButton.addActionListener(new MouseListener());
+	buttonHolders.add(allDifferentButton);
 
 	unselectButton = new JButton("Unselect row/column/block");
 	unselectButton.addActionListener(new MouseListener());
@@ -209,7 +209,7 @@ public class Sudoku{
 
 	theGridPlaceHolder.add(speedSlider);
 
-	solveFFButton.setEnabled(true); //// TODO
+	allDifferentButton.setEnabled(true); //// TODO
 	unselectButton.setEnabled(false);
 		
 	mainFrame.setVisible(true);
@@ -341,7 +341,7 @@ public class Sudoku{
 
 	    // Handle backtrack solve button
 	    if (e.getSource() == backtrackButton) {
-		//solveFFButton.setEnabled(false);
+		//allDifferentButton.setEnabled(false);
 		//unselectButton.setEnabled(true);
 
 		// escape from EDT
@@ -357,7 +357,7 @@ public class Sudoku{
 
 	    // Handle next move button
 	    if (e.getSource() == nextButton) {
-		//solveFFButton.setEnabled(false);
+		//allDifferentButton.setEnabled(false);
 		//unselectButton.setEnabled(true);
 
 		// escape from EDT
@@ -399,7 +399,7 @@ public class Sudoku{
 	    
 	    // Handle solve choco3 button
 	    if (e.getSource() == choco3Button) {
-		//solveFFButton.setEnabled(false);
+		//allDifferentButton.setEnabled(false);
 		//unselectButton.setEnabled(true);
 
 		// escape from EDT
@@ -415,7 +415,7 @@ public class Sudoku{
 
 	    // Handle print button
 	    if (e.getSource() == printButton) {
-		//solveFFButton.setEnabled(false);
+		//allDifferentButton.setEnabled(false);
 		//unselectButton.setEnabled(true);
 
 		// escape from EDT
@@ -430,7 +430,7 @@ public class Sudoku{
 
 	    // Handle next step button
 	    if (e.getSource() == nextStepButton) {
-		//solveFFButton.setEnabled(false);
+		//allDifferentButton.setEnabled(false);
 		//unselectButton.setEnabled(true);
 
 		// escape from EDT
@@ -447,15 +447,15 @@ public class Sudoku{
 	    }
 	    
 	    // Handle solve button
-	    if (e.getSource() == solveFFButton){
-		solveFFButton.setEnabled(false);
+	    if (e.getSource() == allDifferentButton){
+		allDifferentButton.setEnabled(false);
 		unselectButton.setEnabled(true);
 
 		// escape from EDT
 		Thread th = new Thread(new Runnable() {
 			@Override
 			public void run() {
-			    theModel.solveFF();
+			    theModel.allDifferent();
 			}});
 		
 		th.start();
@@ -463,14 +463,14 @@ public class Sudoku{
 	    
 	    // Handle unselect button
 	    if (e.getSource() == unselectButton){
-		solveFFButton.setEnabled(true);
+		allDifferentButton.setEnabled(true);
 		unselectButton.setEnabled(false);
 
 		// escape from EDT
 		Thread th = new Thread(new Runnable() {
 			@Override
 			public void run() {
-			    theModel.moveLeft();
+			    theModel.deselect();
 			}});
 		
 		th.start();
@@ -487,34 +487,34 @@ public class Sudoku{
 			public void run() {
 			    if(DEBUG.getValue()){System.out.println("Started running demo");}
 
-			    solveFFButton.setEnabled(false);
+			    allDifferentButton.setEnabled(false);
 			    unselectButton.setEnabled(false);
 			    showDemoButton.setEnabled(false);
 			    
 			    // sequence of steps to show the demo
-			    theModel.selected(0, 1); // 1st column
-			    theModel.solveFF();
-			    theModel.moveLeft(); // NEW NAME: unselect!
+			    theModel.select(0, 1); // 1st, type 1 for column
+			    theModel.allDifferent();
+			    theModel.deselect();
 			    
-			    theModel.selected(4, 0); // 5th row
-			    theModel.solveFF();
-			    theModel.moveLeft();
+			    theModel.select(4, 0); // 5th, type 0 for row
+			    theModel.allDifferent();
+			    theModel.deselect();
 			    
 			    //
 			    // make buttons selectable/unselectable
 			    //
 			    
-			    theModel.selected(5, 0); // 6th row
-			    theModel.solveFF();
-			    theModel.moveLeft();
+			    theModel.select(5, 0); // 6th, type 0 for row
+			    theModel.allDifferent();
+			    theModel.deselect();
 			    
-			    theModel.selected(3, 2); // 4th block
-			    theModel.solveFF();
-			    theModel.moveLeft();
+			    theModel.select(3, 2); // 4th, type 2 for block
+			    theModel.allDifferent();
+			    theModel.deselect();
 			    
-			    theModel.selected(0, 1); // 1st column
-			    theModel.solveFF();
-			    //theModel.moveLeft();
+			    theModel.select(0, 1); // 1st, type 1 for column
+			    theModel.allDifferent();
+			    //theModel.deselect();
 			    
 			    theModel.fadeInGridNow();
 			    

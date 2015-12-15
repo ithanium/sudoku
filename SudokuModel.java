@@ -133,7 +133,7 @@ public class SudokuModel {
 	return this;
     }
 
-    public boolean solveFF(){
+    public boolean allDifferent(){
 	ifNotAnimatingThenWait();
 			
 	if(DEBUG.getValue()){System.out.println("Started running the all-different implementation");}
@@ -1127,7 +1127,7 @@ public class SudokuModel {
 	return propagate();
     }
 
-    public void selected(int number, int selectionType){
+    public void select(int number, int selectionType){
 	ifNotAnimatingThenWait();
 	
 	ArrayList<Timer> sameLevelTimers = new ArrayList<Timer>();
@@ -1212,8 +1212,7 @@ public class SudokuModel {
 	if(DEBUG.getValue()){System.out.println("Fading graph finished");}
     }
 
-    // TODO: new name: unselect()
-    public void moveLeft(){
+    public void deselect(){
 	ifNotAnimatingThenWait();
 	
 	ArrayList<Timer> sameLevelTimers = new ArrayList<Timer>();

@@ -244,7 +244,7 @@ public class SudokuEdges extends JPanel implements ActionListener {
 		    try{
 			SwingUtilities.invokeAndWait(new Runnable() {
 				public void run() {
-				    theModel.solveFF(); 
+				    theModel.allDifferent(); 
 				}
 			    });
 		    } catch (Exception e2){
