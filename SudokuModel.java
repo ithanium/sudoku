@@ -35,6 +35,10 @@ public class SudokuModel {
 
     public Sudoku referenceToMain;
 
+    public boolean propagateAfterAllDifferent = false;
+    public boolean runAllDifferentOnSelection = false;
+    public boolean deselectAfterAllDifferent = false;
+
     public SudokuModel(){
 	worldStack = new Stack<SudokuWorld>();
     }
@@ -420,6 +424,37 @@ public class SudokuModel {
 	    } catch (Exception e){
 		e.printStackTrace();
 	    }
+	}
+		
+	if(DEBUG.getValue()){System.out.println("Finished running the all-different implementation");}
+
+	ifNotAnimatingThenWait(); //TODO: one or two?
+		
+	if(propagateAfterAllDifferent){
+	    //sleep between steps only if actually having a propagation step
+	    if(SLEEP_BETWEEN_STEPS > 0){
+		try{
+		    if(DEBUG.getValue()){System.out.println("\n\tSleeping between steps for " + SLEEP_BETWEEN_STEPS);}
+		    Thread.sleep(SLEEP_BETWEEN_STEPS);
+		} catch (Exception e){
+		    e.printStackTrace();
+		}
+	    }
+
+	    //TODO: remove this
+	    //public boolean propagateOnAssignment(int shown_x, int shown_y){
+	    propagate();
+	    
+	    if(DEBUG.getValue()){System.out.println("\n\tFinished propagating");}
+	}
+
+	if(SLEEP_BETWEEN_STEPS > 0){
+	    try{
+		if(DEBUG.getValue()){System.out.println("\n\tSleeping between steps for " + SLEEP_BETWEEN_STEPS);}
+		Thread.sleep(SLEEP_BETWEEN_STEPS);
+	    } catch (Exception e){
+		e.printStackTrace();
+	    }
 	} else {
 	    // keep this here, as this is the last step
 	    try{
@@ -430,10 +465,8 @@ public class SudokuModel {
 	    }
 	}
 		
-	if(DEBUG.getValue()){System.out.println("Finished running the all-different implementation");}
-
 	ifNotAnimatingThenWait(); //TODO: one or two?
-	
+		
 	return true; // not important yet
     }
     
@@ -1118,10 +1151,6 @@ public class SudokuModel {
 	this.viewController = vc;
     }
 
-    public boolean propagateOnAssignment(int shown_x, int shown_y){
-	return propagate();
-    }
-
     public void select(int number, int selectionType){
 	ifNotAnimatingThenWait();
 	
@@ -1286,5 +1315,17 @@ public class SudokuModel {
 	if(DEBUG.getValue()){System.out.println("Finished cleaning after moving left");}
 
 	
+    }
+
+    public void setPropagateAfterAllDifferent(boolean value){
+	propagateAfterAllDifferent = value;
+    }
+
+    public void setRunAllDifferentOnSelection(boolean value){
+	runAllDifferentOnSelection = value;
+    }
+
+    public void setDeselectAfterAllDifferent(boolean value){
+	deselectAfterAllDifferent = value;
     }
 }

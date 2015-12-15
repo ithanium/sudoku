@@ -29,7 +29,7 @@ public class Sudoku{
     public JButton showDemoButton;
     
     public JButton allDifferentButton;
-    public JButton unselectButton;
+    public JButton deselectButton;
 
     public JMenuBar jMenuBar;
     
@@ -42,6 +42,12 @@ public class Sudoku{
     public JMenuItem solveInStepsFalseMenuItem;
     public JMenuItem setNormalSpeedMenuItem;
     public JMenuItem setHighSpeedMenuItem;
+    public JMenuItem setPropagateOnMenuItem;
+    public JMenuItem setPropagateOffMenuItem;
+    public JMenuItem setRunAllDifferentWhenSelectingOnMenuItem;
+    public JMenuItem setRunAllDifferentWhenSelectingOffMenuItem;
+    public JMenuItem setDeselectAfterAllDifferentOnMenuItem;
+    public JMenuItem setDeselectAfterAllDifferentOffMenuItem;
     
     public JLabel currentStepStatusLabel;
 
@@ -108,12 +114,29 @@ public class Sudoku{
 	solveInStepsFalseMenuItem = new javax.swing.JMenuItem("Do not solve in steps");
 	setNormalSpeedMenuItem = new javax.swing.JMenuItem("Set normal speed");
 	setHighSpeedMenuItem = new javax.swing.JMenuItem("Set high speed");
-
+	setPropagateOnMenuItem = new javax.swing.JMenuItem("Set propagate on");
+	setPropagateOffMenuItem = new javax.swing.JMenuItem("Set propagate off");
+	setRunAllDifferentWhenSelectingOnMenuItem = new javax.swing.JMenuItem("Run allDifferent when selecting on");
+	setRunAllDifferentWhenSelectingOffMenuItem = new javax.swing.JMenuItem("Run allDifferent when selecting off");
+	setDeselectAfterAllDifferentOnMenuItem = new javax.swing.JMenuItem("Deselect row after allDifferent finishes on");
+	setDeselectAfterAllDifferentOffMenuItem = new javax.swing.JMenuItem("Deselect row after allDifferent finishes off");
+	
 	settingsMenu.add(solveInStepsTrueMenuItem);
-	settingsMenu.add(solveInStepsFalseMenuItem);       
+	settingsMenu.add(solveInStepsFalseMenuItem);
+	settingsMenu.add(new JSeparator(JSeparator.HORIZONTAL));
 	settingsMenu.add(setNormalSpeedMenuItem);
 	settingsMenu.add(setHighSpeedMenuItem);
+	settingsMenu.add(new JSeparator(JSeparator.HORIZONTAL));
+	settingsMenu.add(setPropagateOnMenuItem);
+	settingsMenu.add(setPropagateOffMenuItem);
+	settingsMenu.add(new JSeparator(JSeparator.HORIZONTAL));
+	settingsMenu.add(setRunAllDifferentWhenSelectingOnMenuItem);
+	settingsMenu.add(setRunAllDifferentWhenSelectingOffMenuItem);
+	settingsMenu.add(new JSeparator(JSeparator.HORIZONTAL));
+	settingsMenu.add(setDeselectAfterAllDifferentOnMenuItem);
+	settingsMenu.add(setDeselectAfterAllDifferentOffMenuItem);
 
+	
 	jMenuBar.add(fileMenu);
 	jMenuBar.add(settingsMenu);
 
@@ -122,6 +145,12 @@ public class Sudoku{
 	solveInStepsFalseMenuItem.addActionListener(new MouseListener());
 	setNormalSpeedMenuItem.addActionListener(new MouseListener());
 	setHighSpeedMenuItem.addActionListener(new MouseListener());
+	setPropagateOnMenuItem.addActionListener(new MouseListener());
+	setPropagateOffMenuItem.addActionListener(new MouseListener());
+	setRunAllDifferentWhenSelectingOnMenuItem.addActionListener(new MouseListener());
+	setRunAllDifferentWhenSelectingOffMenuItem.addActionListener(new MouseListener());
+	setDeselectAfterAllDifferentOnMenuItem.addActionListener(new MouseListener());
+	setDeselectAfterAllDifferentOffMenuItem.addActionListener(new MouseListener());
 	
 	mainFrame.setJMenuBar(jMenuBar);
 	
@@ -172,9 +201,9 @@ public class Sudoku{
 	allDifferentButton.addActionListener(new MouseListener());
 	buttonHolders.add(allDifferentButton);
 
-	unselectButton = new JButton("Unselect row/column/block");
-	unselectButton.addActionListener(new MouseListener());
-	buttonHolders.add(unselectButton);
+	deselectButton = new JButton("Deselect row/column/block");
+	deselectButton.addActionListener(new MouseListener());
+	buttonHolders.add(deselectButton);
 	
 	showDemoButton = new JButton("Show demo");
 	showDemoButton.addActionListener(new MouseListener());
@@ -210,7 +239,7 @@ public class Sudoku{
 	theGridPlaceHolder.add(speedSlider);
 
 	allDifferentButton.setEnabled(true); //// TODO
-	unselectButton.setEnabled(false);
+	deselectButton.setEnabled(false);
 		
 	mainFrame.setVisible(true);
     }
@@ -313,7 +342,43 @@ public class Sudoku{
 	    if (e.getSource() == setHighSpeedMenuItem) {
 		setAnimationSpeed(100);
 	    }
+	    
+	    // Handle set propagate on menu item
+	    if (e.getSource() == setPropagateOnMenuItem) {
+		System.out.println("Propagate on");
+		theModel.setPropagateAfterAllDifferent(true);
+	    }
 
+	    // Handle set propagate off menu item
+	    if (e.getSource() == setPropagateOffMenuItem) {
+		System.out.println("Propagate off");
+		theModel.setPropagateAfterAllDifferent(false);
+	    }
+
+	    // Handle set run all different after making a selection on menu item
+	    if (e.getSource() == setRunAllDifferentWhenSelectingOnMenuItem) {
+		System.out.println("AllDifferent on selection on");
+		theModel.setRunAllDifferentOnSelection(true);
+	    }
+
+	    // Handle set run all different after making a selection on menu item
+	    if (e.getSource() == setRunAllDifferentWhenSelectingOffMenuItem) {
+		System.out.println("AllDifferent on selection off");
+		theModel.setRunAllDifferentOnSelection(false);
+	    }
+
+	    // Handle deselect after alldifferent finishies running on menu item
+	    if (e.getSource() == setDeselectAfterAllDifferentOnMenuItem) {
+		System.out.println("Deselect after alldifferent on");
+		theModel.setDeselectAfterAllDifferent(true);
+	    }
+
+	    // Handle deselect after alldifferent finishies running off menu item
+	    if (e.getSource() == setDeselectAfterAllDifferentOffMenuItem) {
+		System.out.println("Deselect after alldifferent off");
+		theModel.setDeselectAfterAllDifferent(false);
+	    }
+	    
 	    // Handle open button action
 	    if (e.getSource() == openFileButton || e.getSource() == openMenuItem) {
 
@@ -342,7 +407,7 @@ public class Sudoku{
 	    // Handle backtrack solve button
 	    if (e.getSource() == backtrackButton) {
 		//allDifferentButton.setEnabled(false);
-		//unselectButton.setEnabled(true);
+		//deselectButton.setEnabled(true);
 
 		// escape from EDT
 		Thread t = new Thread(new Runnable() {
@@ -358,7 +423,7 @@ public class Sudoku{
 	    // Handle next move button
 	    if (e.getSource() == nextButton) {
 		//allDifferentButton.setEnabled(false);
-		//unselectButton.setEnabled(true);
+		//deselectButton.setEnabled(true);
 
 		// escape from EDT
 		Thread t = new Thread(new Runnable() {
@@ -400,7 +465,7 @@ public class Sudoku{
 	    // Handle solve choco3 button
 	    if (e.getSource() == choco3Button) {
 		//allDifferentButton.setEnabled(false);
-		//unselectButton.setEnabled(true);
+		//deselectButton.setEnabled(true);
 
 		// escape from EDT
 		Thread th = new Thread(new Runnable() {
@@ -416,7 +481,7 @@ public class Sudoku{
 	    // Handle print button
 	    if (e.getSource() == printButton) {
 		//allDifferentButton.setEnabled(false);
-		//unselectButton.setEnabled(true);
+		//deselectButton.setEnabled(true);
 
 		// escape from EDT
 		Thread t = new Thread(new Runnable() {
@@ -431,7 +496,7 @@ public class Sudoku{
 	    // Handle next step button
 	    if (e.getSource() == nextStepButton) {
 		//allDifferentButton.setEnabled(false);
-		//unselectButton.setEnabled(true);
+		//deselectButton.setEnabled(true);
 
 		// escape from EDT
 		Thread t = new Thread(new Runnable() {
@@ -449,7 +514,7 @@ public class Sudoku{
 	    // Handle solve button
 	    if (e.getSource() == allDifferentButton){
 		allDifferentButton.setEnabled(false);
-		unselectButton.setEnabled(true);
+		deselectButton.setEnabled(true);
 
 		// escape from EDT
 		Thread th = new Thread(new Runnable() {
@@ -461,10 +526,10 @@ public class Sudoku{
 		th.start();
 	    }
 	    
-	    // Handle unselect button
-	    if (e.getSource() == unselectButton){
+	    // Handle deselect button
+	    if (e.getSource() == deselectButton){
 		allDifferentButton.setEnabled(true);
-		unselectButton.setEnabled(false);
+		deselectButton.setEnabled(false);
 
 		// escape from EDT
 		Thread th = new Thread(new Runnable() {
@@ -488,7 +553,7 @@ public class Sudoku{
 			    if(DEBUG.getValue()){System.out.println("Started running demo");}
 
 			    allDifferentButton.setEnabled(false);
-			    unselectButton.setEnabled(false);
+			    deselectButton.setEnabled(false);
 			    showDemoButton.setEnabled(false);
 			    
 			    // sequence of steps to show the demo
@@ -501,7 +566,7 @@ public class Sudoku{
 			    theModel.deselect();
 			    
 			    //
-			    // make buttons selectable/unselectable
+			    // make buttons selectable/deselectable
 			    //
 			    
 			    theModel.select(5, 0); // 6th, type 0 for row
@@ -518,7 +583,7 @@ public class Sudoku{
 			    
 			    theModel.fadeInGridNow();
 			    
-			    unselectButton.setEnabled(true);
+			    deselectButton.setEnabled(true);
 			    
 			    if(DEBUG.getValue()){System.out.println("Finished running demo");}
 			    
