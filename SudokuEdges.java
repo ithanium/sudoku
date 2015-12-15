@@ -21,7 +21,7 @@ public class SudokuEdges extends JPanel implements ActionListener {
     private float alpha = 1f;
     private float fadeOutMinimum = 0f;
 
-    private boolean fadingOut = true;
+    private boolean fadingOut;
     
     JLabel statusLabel;
     public static JButton printButton;

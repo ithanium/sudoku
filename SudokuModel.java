@@ -1,32 +1,31 @@
 import java.io.*;
 import java.util.*;
 
-import javax.swing.Timer;
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.Color;
 
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.variables.*;
 import org.chocosolver.solver.constraints.*;
-import org.chocosolver.solver.exception.ContradictionException;
 
 public class SudokuModel {
-    public static MutableBoolean DEBUG;
+    public MutableBoolean DEBUG;
 
     public Object animationLock = new Object();
     
     public SudokuGrid theGrid; // TODO update the name // GUI
-    public static int SIZE;
-    public static int SLEEP;
-    public static int SLEEP_BETWEEN_STEPS = 3000;
-    
-    private static Stack<SudokuWorld> worldStack = new Stack<SudokuWorld>();
+    public int SIZE;
+    public int SLEEP;
+    public int SLEEP_BETWEEN_STEPS = 3000;
 
+    private static Stack<SudokuWorld> worldStack = new Stack<SudokuWorld>();
+    
     private Solver solver = new Solver("sudoku");
     private IntVar[][] rows = VariableFactory.enumeratedMatrix("rows", 9, 9, new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 }, solver); // TODO update the name
 
     ArrayList<ArrayList<Timer>> timers = new ArrayList<ArrayList<Timer>>();
-
+    
     public Timer lastRunningTimer;
     public boolean isAnimationPaused = false;
 
@@ -38,11 +37,11 @@ public class SudokuModel {
 
     public Thread logicThread;
 
-    public void SudokuModel(){
+    public SudokuModel(){
 	worldStack = new Stack<SudokuWorld>();
     }
     
-    public void SudokuModel(Sudoku referenceToMain){
+    public SudokuModel(Sudoku referenceToMain){
 	worldStack = new Stack<SudokuWorld>();
 
 	this.referenceToMain = referenceToMain;
@@ -163,7 +162,6 @@ public class SudokuModel {
 	
 	for(int i=0; i<9; i++){
 	    for(int j=0; j< 9; j++){
-		int row = 8; ////////////
 		
 		// from VAR i to VALUE j
 		int shown_x = theGrid.sudokuCells3Now[i].x;
@@ -274,7 +272,7 @@ public class SudokuModel {
 	
 	Tarjan tarjan = new Tarjan(super_getThis(), newA2, 18);
 	tarjan.DEBUG = DEBUG;
-	ArrayList<ArrayList<Integer>> components = tarjan.run();
+	tarjan.run();
 
 	if(DEBUG.getValue()){System.out.println("Step 3 - Tarjan - finished");}
 

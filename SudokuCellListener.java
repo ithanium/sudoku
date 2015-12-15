@@ -1,10 +1,6 @@
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import javax.swing.*;
-
-import java.util.ArrayList;
-
 public class SudokuCellListener extends MouseAdapter {
     public void mouseClicked(MouseEvent e) {
 	SudokuCell source = (SudokuCell) e.getSource();

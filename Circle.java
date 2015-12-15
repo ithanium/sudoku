@@ -3,10 +3,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -25,8 +22,6 @@ public class Circle extends JPanel implements ActionListener{
     public SudokuModel theModel;
 
     public String value;
-
-    private boolean fadingOut = true;
 
     public Color fontColor = Color.WHITE;
     public Color circleColor = Color.BLACK;
@@ -155,7 +150,6 @@ public class Circle extends JPanel implements ActionListener{
     }
     
     public void fadeOut(){
-	fadingOut = true;
 	fadeOutMinimum = 0f;
 	//timer1.start(); KEEP IT DELETED	
     }
@@ -167,8 +161,6 @@ public class Circle extends JPanel implements ActionListener{
     }
     
     public void fadeIn(){
-	fadingOut = false;
-        //timer2.start(); KEEP IT DELETED
     }
 
     public Timer getTimerFadeOut(){

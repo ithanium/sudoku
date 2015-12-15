@@ -2,7 +2,7 @@ import java.util.*;
 import java.awt.Color;
 
 public class FordFulkerson {
-    public static MutableBoolean DEBUG;
+    public MutableBoolean DEBUG;
     
     int[][] A;         // adjacency matrix, will be used only for displaying output
     int[][] R;         //  residual graph

@@ -1,30 +1,19 @@
 import javax.swing.*;
 import javax.swing.event.*;
-
-import java.awt.event.*;
-
-import java.awt.Color;
 import java.awt.*;
-
+import java.awt.event.*;
 import java.io.File;
 import java.io.FileNotFoundException;
-
-import java.util.List;
-
 import java.util.Hashtable;
 import java.util.Dictionary;
-import java.util.ArrayList;
-
-import java.util.logging.*;
-
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Sudoku{
     public static MutableBoolean DEBUG = new MutableBoolean(false);
-
+    
     public final int SIZE = 9;
     public final int SLEEP = 1;
-        
+	
     public SudokuModel theModel;
 
     public JButton openFileButton;
@@ -66,17 +55,17 @@ public class Sudoku{
 	theModel.SLEEP = SLEEP;
 
 	/*
-	try{
-	    SwingUtilities.invokeAndWait(new Runnable() {
-		    public void run() {
+	  try{
+	  SwingUtilities.invokeAndWait(new Runnable() {
+	  public void run() {
 	*/
-			showGUI();
+	showGUI();
 	/*
-		    }
-		});
-	} catch (Exception e){
-	    e.printStackTrace();
-	}
+	  }
+	  });
+	  } catch (Exception e){
+	  e.printStackTrace();
+	  }
 	*/
 			
 	if(DEBUG.getValue()){System.out.println("GUI loaded");}
@@ -94,30 +83,30 @@ public class Sudoku{
     public void showGUI(){
 
 	JFrame mainFrame = new JFrame("sudo ku");
-        mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        mainFrame.setSize(1250, 725);
-        mainFrame.setLocationRelativeTo(null);
+	mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+	mainFrame.setSize(1250, 725);
+	mainFrame.setLocationRelativeTo(null);
 	
 	mainFrame.setResizable(false);
 
 	jMenuBar = new javax.swing.JMenuBar();
 	
-        fileMenu = new javax.swing.JMenu("File");
-        openMenuItem = new javax.swing.JMenuItem("Open");
+	fileMenu = new javax.swing.JMenu("File");
+	openMenuItem = new javax.swing.JMenuItem("Open");
 	exitMenuItem = new javax.swing.JMenuItem("Exit");
 	exitMenuItem.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
+		@Override
+		public void actionPerformed(ActionEvent e) {
+		    System.exit(0);
+		}
+	    });
 	fileMenu.add(openMenuItem);
 	fileMenu.add(exitMenuItem);
 
 	settingsMenu = new javax.swing.JMenu("Settings");
-        solveInStepsTrueMenuItem = new javax.swing.JMenuItem("Solve in steps");
+	solveInStepsTrueMenuItem = new javax.swing.JMenuItem("Solve in steps");
 	solveInStepsFalseMenuItem = new javax.swing.JMenuItem("Do not solve in steps");
-        setNormalSpeedMenuItem = new javax.swing.JMenuItem("Set normal speed");
+	setNormalSpeedMenuItem = new javax.swing.JMenuItem("Set normal speed");
 	setHighSpeedMenuItem = new javax.swing.JMenuItem("Set high speed");
 
 	settingsMenu.add(solveInStepsTrueMenuItem);
@@ -129,10 +118,10 @@ public class Sudoku{
 	jMenuBar.add(settingsMenu);
 
 	openMenuItem.addActionListener(new MouseListener());
-        solveInStepsTrueMenuItem.addActionListener(new MouseListener());
-        solveInStepsFalseMenuItem.addActionListener(new MouseListener());
-        setNormalSpeedMenuItem.addActionListener(new MouseListener());
-        setHighSpeedMenuItem.addActionListener(new MouseListener());
+	solveInStepsTrueMenuItem.addActionListener(new MouseListener());
+	solveInStepsFalseMenuItem.addActionListener(new MouseListener());
+	setNormalSpeedMenuItem.addActionListener(new MouseListener());
+	setHighSpeedMenuItem.addActionListener(new MouseListener());
 	
 	mainFrame.setJMenuBar(jMenuBar);
 	
@@ -191,7 +180,7 @@ public class Sudoku{
 	showDemoButton.addActionListener(new MouseListener());
 	buttonHolders.add(showDemoButton);
 	    
-    	currentStepStatusLabel = new JLabel();
+	currentStepStatusLabel = new JLabel();
 	currentStepStatusLabel.setPreferredSize(new Dimension(1215, 25));
 	currentStepStatusLabel.setFont(new Font("Serif", Font.PLAIN, 14));
 	currentStepStatusLabel.setForeground(Color.BLACK);
@@ -234,7 +223,7 @@ public class Sudoku{
 	    }
 	}
 		
-        new Sudoku();
+	new Sudoku();
     }
 
     public void setAnimationSpeed(int speed){
@@ -331,10 +320,10 @@ public class Sudoku{
 		JFileChooser fc = new JFileChooser();
 		fc.setAcceptAllFileFilterUsed(false);
 		fc.addChoosableFileFilter(new FileNameExtensionFilter(".txt - plain text files", "txt"));
-        
+	
 		File workingDirectory = new File(System.getProperty("user.dir"));
 		fc.setCurrentDirectory(workingDirectory);
-        
+	
 		int returnVal = fc.showOpenDialog(null);
 
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -439,7 +428,7 @@ public class Sudoku{
 		t.start();
 	    }
 
-	     // Handle next step button
+	    // Handle next step button
 	    if (e.getSource() == nextStepButton) {
 		//solveFFButton.setEnabled(false);
 		//unselectButton.setEnabled(true);

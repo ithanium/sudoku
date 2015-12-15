@@ -1,5 +1,4 @@
 import javax.swing.*;
-import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
@@ -23,8 +22,6 @@ public class SudokuCell extends JPanel implements ActionListener{
     int x,y; // the place on the grid // TO DO use i, j
 
     private JLabel valuesLabel = new JLabel();
-
-    private boolean fadingOut = true;
 
     private boolean noBoldBorder = false;
 
@@ -129,9 +126,6 @@ public class SudokuCell extends JPanel implements ActionListener{
 	g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
 	g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 	g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-	
-	int height = 50;
-	int width = 50;
 	
 	Color prevColor = new Color(Color.BLACK.getRed(), Color.BLACK.getGreen(), Color.BLACK.getBlue(), (int)(alpha*255));
 	
@@ -249,7 +243,6 @@ public class SudokuCell extends JPanel implements ActionListener{
     }
     
     public void fadeOut(){
-	fadingOut = true;
 	fadeOutMinimum = 0f;
 	//timer1.start(); KEEP IT DELETED	
     }
@@ -261,8 +254,6 @@ public class SudokuCell extends JPanel implements ActionListener{
     }
     
     public void fadeIn(){
-	fadingOut = false;
-        //timer2.start(); KEEP IT DELETED
     }
 
     public void setModel(SudokuModel model){

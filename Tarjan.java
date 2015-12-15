@@ -2,7 +2,7 @@ import java.util.*;
 import java.awt.Color;
 
 public class Tarjan {
-    public static MutableBoolean DEBUG;
+    public MutableBoolean DEBUG;
     
     SudokuModel theModel;
     int[][] A;         // adjacency matrix, will be used only for displaying output

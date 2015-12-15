@@ -1,5 +1,3 @@
-import java.awt.Color;
-
 class MutableBoolean
 {
     boolean value;

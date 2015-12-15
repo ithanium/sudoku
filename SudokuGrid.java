@@ -1,12 +1,10 @@
 import javax.swing.*;
 import java.awt.*;
-//import java.util.*;
 import java.awt.event.*;
-
 import java.util.ArrayList;
 
 class SudokuGrid extends JPanel implements ActionListener{
-    public static MutableBoolean DEBUG;
+    public MutableBoolean DEBUG;
     
     public  float DELTA = 5f; //// WAS 1
     //private  Timer timer = new Timer(5, null);
