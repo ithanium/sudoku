@@ -535,6 +535,7 @@ class SudokuGrid extends JPanel implements ActionListener{
 		}
 	    }
 
+	    // the equation of the line
 	    float b = y1 - m*x1;
 	    float y = m * x + b;
 	    

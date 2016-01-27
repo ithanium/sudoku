@@ -21,6 +21,9 @@ public class SudokuCell extends JPanel implements ActionListener{
     private boolean noBoldBorder = false;
     public boolean notInTheGrid = false;
     public Color fontColor = Color.BLACK;
+
+    public int fontSize = 20;
+    public Font theFont = new Font("Serif", Font.PLAIN, fontSize);
         
     public SudokuCell(int i, int j){
 	super();
@@ -38,14 +41,16 @@ public class SudokuCell extends JPanel implements ActionListener{
 	timer2.setCoalesce(false);
 	*/
 	
-	valuesLabel.setFont(new Font("Serif", Font.PLAIN, 14));
+	valuesLabel.setFont(theFont);
 	valuesLabel.setForeground(fontColor);
+	//valuesLabel.setSize(SIZE, SIZE);
+	valuesLabel.setSize(new Dimension(SIZE, SIZE));
 	//valuesLabel.setVerticalAlignment(SwingConstants.CENTER);
 	//valuesLabel.setSize(new Dimension(50, 50));
 	//valuesLabel.setText("<html><div style=\"text-align: center; padding-top: 3px; padding-left: 1px;\"><font color='BLACK'>1 2 3<br>4 5 6<br>7 8 9</font></div></html>");
 	
 	setLayout(new GridBagLayout());
-	setMinimumSize(new Dimension(50, 50));
+	setPreferredSize(new Dimension(50, 50));
 
 	add(valuesLabel);
 
@@ -54,8 +59,8 @@ public class SudokuCell extends JPanel implements ActionListener{
     }
 
     public void setValuesLabel(String valuesText){
-	SwingUtilities.invokeLater(new Runnable() {
-		public void run() {
+	//SwingUtilities.invokeLater(new Runnable() {
+	//	public void run() {
 		    //System.out.println("TEST X0");
 		    //System.out.println("Should be true " + SwingUtilities.isEventDispatchThread());
 		    valuesLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -63,24 +68,35 @@ public class SudokuCell extends JPanel implements ActionListener{
 		    
 		    if(valuesText.length() <= 1){
 			// Single digit
-			valuesLabel.setSize(SIZE,SIZE);
-	    
+
 			if(valuesText.compareTo("0") != 0){
 			    valuesLabel.setText(valuesText);
 			} else {
 			    valuesLabel.setText(" ");
 			}
-			valuesLabel.setFont(new Font("Serif", Font.PLAIN, 20));
-			
+
+			//fontSize = 20;
+			fontSize = theModel.getMaxFittingFontSize("9", theFont, valuesLabel, 50, 50);
+			System.out.println("fontSize: " + fontSize);
+
+			valuesLabel.setFont(new Font("Serif", Font.PLAIN, fontSize));
+
+			valuesLabel.repaint();
 		    } else {
 			// More choices available
-			valuesLabel.setSize(SIZE,SIZE);
 			valuesLabel.setText(valuesText);
-			valuesLabel.setFont(new Font("Serif", Font.PLAIN, 14));
+			
+			//fontSize = 14;
+			fontSize = theModel.getMaxFittingFontSize("1 2 3", theFont, valuesLabel, 50, 50);
+			System.out.println("fontSize: " + fontSize);
+			
+			valuesLabel.setFont(new Font("Serif", Font.PLAIN, fontSize));
+			valuesLabel.repaint();
 			
 		    }
-		}
-	    });
+		    //		}
+    //  });
+
     }
 
     public String formatPossibleValues(){

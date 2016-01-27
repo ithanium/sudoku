@@ -5,6 +5,12 @@ import javax.swing.*;
 import javax.swing.Timer;
 import java.awt.Color;
 
+
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.variables.*;
 import org.chocosolver.solver.constraints.*;
@@ -1343,5 +1349,47 @@ public class SudokuModel {
     
     public void setCurrentStepStatusLabel(String value){
 	referenceToMain.currentStepStatusLabel.setText(value);
+    }
+
+    public static int getMaxFittingFontSize(String text, Font font, Component comp, int compWidth, int compHeight){
+	
+	//int compWidth = comp.getSize().width;
+	//int compHeight = comp.getSize().height;
+	/*
+	int width = compWidth;
+	int height = compHeight;
+	
+	int minSize = 0;
+	int maxSize = 288;
+	int curSize = font.getSize();
+
+	while (maxSize - minSize > 2){
+	    FontMetrics fm = comp.getFontMetrics(new Font(font.getName(), font.getStyle(), curSize));
+	    int fontWidth = fm.stringWidth(text);
+	    int fontHeight = fm.getLeading() + fm.getMaxAscent() + fm.getMaxDescent();
+	    
+	    if ((fontWidth > width) || (fontHeight > height)){
+		maxSize = curSize;
+		curSize = (maxSize + minSize) / 2;
+	    }
+	    else{
+		minSize = curSize;
+		curSize = (minSize + maxSize) / 2;
+	    }
+	}
+
+	System.out.println(text + ": " + curSize);
+
+	return curSize;
+	*/
+	
+	int stringWidth = comp.getFontMetrics(font).stringWidth(text);
+	double widthRatio = (double)compWidth / (double)stringWidth;
+	int newFontSize = (int)(font.getSize() * widthRatio);
+	int fontSizeToUse = Math.min(newFontSize, compHeight);
+
+	System.out.println(text + "\n" + compWidth + " " + compHeight + " " + stringWidth + " " + widthRatio + " " + newFontSize + " " + fontSizeToUse);
+	
+	return (int)(fontSizeToUse / 1.75);
     }
 }
