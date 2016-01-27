@@ -19,6 +19,7 @@ public class Sudoku{
     public JButton openFileButton;
     public JButton pauseButton;
     public JButton playButton;
+    public JButton playPauseButton;
     public JButton nextStepButton;
     public JButton allDifferentButton;
     public JButton deselectButton;
@@ -163,7 +164,7 @@ public class Sudoku{
 	openFileButton = new JButton("Open");
 	openFileButton.addActionListener(new MouseListener());
 	buttonHolders.add(openFileButton);
-
+	/*
 	pauseButton = new JButton("Pause");
 	pauseButton.addActionListener(new MouseListener());
 	buttonHolders.add(pauseButton);
@@ -171,6 +172,10 @@ public class Sudoku{
 	playButton = new JButton("Play");
 	playButton.addActionListener(new MouseListener());
 	buttonHolders.add(playButton);
+	*/
+	playPauseButton = new JButton("Pause");
+	playPauseButton.addActionListener(new MouseListener());
+	buttonHolders.add(playPauseButton);
 
 	nextStepButton = new JButton("Next step");
 	nextStepButton.addActionListener(new MouseListener());
@@ -225,6 +230,7 @@ public class Sudoku{
 
 	theGridPlaceHolder.add(speedSlider);
 
+	playPauseButton.setEnabled(false);
 	allDifferentButton.setEnabled(true); //// TODO
 	deselectButton.setEnabled(false);
 		
@@ -242,54 +248,72 @@ public class Sudoku{
 	new Sudoku();
     }
 
-    public void setAnimationSpeed(int speed){
-	if(speed <= 50){
-	    if(DEBUG.getValue()){System.out.println("Set normal speed  menu item clicked");}
+    public void setAnimationSpeed(float SPEED){
 
-	    for(int i=0; i<9; i++){
-		for(int j=0; j<9; j++){
-		    theModel.viewController.theGrid.sudokuCells[i][j].DELTA = 0.01f;
-		}
-	    }
+	// SPEED Inverse
+	// Used for inversely proportional values
 
-	    theModel.SLEEP = 1;
-	    theModel.SLEEP_BETWEEN_STEPS = 3000;
-	    
-	    theModel.viewController.theGrid.DELTA = 5f; // was 1f, 5f, for movement
-	    
-	    for(int i=0; i<11; i++){
-		theModel.viewController.theGrid.valueCircles[i].DELTA = 0.01f; // forfade in out
-	    }
-	    
-	    theModel.viewController.theEdges.DELTA = 0.01f; // for fade out/fade in
-	    // TODO: SHOULD TWEAK THIS AS SLEEP 0 doesn't mean
-	    // no sleep at all
-	    theModel.viewController.theEdges.SLEEP = 500;  // between drawing
-	    theModel.viewController.theEdges.SLEEP_BETWEEN_STEPS = 3000;  // between drawing
-	} else {
-	    if(DEBUG.getValue()){System.out.println("Set high speed menu item clicked");}
+	float SPEED_INVERSE = 100 - SPEED;
+	
+	// Values for minimum speed are stored in _MIN
+	// Values for maximum speed are stored in _MAX
 
-	    for(int i=0; i<9; i++){
-		for(int j=0; j<9; j++){
-		    theModel.viewController.theGrid.sudokuCells[i][j].DELTA = 1f;
-		}
+	int SLEEP_MIN = 1;                            // sleep thread when drawing
+	int SLEEP_MAX = 0;                            // sleep thread when drawing
+	int SLEEP_BETWEEN_STEPS_MIN = 3000;           // sleep thread when drawing
+	int SLEEP_BETWEEN_STEPS_MAX = 0;              // sleep thread when drawing
+	int SLEEP_THE_EDGES_MIN = 500;                // sleep thread when drawing
+	int SLEEP_THE_EDGES_MAX = 0;                  // sleep thread when drawing
+	int SLEEP_BETWEEN_STEPS_THE_EDGES_MIN = 3000; // sleep thread when drawing
+	int SLEEP_BETWEEN_STEPS_THE_EDGES_MAX = 0;    // sleep thread when drawing
+	float DELTA_SUDOKU_CELLS_MIN = 0.01f;         // for fade out/fade in alpha
+	float DELTA_SUDOKU_CELLS_MAX = 1f;            // for fade out/fade in alpha
+	float DELTA_THE_GRID_MIN = 5f;                // move cells right by delta
+	float DELTA_THE_GRID_MAX = 200f;              // move cells right by delta
+	float DELTA_THE_EDGES_MIN = 0.01f;            // for fade out/fade in alpha
+	float DELTA_THE_EDGES_MAX = 1f;               // for fade out/fade in alpha
+	float DELTA_VALUE_CIRCLES_MIN = 0.01f;        // for fade out/fade in alpha
+	float DELTA_VALUE_CIRCLES_MAX = 1f;           // for fade out/fade in alpha
+	
+	int SLEEP = Math.round(SPEED_INVERSE / 100 * (SLEEP_MIN - SLEEP_MAX)) + SLEEP_MAX;
+	int SLEEP_BETWEEN_STEPS = Math.round(SPEED_INVERSE / 100 * (SLEEP_BETWEEN_STEPS_MIN - SLEEP_BETWEEN_STEPS_MAX)) + SLEEP_BETWEEN_STEPS_MAX;
+	int SLEEP_THE_EDGES = Math.round(SPEED_INVERSE / 100 * (SLEEP_THE_EDGES_MIN - SLEEP_THE_EDGES_MAX)) + SLEEP_THE_EDGES_MAX;
+	int SLEEP_BETWEEN_STEPS_THE_EDGES = Math.round(SPEED_INVERSE / 100 * (SLEEP_BETWEEN_STEPS_THE_EDGES_MIN - SLEEP_BETWEEN_STEPS_THE_EDGES_MAX)) + SLEEP_BETWEEN_STEPS_THE_EDGES_MAX;
+	float DELTA_SUDOKU_CELLS = SPEED / 100 * (DELTA_SUDOKU_CELLS_MAX - DELTA_SUDOKU_CELLS_MIN) + DELTA_SUDOKU_CELLS_MIN;
+	float DELTA_THE_GRID = SPEED / 100 * (DELTA_THE_GRID_MAX - DELTA_THE_GRID_MIN) + DELTA_THE_GRID_MIN;
+	float DELTA_THE_EDGES = SPEED / 100 * (DELTA_THE_EDGES_MAX - DELTA_THE_EDGES_MIN) + DELTA_THE_EDGES_MIN;
+	float DELTA_VALUE_CIRCLES = SPEED / 100 * (DELTA_VALUE_CIRCLES_MAX - DELTA_VALUE_CIRCLES_MIN) + DELTA_VALUE_CIRCLES_MIN;
+	/*
+	System.out.println();
+	System.out.println("SPEED: " + SPEED);
+	System.out.println("SLEEP: " + SLEEP);
+	System.out.println("SLEEP_BETWEEN_STEPS: " + SLEEP_BETWEEN_STEPS);
+	System.out.println("SLEEP_THE_EDGES: " + SLEEP_THE_EDGES);
+	System.out.println("SLEEP_BETWEEN_STEPS_THE_EDGES: " + SLEEP_BETWEEN_STEPS_THE_EDGES);
+	System.out.println("DELTA_SUDOKU_CELLS: " + DELTA_SUDOKU_CELLS);
+	System.out.println("DELTA_THE_GRID: " + DELTA_THE_GRID);
+	System.out.println("DELTA_THE_EDGES: " + DELTA_THE_EDGES);
+	System.out.println("DELTA_VALUE_CIRCLES: " + DELTA_VALUE_CIRCLES);
+	*/
+	theModel.SLEEP = SLEEP;
+	theModel.SLEEP_BETWEEN_STEPS = SLEEP_BETWEEN_STEPS;
+	theModel.viewController.theEdges.SLEEP = SLEEP_THE_EDGES;
+	theModel.viewController.theEdges.SLEEP_BETWEEN_STEPS = SLEEP_BETWEEN_STEPS_THE_EDGES;
+
+	for(int i=0; i<9; i++){
+	    for(int j=0; j<9; j++){
+		theModel.viewController.theGrid.sudokuCells[i][j].DELTA = DELTA_SUDOKU_CELLS;
 	    }
-	    
-	    theModel.SLEEP = 0;
-	    theModel.SLEEP_BETWEEN_STEPS = 0;
-	    
-	    theModel.viewController.theGrid.DELTA = 1000f; // was 1f, 5f, for movement
-	    
-	    for(int i=0; i<11; i++){
-		theModel.viewController.theGrid.valueCircles[i].DELTA = 1f; // forfade in out
-	    }
-	    
-	    theModel.viewController.theEdges.DELTA = 1f; // for fade out/fade in
-	    // TODO: SHOULD TWEAK THIS AS SLEEP 0 doesn't mean
-	    // no sleep at all
-	    theModel.viewController.theEdges.SLEEP = 0;  // between drawing
-	    theModel.viewController.theEdges.SLEEP_BETWEEN_STEPS = 0;  // between drawing
 	}
+	    
+	theModel.viewController.theGrid.DELTA = DELTA_THE_GRID;
+
+	theModel.viewController.theEdges.DELTA = DELTA_THE_EDGES;
+	
+	for(int i=0; i<11; i++){
+	    theModel.viewController.theGrid.valueCircles[i].DELTA = DELTA_VALUE_CIRCLES;
+	}
+
     }
     
     // make sudoku.java implement changelistener and actionlistener
@@ -423,7 +447,7 @@ public class Sudoku{
 		    });
 		t.start();
 	    }
-
+	    /*
 	    // Handle pause button
 	    if (e.getSource() == pauseButton) {
 		// escape from EDT
@@ -447,6 +471,34 @@ public class Sudoku{
 		    });
 		t.start();
 
+	    }
+	    */
+	    
+	    // Handle playPauseButton button
+	    if (e.getSource() == playPauseButton) {
+		if(theModel.isAnimationPaused == false){
+		    //pause
+		    playPauseButton.setText("Play");
+		    // escape from EDT
+		    Thread t = new Thread(new Runnable() {
+			    @Override
+			    public void run() {
+				theModel.pauseAnimation();
+			    }			
+			});
+		    t.start();
+		} else if(theModel.isAnimationPaused == true){
+		    //play
+		    playPauseButton.setText("Pause");
+		    // escape from EDT
+		    Thread t = new Thread(new Runnable() {
+			    @Override
+			    public void run() {
+				theModel.playAnimation();
+			    }			
+			});
+		    t.start();
+		}
 	    }
 	    
 	    // Handle solve choco3 button
@@ -497,13 +549,14 @@ public class Sudoku{
 
 	    // Handle showDemoButton button
 	    if (e.getSource() == showDemoButton){
-
+		playPauseButton.setEnabled(true);
 		//System.out.println("EDT? " + SwingUtilities.isEventDispatchThread() + " " + Thread.currentThread().getId() + " " + new Throwable().getStackTrace()[0].getClassName() + " " + new Throwable().getStackTrace()[0].getLineNumber());
 
 		// escape from EDT
 		Thread th = new Thread(new Runnable() {
 			@Override
 			public void run() {
+			    theModel.setCurrentStepStatusLabel("Started running demo");
 			    if(DEBUG.getValue()){System.out.println("Started running demo");}
 
 			    allDifferentButton.setEnabled(false);
@@ -539,6 +592,7 @@ public class Sudoku{
 			    
 			    deselectButton.setEnabled(true);
 			    
+			    theModel.setCurrentStepStatusLabel("Finished running demo");
 			    if(DEBUG.getValue()){System.out.println("Finished running demo");}
 			    
 			}});

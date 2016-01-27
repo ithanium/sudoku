@@ -139,6 +139,7 @@ public class Tarjan {
     public ArrayList<ArrayList<Integer>> run() {
 	// number of strongly connected components
         int scc_count = count();
+	theModel.setCurrentStepStatusLabel(scc_count + " strongly connected components");
         if(DEBUG.getValue()){System.out.println("\t" + scc_count + " strongly connected components");}
 
 	ArrayList<ArrayList<Integer>> components = new ArrayList<ArrayList<Integer>>();
@@ -156,6 +157,9 @@ public class Tarjan {
 	    if(DEBUG.getValue()){System.out.print("\tComponent " + i + ": ");}
 	    
             for (int v : components.get(i)) {
+
+		//TODO: how to make it in one call?
+		//setCurrentStepStatusLabel("Component " + i + ": " + v + " ");
                 if(DEBUG.getValue()){System.out.print(v + " ");}
 		if(v < 9){
 		    // dealing with a var on the left

@@ -138,7 +138,8 @@ public class SudokuModel {
 
     public boolean allDifferent(){
 	ifNotAnimatingThenWait();
-			
+
+	setCurrentStepStatusLabel("Started running the all-different implementation");
 	if(DEBUG.getValue()){System.out.println("Started running the all-different implementation");}
 
 	int edges = 0;
@@ -164,8 +165,8 @@ public class SudokuModel {
 	    for(int j=0; j< 9; j++){
 		
 		// from VAR i to VALUE j
-		int shown_x = theGrid.sudokuCells3Now[i].x;
-		int shown_y = theGrid.sudokuCells3Now[i].y;
+		int shown_x = theGrid.sudokuCells3Now[i].i;
+		int shown_y = theGrid.sudokuCells3Now[i].j;
 
 		int capacity = 0;
 		if(worldPeek().grid[shown_x][shown_y].hasValue(j + 1)){
@@ -180,7 +181,8 @@ public class SudokuModel {
 
 	//if(solveInSteps){pauseAnimation();} //this is not a step
 	ifNotAnimatingThenWait();
-	
+
+	setCurrentStepStatusLabel("Step 1 - Ford Fulkerson - started");
 	if(DEBUG.getValue()){System.out.println("Step 1 - Ford Fulkerson - started");}
 
 	FordFulkerson ff = new FordFulkerson(super_getThis(), A, R, 20); //TODO this works with only using "this" !
@@ -209,11 +211,14 @@ public class SudokuModel {
 	    e.printStackTrace();
 	}
 			*/
+			
+	setCurrentStepStatusLabel("Step 1 - Ford Fulkerson - finished");
 	if(DEBUG.getValue()){System.out.println("Step 1 - Ford Fulkerson - finished");}
 	
 	if(solveInSteps){pauseAnimation();}
 	ifNotAnimatingThenWait();
-	
+
+	setCurrentStepStatusLabel("Step 2 - Add arrows after maximum matching - started");
 	if(DEBUG.getValue()){System.out.println("Step 2 - Add arrows after maximum matching - started");}
 	
 	int newA[][] = new int[20][20];
@@ -222,6 +227,7 @@ public class SudokuModel {
 	for(int i=0; i<20; i++){
 	    for(int j=0; j<20; j++){
 		if(i > 0 && i < 10 && A[i][j] == 1 && A[i][j] * R[j][i] == 1){
+		    setCurrentStepStatusLabel("Edge i: "+(i)+" j:"+(j));
 		    if(DEBUG.getValue()){System.out.println("\tEdge i: "+(i)+" j:"+(j));}
 		    newA[i][j] = 1;
 		}
@@ -246,7 +252,8 @@ public class SudokuModel {
 	////////////////////////////////////////////////////
 	//Printing step 2 arrow flows after maximum matching
 	//newA2
-	
+
+	setCurrentStepStatusLabel("Step 2 - Add arrows after maximum matching - finished");
        	if(DEBUG.getValue()){System.out.println("Step 2 - Add arrows after maximum matching - finished");}
 
 	if(SLEEP_BETWEEN_STEPS > 0){
@@ -273,14 +280,18 @@ public class SudokuModel {
 	    e.printStackTrace();
 	}
 			*/
-	if(DEBUG.getValue()){System.out.println("Step 3 - Tarjan -  started");}
+
+			setCurrentStepStatusLabel("Step 3 - Tarjan -  started");
+			if(DEBUG.getValue()){System.out.println("Step 3 - Tarjan -  started");}
 	
 	Tarjan tarjan = new Tarjan(super_getThis(), newA2, 18);
 	tarjan.DEBUG = DEBUG;
 	tarjan.run();
 
+	setCurrentStepStatusLabel("Step 3 - Tarjan - finished");
 	if(DEBUG.getValue()){System.out.println("Step 3 - Tarjan - finished");}
 
+	setCurrentStepStatusLabel("Step 4 - Apply knowledge after running Tartajn - started");
 	if(DEBUG.getValue()){System.out.println("Step 4 - Apply knowledge after running Tartajn - started");}
 	
 	int newA3[][] = new int[18][18];
@@ -295,6 +306,7 @@ public class SudokuModel {
 		int finish_component_id = tarjan.id(v);
 		
 		if(start_component_id != finish_component_id){
+		    setCurrentStepStatusLabel("Considering u: " + u + " v: " + v + " start comp: " + start_component_id + " finish comp: " + finish_component_id);
 		    if(DEBUG.getValue()){System.out.println("\tConsidering u: " + u + " v: " + v + " start comp: " + start_component_id + " finish comp: " + finish_component_id);}
 		    newA3[u][v] = 1;
 		}
@@ -302,6 +314,7 @@ public class SudokuModel {
 	}
 
 	if(DEBUG.getValue()){System.out.println();}
+	setCurrentStepStatusLabel("Starting coloring edges in blue & red");
 	if(DEBUG.getValue()){System.out.println("\tStarting coloring edges in blue & red");}
 	/*
 	try{
@@ -315,18 +328,20 @@ public class SudokuModel {
 				}
 
 				if(u<9){
+				    setCurrentStepStatusLabel("Color red for edge u: " + u + " v:" + v + " (cell: " + u + " to number: " + (v-8) + ")");
 				    if(DEBUG.getValue()){System.out.println("\t\tColor red for edge u: " + u + " v:" + v + " (cell: " + u + " to number: " + (v-8) + ")");}
 				    
-				    int shown_x = theGrid.sudokuCells3Before[u].x;
-				    int shown_y = theGrid.sudokuCells3Before[u].y;
+				    int shown_x = theGrid.sudokuCells3Before[u].i;
+				    int shown_y = theGrid.sudokuCells3Before[u].j;
 
 				    viewController.theEdges.edgeColors[u+1][v+1] = Color.RED;
 				    
 				} else if(u>8){
+				    setCurrentStepStatusLabel("Color blue for edge v: " + v + " u:" + u + " (cell: " + v + " to number: " + (u-8) + ")");
 				    if(DEBUG.getValue()){System.out.println("\t\tColor blue for edge v: " + v + " u:" + u + " (cell: " + v + " to number: " + (u-8) + ")");}  // switch
 				    
-				    int shown_x = theGrid.sudokuCells3Before[v].x;
-				    int shown_y = theGrid.sudokuCells3Before[v].y;
+				    int shown_x = theGrid.sudokuCells3Before[v].i;
+				    int shown_y = theGrid.sudokuCells3Before[v].j;
 
 				    viewController.theEdges.edgeColors[v+1][u+1] = Color.BLUE;
 				    
@@ -342,7 +357,8 @@ public class SudokuModel {
 	    e.printStackTrace();
 	}
 			*/
-	if(DEBUG.getValue()){System.out.println("\tFinished coloring edges in blue & red");}
+			setCurrentStepStatusLabel("Finished coloring edges in blue & red");
+			if(DEBUG.getValue()){System.out.println("\tFinished coloring edges in blue & red");}
 	
 	if(SLEEP_BETWEEN_STEPS > 0){
 	    try{
@@ -357,6 +373,7 @@ public class SudokuModel {
 	ifNotAnimatingThenWait();
 		
 	if(DEBUG.getValue()){System.out.println();}
+	setCurrentStepStatusLabel("Start applying results in the original grid");
 	if(DEBUG.getValue()){System.out.println("\tStart applying results in the original grid");}
 	/*
 	try{
@@ -372,10 +389,11 @@ public class SudokuModel {
 				ifNotAnimatingThenWait(); //TODO: one or two?
 				
 				if(u<9){
+				    setCurrentStepStatusLabel("Remove value u: " + u + " v:" + v + " (cell: " + u + " to number: " + (v-8) + ")");
 				    if(DEBUG.getValue()){System.out.println("\t\tRemove value u: " + u + " v:" + v + " (cell: " + u + " to number: " + (v-8) + ")");}
 				    
-				    int shown_x = theGrid.sudokuCells3Before[u].x;
-				    int shown_y = theGrid.sudokuCells3Before[u].y;
+				    int shown_x = theGrid.sudokuCells3Before[u].i;
+				    int shown_y = theGrid.sudokuCells3Before[u].j;
 				    
 				    // delete from sudoku
 				    worldPeek().grid[shown_x][shown_y].eliminateValue(v - (9-1));
@@ -385,10 +403,11 @@ public class SudokuModel {
 				    theGrid.sudokuCells3Before[u].setValuesLabel(theGrid.sudokuCells3Before[u].formatPossibleValues());
 				    
 				} else if(u>8){
+				    setCurrentStepStatusLabel("Assign value v: " + v + " u:" + u + " (cell: " + v + " to number: " + (u-8) + ")");
 				    if(DEBUG.getValue()){System.out.println("\t\tAssign value v: " + v + " u:" + u + " (cell: " + v + " to number: " + (u-8) + ")");} // switch
 				    
-				    int shown_x = theGrid.sudokuCells3Before[v].x;
-				    int shown_y = theGrid.sudokuCells3Before[v].y;
+				    int shown_x = theGrid.sudokuCells3Before[v].i;
+				    int shown_y = theGrid.sudokuCells3Before[v].j;
 				    
 				    // delete from sudoku
 				    worldPeek().grid[shown_x][shown_y].setValue(u - (9-1));
@@ -412,9 +431,11 @@ public class SudokuModel {
 	    e.printStackTrace();
 	}
 			*/
-	if(DEBUG.getValue()){System.out.println("\tFinished applying results in the original grid");}
+			setCurrentStepStatusLabel("Finished applying results in the original grid");
+			if(DEBUG.getValue()){System.out.println("\tFinished applying results in the original grid");}
 
-	if(DEBUG.getValue()){System.out.println("Step 4 - Apply knowledge after running Tartajn - finished");}
+			setCurrentStepStatusLabel("Step 4 - Apply knowledge after running Tarjan - finished");
+			if(DEBUG.getValue()){System.out.println("Step 4 - Apply knowledge after running Tarjan - finished");}
 
 	if(SLEEP_BETWEEN_STEPS > 0){
 	    try{
@@ -424,7 +445,8 @@ public class SudokuModel {
 		e.printStackTrace();
 	    }
 	}
-		
+
+	setCurrentStepStatusLabel("Finished running the all-different implementation");
 	if(DEBUG.getValue()){System.out.println("Finished running the all-different implementation");}
 
 	if(solveInSteps){pauseAnimation();}
@@ -444,7 +466,8 @@ public class SudokuModel {
 	    //TODO: remove this
 	    //public boolean propagateOnAssignment(int shown_x, int shown_y){
 	    propagate();
-	    
+
+	    setCurrentStepStatusLabel("Finished propagating");
 	    if(DEBUG.getValue()){System.out.println("\n\tFinished propagating");}
 
 	    if(solveInSteps){pauseAnimation();}
@@ -669,13 +692,19 @@ public class SudokuModel {
     }
 
     public void redraw(){
+	/*
+
+	  no need for this as SudokuCell automatically reads from model
+	  I think so
+
 	for(int i=0; i<9; i++){
 	    for(int j=0; j<9; j++){
 		ArrayList<Integer> possibleValues = worldPeek().grid[i][j].getPossibleValues();
 		this.theGrid.sudokuCells[i][j].possibleValues = possibleValues;
 	    }
 	}
-
+	*/
+	
 	// Separate loop so we can just redraw everything after knowing the values
 	
 	for(int i=0; i<9; i++){
@@ -1150,7 +1179,8 @@ public class SudokuModel {
 	    } catch (InterruptedException ex) {
 	    }
 	}
-	
+
+	setCurrentStepStatusLabel("Faded out before actually moving to the right");
 	if(DEBUG.getValue()){System.out.println("Faded out before actually moving to the right");}
 	
 
@@ -1180,7 +1210,8 @@ public class SudokuModel {
 	    } catch (InterruptedException ex) {
 	    }
 	}
-	
+
+	setCurrentStepStatusLabel("Moving row, column or block to the right finished");
 	if(DEBUG.getValue()){System.out.println("Moving row, column or block to the right finished");}
 
 	if(SLEEP == 0 && SLEEP_BETWEEN_STEPS == 0){
@@ -1206,7 +1237,8 @@ public class SudokuModel {
 		}
 	    }
 	}
-	
+
+	setCurrentStepStatusLabel("Fading graph finished");
 	if(DEBUG.getValue()){System.out.println("Fading graph finished");}
     }
 
@@ -1246,6 +1278,7 @@ public class SudokuModel {
 	    }
 	}
 
+	setCurrentStepStatusLabel("Moving row, column or block to the left finished");
 	if(DEBUG.getValue()){System.out.println("Moving row, column or block to the left finished");}
 	
 
@@ -1260,6 +1293,7 @@ public class SudokuModel {
 	    }
 	}
 
+	setCurrentStepStatusLabel("Faded in after moving left");
 	if(DEBUG.getValue()){System.out.println("Faded in after moving left");}
 		    
 	viewController.theEdges.setVisible(false);
@@ -1285,7 +1319,7 @@ public class SudokuModel {
 				    
 	viewController.theEdges.setVisible(true);
 
-
+	setCurrentStepStatusLabel("Finished cleaning after moving left");
 	if(DEBUG.getValue()){System.out.println("Finished cleaning after moving left");}
 
 	
@@ -1305,5 +1339,9 @@ public class SudokuModel {
 
     public void setSolveInSteps(boolean value){
 	solveInSteps = value;
+    }
+    
+    public void setCurrentStepStatusLabel(String value){
+	referenceToMain.currentStepStatusLabel.setText(value);
     }
 }

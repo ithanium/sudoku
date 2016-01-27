@@ -4,32 +4,25 @@ import java.awt.event.*;
 import java.util.ArrayList;
 
 public class SudokuCell extends JPanel implements ActionListener{
-    public float DELTA = 0.01f; // delete one zero
-    public ArrayList<Timer> fadeOutTimers = new ArrayList<Timer>(); //fadeOut
-    public ArrayList<Timer> fadeInTimers = new ArrayList<Timer>(); //fadeIn
+
+    int i, j;  // the place on the grid
+    int value; // the value, if known
+    public SudokuModel theModel;
+
+    private static final int SIZE = 50; // TODO change name
+    
+    public float DELTA = 0.01f;
+    public ArrayList<Timer> fadeOutTimers = new ArrayList<Timer>();
+    public ArrayList<Timer> fadeInTimers = new ArrayList<Timer>();
     private float alpha = 1f;
     private float fadeOutMinimum = 0f;
-
-    public SudokuModel theModel;
     
-    ////////
-    
-    private static final int SIZE = 50; // TODO change name
-
-    int value;
-    public ArrayList<Integer> possibleValues;
-
-    int x,y; // the place on the grid // TO DO use i, j
-
     private JLabel valuesLabel = new JLabel();
-
     private boolean noBoldBorder = false;
-
     public boolean notInTheGrid = false;
-
     public Color fontColor = Color.BLACK;
         
-    public SudokuCell(int x, int y){
+    public SudokuCell(int i, int j){
 	super();
 
 	//this.setPreferredSize(new Dimension(256, 96));
@@ -56,8 +49,8 @@ public class SudokuCell extends JPanel implements ActionListener{
 
 	add(valuesLabel);
 
-	this.x = x;
-	this.y = y;
+	this.i = i;
+	this.j = j;
     }
 
     public void setValuesLabel(String valuesText){
@@ -93,7 +86,7 @@ public class SudokuCell extends JPanel implements ActionListener{
     public String formatPossibleValues(){
 	// first refresh the values
 	//System.out.println(theModel);
-	possibleValues = theModel.getPossibleValues(x, y);
+	ArrayList<Integer> possibleValues = theModel.getPossibleValues(i, j);
 	
 	if(possibleValues.size() == 1){
 	    return Integer.toString(possibleValues.get(0));
@@ -131,26 +124,21 @@ public class SudokuCell extends JPanel implements ActionListener{
 	
 	g2d.setColor(prevColor);
 	
-	//g2d.drawRect(0, 0, width-1, height-1);
-
-	// top, left, bottom, right
-	// got them right, but through trial and error
-	// may want to think about it
 	int top = 1;
 	int left = 1;
 	int bottom = 1;
 	int right = 1;
 
 	if(noBoldBorder == false){
-	    if(this.x % 3 == 0){top = 2;}
-	    if(this.y % 3 == 0){left = 2;}
-	    if(this.x % 3 == 2){bottom = 2;}
-	    if(this.y % 3 == 2){right = 2;}
+	    if(this.i % 3 == 0){top = 2;}
+	    if(this.j % 3 == 0){left = 2;}
+	    if(this.i % 3 == 2){bottom = 2;}
+	    if(this.j % 3 == 2){right = 2;}
 
-	    if(this.x % 9 == 0){top = 4;}
-	    if(this.y % 9 == 0){left = 4;}
-	    if(this.x % 9 == 8){bottom = 4;}
-	    if(this.y % 9 == 8){right = 4;}
+	    if(this.i % 9 == 0){top = 4;}
+	    if(this.j % 9 == 0){left = 4;}
+	    if(this.i % 9 == 8){bottom = 4;}
+	    if(this.j % 9 == 8){right = 4;}
 	}
 
 	setBorder(BorderFactory.createMatteBorder(top, left, bottom, right, prevColor));
@@ -165,21 +153,6 @@ public class SudokuCell extends JPanel implements ActionListener{
 
     @Override
     public void actionPerformed(ActionEvent e) {
-	/*
-	System.out.println(e.getSource() + " action perfomed");
-	SwingUtilities.invokeLater(new Runnable() {
-		@Override
-		public void run() {
-	*/
-	//System.out.println(e.getSource());
-
-	/////////
-	
-	/*	}
-		});
-		    */
-	//repaint();
-
 	if(theModel.isAnimationPaused){
 	    return;
 	}

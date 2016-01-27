@@ -8,7 +8,7 @@ import java.awt.geom.Line2D;
 //import java.awt.geom.Line2D;
 
 public class SudokuEdges extends JPanel implements ActionListener {
-    public static MutableBoolean DEBUG;
+    public static MutableBoolean DEBUG; //TODO: delete it? not used
 
     public SudokuModel theModel;
 
@@ -192,8 +192,8 @@ public class SudokuEdges extends JPanel implements ActionListener {
 		}
 		
 		// from VAR i to VALUE j
-	        int shown_x = theModel.theGrid.sudokuCells3Now[i].x;
-		int shown_y = theModel.theGrid.sudokuCells3Now[i].y;
+	        int shown_x = theModel.theGrid.sudokuCells3Now[i].i;
+		int shown_y = theModel.theGrid.sudokuCells3Now[i].j;
 		
 		x1 = 600;
 		y1 = (i) * 50 + (i)*distanceBetweenCells_y;

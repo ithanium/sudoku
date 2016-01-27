@@ -87,7 +87,8 @@ public class FordFulkerson {
 	    if(u>0 && u<10){
 		if((u < lastVarVisited && !finishedGreedyMatch) || u == 9){
 		    finishedGreedyMatch = true;
-		    if(DEBUG.getValue()){System.out.println("\tGreedy matched finished");}
+		    theModel.setCurrentStepStatusLabel("Greedy match finished");
+		    if(DEBUG.getValue()){System.out.println("\tGreedy match finished");}
 		    theModel.viewController.theEdges.drawMovesNow();
 		} else {
 		    lastVarVisited = u;
