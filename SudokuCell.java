@@ -75,9 +75,12 @@ public class SudokuCell extends JPanel implements ActionListener{
 			    valuesLabel.setText(" ");
 			}
 
-			fontSize = 16;
+			// TODO DISSERTATION
+			// NUMBERS ARE HARDCODED BECAUSE
+			// FONT FORMATING RETURNS SAME THING ON ALL PLATFORMS
+			// EVEN THOUGH FONTS LOOK DIFFERENT
+			fontSize = 20;
 			//fontSize = theModel.getMaxFittingFontSize("9", theFont, valuesLabel, 50, 50);
-			System.out.println("fontSize: " + fontSize);
 
 			valuesLabel.setFont(new Font("Serif", Font.PLAIN, fontSize));
 
@@ -86,7 +89,7 @@ public class SudokuCell extends JPanel implements ActionListener{
 			// More choices available
 			valuesLabel.setText(valuesText);
 			
-			fontSize = 10;
+			fontSize = 14;
 			//fontSize = theModel.getMaxFittingFontSize("1 2 3", theFont, valuesLabel, 50, 50);
 			//System.out.println("fontSize: " + fontSize);
 			
@@ -132,40 +135,46 @@ public class SudokuCell extends JPanel implements ActionListener{
 	super.paintComponent(grphcs);
 	
 	Graphics2D g2d = (Graphics2D) grphcs;
-	//g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
-	//g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-	//g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+	g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+	g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+	g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 	
 	Color prevColor = new Color(Color.BLACK.getRed(), Color.BLACK.getGreen(), Color.BLACK.getBlue(), (int)(alpha*255));
 	
 	g2d.setColor(prevColor);
-	
-	int top = 1;
-	int left = 1;
-	int bottom = 1;
-	int right = 1;
+
+	int top = 2;
+	int left = 2;
+	int bottom = 2;
+	int right = 2;
 
 	if(noBoldBorder == false){
-	    if(this.i % 3 == 0){top = 2;}
-	    if(this.j % 3 == 0){left = 2;}
-	    if(this.i % 3 == 2){bottom = 2;}
-	    if(this.j % 3 == 2){right = 2;}
+	    // sub-grids border
+	    if(this.i % 3 == 0){top = 4;}
+	    if(this.j % 3 == 0){left = 4;}
+	    if(this.i % 3 == 2){bottom = 4;}
+	    if(this.j % 3 == 2){right = 4;}
 
-	    if(this.i % 9 == 0){top = 4;}
-	    if(this.j % 9 == 0){left = 4;}
-	    if(this.i % 9 == 8){bottom = 4;}
-	    if(this.j % 9 == 8){right = 4;}
-	}
+	    // outside border
+	    if(this.i % 9 == 0){top = 8;}
+	    if(this.j % 9 == 0){left = 8;}
+	    if(this.i % 9 == 8){bottom = 8;}
+	    if(this.j % 9 == 8){right = 8;}
+	}	 
 
+	//THIS DIDN'T WORK ON WINDOWS
+	//KEEP THIS TO WRITE IN DISSERTATION
+	//TODO:
 	//setBorder(BorderFactory.createMatteBorder(top, left, bottom, right, prevColor));
-	 g2d.setStroke(new BasicStroke(top));
-	 g2d.drawLine(0, 0, 50, 0);
-	 g2d.setStroke(new BasicStroke(left));
-	 g2d.drawLine(0, 0, 0, 50);
-	 g2d.setStroke(new BasicStroke(bottom));
-	 g2d.drawLine(0, 50, 50, 50);
+
+	g2d.setStroke(new BasicStroke(top));
+	g2d.drawLine(0, 0, 50, 0);
+	g2d.setStroke(new BasicStroke(left));
+	g2d.drawLine(0, 0, 0, 50);
+	g2d.setStroke(new BasicStroke(bottom));
+	g2d.drawLine(0, 50, 50, 50);
 	g2d.setStroke(new BasicStroke(right));
-	 g2d.drawLine(50, 0, 50, 50);
+	g2d.drawLine(50, 0, 50, 50);
     }
 
     @Override
