@@ -23,6 +23,8 @@ public class SudokuCell extends JPanel implements ActionListener{
     public Color fontColor = Color.BLACK;
 
     public int fontSize = 20;
+    public int fontSizeLarge = 20;
+    public int fontSizeSmall = 14;
     public Font theFont = new Font("Serif", Font.PLAIN, fontSize);
         
     public SudokuCell(int i, int j){
@@ -65,6 +67,18 @@ public class SudokuCell extends JPanel implements ActionListener{
 		    //System.out.println("Should be true " + SwingUtilities.isEventDispatchThread());
 		    valuesLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		    valuesLabel.setVerticalAlignment(SwingConstants.CENTER);
+
+		    String OS = System.getProperty("os.name");
+		    
+		    if(OS.startsWith("Windows")){
+			//Windows
+			fontSizeLarge = 16;
+			fontSizeSmall = 10;
+		    } else {
+			//Mac
+			fontSizeLarge = 20;
+			fontSizeSmall = 14;
+		    }
 		    
 		    if(valuesText.length() <= 1){
 			// Single digit
@@ -79,7 +93,7 @@ public class SudokuCell extends JPanel implements ActionListener{
 			// NUMBERS ARE HARDCODED BECAUSE
 			// FONT FORMATING RETURNS SAME THING ON ALL PLATFORMS
 			// EVEN THOUGH FONTS LOOK DIFFERENT
-			fontSize = 20;
+			fontSize = fontSizeLarge;
 			//fontSize = theModel.getMaxFittingFontSize("9", theFont, valuesLabel, 50, 50);
 
 			valuesLabel.setFont(new Font("Serif", Font.PLAIN, fontSize));
@@ -89,7 +103,7 @@ public class SudokuCell extends JPanel implements ActionListener{
 			// More choices available
 			valuesLabel.setText(valuesText);
 			
-			fontSize = 14;
+			fontSize = fontSizeSmall;
 			//fontSize = theModel.getMaxFittingFontSize("1 2 3", theFont, valuesLabel, 50, 50);
 			//System.out.println("fontSize: " + fontSize);
 			
