@@ -167,14 +167,29 @@ public class SudokuCell extends JPanel implements ActionListener{
 	//TODO:
 	//setBorder(BorderFactory.createMatteBorder(top, left, bottom, right, prevColor));
 
-	g2d.setStroke(new BasicStroke(top));
-	g2d.drawLine(0, 0, 50, 0); //windows: 49
-	g2d.setStroke(new BasicStroke(left));
-	g2d.drawLine(0, 0, 0, 50);//windows: 49
-	g2d.setStroke(new BasicStroke(bottom));
-	g2d.drawLine(0, 50, 50, 50);//windows: 49
-	g2d.setStroke(new BasicStroke(right));
-	g2d.drawLine(50, 0, 50, 50);//here leave it like this
+	String OS = System.getProperty("os.name");
+
+	if(OS.startsWith("Windows")){
+	    g2d.setStroke(new BasicStroke(top));
+	    g2d.drawLine(0, 0, 49, 0);
+	    g2d.setStroke(new BasicStroke(left));
+	    g2d.drawLine(0, 0, 0, 49);
+	    g2d.setStroke(new BasicStroke(bottom));
+	    g2d.drawLine(0, 49, 49, 49);
+	    g2d.setStroke(new BasicStroke(right));
+	    g2d.drawLine(50, 0, 50, 50);
+	} else {
+	    //Mac
+	    g2d.setStroke(new BasicStroke(top));
+	    g2d.drawLine(0, 0, 50, 0);
+	    g2d.setStroke(new BasicStroke(left));
+	    g2d.drawLine(0, 0, 0, 50);
+	    g2d.setStroke(new BasicStroke(bottom));
+	    g2d.drawLine(0, 50, 50, 50);
+	    g2d.setStroke(new BasicStroke(right));
+	    g2d.drawLine(50, 0, 50, 50);
+	}
+	
     }
 
     @Override
