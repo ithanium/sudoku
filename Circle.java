@@ -39,7 +39,9 @@ public class Circle extends JPanel implements ActionListener{
 
 	textLabel.setHorizontalAlignment(SwingConstants.CENTER);
 	textLabel.setVerticalAlignment(SwingConstants.CENTER);
-		    
+
+	textLabel.setSize(new Dimension(getWidth(), getHeight()));
+	
 	textLabel.setFont(new Font("Serif", Font.PLAIN, 30));
 	textLabel.setForeground(fontColor);
 	textLabel.setText("<html><div style=\"text-align: center; padding-top: 5px; padding-left: 2px;\">"+ value +"</div></html>");
