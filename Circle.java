@@ -26,6 +26,9 @@ public class Circle extends JPanel implements ActionListener{
 
     public Color fontColor = Color.WHITE;
     public Color circleColor = Color.BLACK;
+
+    public int paddingTop = 3;
+    public int paddingLeft = 2;
     
     public Circle(SudokuModel theModel, String value){
 	super();
@@ -37,6 +40,18 @@ public class Circle extends JPanel implements ActionListener{
     this.setOpaque(false);
 	
 	this.value = value;
+
+	String OS = System.getProperty("os.name");
+	
+	if(OS.startsWith("Windows")){
+	    //Windows
+	    paddingTop = 0;
+	    paddingLeft = 2;
+	} else {
+	    //Mac
+	    paddingTop = 6;
+	    paddingLeft = 2;
+	}
 	
 	textLabel = new JLabel();
 
@@ -45,12 +60,9 @@ public class Circle extends JPanel implements ActionListener{
 
 	textLabel.setSize(new Dimension(getWidth(), getHeight()));
 
-	System.out.println(getWidth() + " " + getHeight());
-	
 	textLabel.setFont(new Font("Serif", Font.PLAIN, 30));
 	textLabel.setForeground(fontColor);
-	//3, 2 pentru mac la paddinguri
-	textLabel.setText("<html><div style=\"text-align: center; padding-top: 0px; padding-left: 2px;\">"+ value +"</div></html>");
+	textLabel.setText("<html><div style=\"text-align: center; padding-top: " + paddingTop + "px; padding-left: " + paddingLeft + "px;\">"+ value +"</div></html>");
 	add(textLabel);	
     }
     

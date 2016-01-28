@@ -26,3 +26,7 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+.#Var.java
+
+.#SudokuModel.java

@@ -25,7 +25,7 @@ public class Constraint {
 	flag = false;
 	v2.constraints.add(this);
 
-	//v2.constraints.remove(oldC); // ?????????????? should I?
+	//v2.constraints.remove(oldC); //? TODO: ????????????? should I?
     }
     
     public boolean revise(){ // reminder, only first domain is checked

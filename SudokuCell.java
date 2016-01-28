@@ -25,6 +25,8 @@ public class SudokuCell extends JPanel implements ActionListener{
     public int fontSize = 20;
     public int fontSizeLarge = 20;
     public int fontSizeSmall = 14;
+    public int paddingTop = 3;
+    public int paddingLeft = 4;
     public Font theFont = new Font("Serif", Font.PLAIN, fontSize);
         
     public SudokuCell(int i, int j){
@@ -58,6 +60,23 @@ public class SudokuCell extends JPanel implements ActionListener{
 
 	this.i = i;
 	this.j = j;
+
+	String OS = System.getProperty("os.name");
+	
+	if(OS.startsWith("Windows")){
+	    //Windows
+	    fontSizeLarge = 20;
+	    fontSizeSmall = 11;
+	    paddingTop = 0;
+	    paddingLeft = 4;
+	} else {
+	    //Mac
+	    fontSizeLarge = 20;
+	    fontSizeSmall = 14;
+	    paddingTop = 3;
+	    paddingLeft = 4;
+	}
+	
     }
 
     public void setValuesLabel(String valuesText){
@@ -67,18 +86,6 @@ public class SudokuCell extends JPanel implements ActionListener{
 		    //System.out.println("Should be true " + SwingUtilities.isEventDispatchThread());
 		    valuesLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		    valuesLabel.setVerticalAlignment(SwingConstants.CENTER);
-
-		    String OS = System.getProperty("os.name");
-		    
-		    if(OS.startsWith("Windows")){
-			//Windows
-			fontSizeLarge = 20;
-			fontSizeSmall = 11;
-		    } else {
-			//Mac
-			fontSizeLarge = 20;
-			fontSizeSmall = 14;
-		    }
 		    
 		    if(valuesText.length() <= 1){
 			// Single digit
@@ -126,9 +133,7 @@ public class SudokuCell extends JPanel implements ActionListener{
 	}
 
 	StringBuilder sb = new StringBuilder();
-	//sb.append("<html><div style=\"text-align: center;\">");
-	//3, 4 la mac
-	sb.append("<html><div style=\"text-align: center; padding-top: 0px; padding-left: 4px;\">");
+	sb.append("<html><div style=\"text-align: center; padding-top: " + paddingTop + "px; padding-left: " + paddingLeft + "px;\">");
 	for(int i=1; i<=9; i++){
 	    if(possibleValues.contains(i)){
 		sb.append(i + "&nbsp;");
