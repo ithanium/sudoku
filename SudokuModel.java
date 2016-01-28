@@ -1388,7 +1388,7 @@ public class SudokuModel {
 	int newFontSize = (int)(font.getSize() * widthRatio);
 	int fontSizeToUse = Math.min(newFontSize, compHeight);
 
-	System.out.println(text + "\n" + compWidth + " " + compHeight + " " + stringWidth + " " + widthRatio + " " + newFontSize + " " + fontSizeToUse);
+	//System.out.println(text + "\n" + compWidth + " " + compHeight + " " + stringWidth + " " + widthRatio + " " + newFontSize + " " + fontSizeToUse);
 	
 	return (int)(fontSizeToUse / 1.75);
     }

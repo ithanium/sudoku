@@ -238,6 +238,7 @@ public class Sudoku{
     }
     
     public static void main(String args[]){
+    	//System.setProperty("J2D_D3D", "false");
 	if(args.length > 0){
 	    if(args[0].compareTo("debug") == 0 || args[0].compareTo("DEBUG") == 0){
 		DEBUG.setValue(true);
