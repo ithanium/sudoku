@@ -29,6 +29,8 @@ public class Circle extends JPanel implements ActionListener{
     public Circle(SudokuModel theModel, String value){
 	super();
 
+	setSize(new Dimension(50, 50));
+	
 	this.theModel = theModel;
 	
         this.setOpaque(false);
@@ -41,6 +43,8 @@ public class Circle extends JPanel implements ActionListener{
 	textLabel.setVerticalAlignment(SwingConstants.CENTER);
 
 	textLabel.setSize(new Dimension(getWidth(), getHeight()));
+
+	System.out.println(getWidth() + " " + getHeight());
 	
 	textLabel.setFont(new Font("Serif", Font.PLAIN, 30));
 	textLabel.setForeground(fontColor);
