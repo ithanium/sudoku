@@ -213,7 +213,7 @@ public class Sudoku{
 	theGridPlaceHolder.add(buttonHolders);
 	
 	speedSlider = new JSlider(0, 100);
-	speedSlider.setPreferredSize(new Dimension(1215, 40));
+	speedSlider.setPreferredSize(new Dimension(1215, 45));
 	speedSlider.addChangeListener(new MyChangeListener());
 	speedSlider.setSnapToTicks(true);
 	speedSlider.setMajorTickSpacing(10);

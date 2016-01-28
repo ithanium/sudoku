@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -33,8 +34,8 @@ public class Circle extends JPanel implements ActionListener{
 	
 	this.theModel = theModel;
 	
-        this.setOpaque(false);
-
+    this.setOpaque(false);
+	
 	this.value = value;
 	
 	textLabel = new JLabel();
@@ -48,7 +49,8 @@ public class Circle extends JPanel implements ActionListener{
 	
 	textLabel.setFont(new Font("Serif", Font.PLAIN, 30));
 	textLabel.setForeground(fontColor);
-	textLabel.setText("<html><div style=\"text-align: center; padding-top: 5px; padding-left: 2px;\">"+ value +"</div></html>");
+	//3, 2 pentru mac la paddinguri
+	textLabel.setText("<html><div style=\"text-align: center; padding-top: 0px; padding-left: 2px;\">"+ value +"</div></html>");
 	add(textLabel);	
     }
     

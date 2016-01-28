@@ -72,8 +72,8 @@ public class SudokuCell extends JPanel implements ActionListener{
 		    
 		    if(OS.startsWith("Windows")){
 			//Windows
-			fontSizeLarge = 16;
-			fontSizeSmall = 10;
+			fontSizeLarge = 20;
+			fontSizeSmall = 11;
 		    } else {
 			//Mac
 			fontSizeLarge = 20;
@@ -127,7 +127,8 @@ public class SudokuCell extends JPanel implements ActionListener{
 
 	StringBuilder sb = new StringBuilder();
 	//sb.append("<html><div style=\"text-align: center;\">");
-	sb.append("<html><div style=\"text-align: center; padding-top: 3px; padding-left: 4px;\">");
+	//3, 4 la mac
+	sb.append("<html><div style=\"text-align: center; padding-top: 0px; padding-left: 4px;\">");
 	for(int i=1; i<=9; i++){
 	    if(possibleValues.contains(i)){
 		sb.append(i + "&nbsp;");
