@@ -56,19 +56,7 @@ public class Sudoku{
 	theModel.SIZE = SIZE;
 	theModel.SLEEP = SLEEP;
 
-	/*
-	  try{
-	  SwingUtilities.invokeAndWait(new Runnable() {
-	  public void run() {
-	*/
 	showGUI();
-	/*
-	  }
-	  });
-	  } catch (Exception e){
-	  e.printStackTrace();
-	  }
-	*/
 			
 	if(DEBUG.getValue()){System.out.println("GUI loaded");}
 	
@@ -269,7 +257,7 @@ public class Sudoku{
 	int SLEEP_BETWEEN_STEPS_THE_EDGES_MAX = 0;    // sleep thread when drawing
 	float DELTA_SUDOKU_CELLS_MIN = 0.01f;         // for fade out/fade in alpha
 	float DELTA_SUDOKU_CELLS_MAX = 1f;            // for fade out/fade in alpha
-	float DELTA_THE_GRID_MIN = 5f;                // move cells right by delta
+	float DELTA_THE_GRID_MIN = 0.5f;                // move cells right by delta
 	float DELTA_THE_GRID_MAX = 200f;              // move cells right by delta
 	float DELTA_THE_EDGES_MIN = 0.01f;            // for fade out/fade in alpha
 	float DELTA_THE_EDGES_MAX = 1f;               // for fade out/fade in alpha

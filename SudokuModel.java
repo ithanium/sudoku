@@ -87,26 +87,78 @@ public class SudokuModel {
     } // x != y
 
     public boolean propagate(){
+	int SLEEP_HERE = 10;
+	SudokuWorld world = worldPeek();
+	ArrayList<Integer> ij1;
+	ArrayList<Integer> ij2;
+	
 	ArrayList<Constraint> constraints = worldStack.peek().constraints;
 	
 	boolean consistent = true;
 	Stack<Constraint> S = new Stack<Constraint>();
 	for (Constraint c : constraints){ // add all the constraints on the stack
-	    //System.out.println("Push " + c.name);
 	    S.push(c); c.flag = true;
+
+	    ij1 = world.getIJFromVar(c.v1);
+	    ij2 = world.getIJFromVar(c.v2);
+	    this.theGrid.sudokuCells[ij1.get(0)][ij1.get(1)].setBackground(Color.GREEN);
+	    this.theGrid.sudokuCells[ij2.get(0)][ij2.get(1)].setBackground(Color.GREEN);
 	}
+
+	//if(SLEEP_BETWEEN_STEPS > 0){
+	    try{
+		//Thread.sleep(SLEEP_BETWEEN_STEPS);
+		Thread.sleep(SLEEP_HERE);
+	    } catch (Exception e){
+		e.printStackTrace();
+	    }
+	//}
+
+        //if(solveInSteps){pauseAnimation();}
+        //ifNotAnimatingThenWait();
 	
 	while (consistent && !S.isEmpty()){
 	    Constraint c = S.pop();
-	    //System.out.println("Pop " + c.name);
 	    c.flag = false;
+	    
+	    ij1 = world.getIJFromVar(c.v1);
+	    ij2 = world.getIJFromVar(c.v2);
+	    this.theGrid.sudokuCells[ij1.get(0)][ij1.get(1)].setBackground(null);
+	    this.theGrid.sudokuCells[ij2.get(0)][ij2.get(1)].setBackground(null);
+
+	    //if(SLEEP_BETWEEN_STEPS > 0){
+	    try{
+		//Thread.sleep(SLEEP_BETWEEN_STEPS);
+		Thread.sleep(SLEEP_HERE);
+	    } catch (Exception e){
+		e.printStackTrace();
+	    }
+	    //}
+
+            //if(solveInSteps){pauseAnimation();}
+            //ifNotAnimatingThenWait();
+	    
 	    if (c.revise()){
 		redraw();
 		consistent = c.v1.domain.cardinality() > 0;
 		for (Constraint cv1 : c.v1.constraints){
 		    if (!cv1.flag){
-			//System.out.println("Push from var " + cv1.name);
 			S.push(cv1); cv1.flag = true;
+			ij1 = world.getIJFromVar(c.v1);
+			ij2 = world.getIJFromVar(c.v2);		this.theGrid.sudokuCells[ij1.get(0)][ij1.get(1)].setBackground(Color.GREEN);
+			this.theGrid.sudokuCells[ij2.get(0)][ij2.get(1)].setBackground(Color.GREEN);
+			
+			//if(SLEEP_BETWEEN_STEPS > 0){
+			try{
+			    //Thread.sleep(SLEEP_BETWEEN_STEPS);
+			    Thread.sleep(SLEEP_HERE);
+			} catch (Exception e){
+			    e.printStackTrace();
+			}
+			//}
+
+			//if(solveInSteps){pauseAnimation();}
+			//ifNotAnimatingThenWait();
 		    }
 		}
 	    }
@@ -1217,6 +1269,12 @@ public class SudokuModel {
 	    }
 	}
 
+	for (int i = 0; i < 9; i++) {
+	    for (int j = 0; j < 9; j++) {
+		this.theGrid.sudokuCells[i][j].setOpaque(true);
+	    }
+	}
+	
 	setCurrentStepStatusLabel("Moving row, column or block to the right finished");
 	if(DEBUG.getValue()){System.out.println("Moving row, column or block to the right finished");}
 
@@ -1250,9 +1308,14 @@ public class SudokuModel {
 
     public void deselect(){
 	ifNotAnimatingThenWait();
+
+	for (int i = 0; i < 9; i++) {
+	    for (int j = 0; j < 9; j++) {
+		this.theGrid.sudokuCells[i][j].setOpaque(false);
+	    }
+	}
 	
 	ArrayList<Timer> sameLevelTimers = new ArrayList<Timer>();
-
 			
 	for(int i=0; i<9; i++){
 	    for(int j=0; j<9; j++){

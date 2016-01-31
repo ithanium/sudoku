@@ -42,31 +42,17 @@ class SudokuGrid extends JPanel implements ActionListener{
     public int lastSelectionNumber = 0;
 
     public SudokuGrid(SudokuModel model, int rows, int columns){
-	//super(new GridBagLayout());
 	super(null);
-	//System.out.println("SudokuGrid made");
 	setModel(model);
 	
 	this.setLayout(null);
 
-	//setBackground(new Color(0,0,0,0));
-	//this.setBackground(Color.RED);
-	// 4 is because I want the distanceBetweenCells_y to be in line with last
 	this.setPreferredSize(new Dimension(1150, 550-4)); ///!!!! not minimum sau size
-        //this.setOpaque(false); // don't know why
-	//this.setVisible(true);
-	
-        //this.setBackground(Color.black);
-	/*
-        timer.setInitialDelay(10);
-        timer.addActionListener(this);
-	timer.setCoalesce(false);
-	*/
+
 	sudokuCells = new SudokuCell[rows][columns];
-	sudokuCells2 = new SudokuCell[rows][columns]; //////////////
+	sudokuCells2 = new SudokuCell[rows][columns];
 	sudokuCells3Before = new SudokuCell[rows];
 	sudokuCells3Now = new SudokuCell[rows];
-	//sudokuCells3After = new SudokuCell[rows];
 
 	sudokuCells3BeforeLeft = new SudokuCell[rows];
 	sudokuCells3NowLeft = new SudokuCell[rows];
@@ -75,44 +61,24 @@ class SudokuGrid extends JPanel implements ActionListener{
 
 	valueCircles = new Circle[rows + 2];
 	
-	c = new GridBagConstraints();
-
 	offset_y = (getPreferredSize().height - 9 * 50)/2;
 	distanceBetweenCells_y = (getPreferredSize().height - 9 * 50)/(9-1);
-	//System.out.println("Distance " + distanceBetweenCells_y);
+
 	for(int i=0; i<rows; i++){
 	    for(int j=0; j<columns;j++){
-		c.weightx = 1.0;
-		c.weighty = 1.0;
-		c.fill = GridBagConstraints.BOTH;
-		c.gridx = j; // was
-		c.gridy = i; // the opposite
-
 		sudokuCells[i][j] = new SudokuCell(i,j);
 		sudokuCells[i][j].addMouseListener(new SudokuCellListener());
-		//System.out.println("Grid settings the model to cell " + this.theModel);
+
 		sudokuCells[i][j].setModel(this.theModel);
 
-		//////
 		sudokuCells2[i][j] = new SudokuCell(i,j);
 		sudokuCells2[i][j].addMouseListener(new SudokuCellListener());
-		//System.out.println("Grid settings the model to cell " + this.theModel);
+
 		sudokuCells2[i][j].setModel(this.theModel);
 		sudokuCells2[i][j].setVisible(false);
 		
-		//add(sudokuCells[i][j], c); // ,c
-		//if(i == 0 && j== 0){
 		add(sudokuCells[i][j], square_x, square_y + offset_y);
 		    
-		    //}
-
-		//System.out.println("CELL i=" + i + " j=" + j + " x: " + sudokuCells[i][j].getX()+" y: " + sudokuCells[i][j].getY() + " bounds_x: " + sudokuCells[i][j].getBounds().x + " bounds_y: " + sudokuCells[i][j].getBounds().y + " bounds_width: " + sudokuCells[i][j].getBounds().width + " bounds_height: " + sudokuCells[i][j].getBounds().height + "\n");
-				
-		if(j == 0){
-		    //square_x = (int)sudokuCells[i][j].getX();
-		    //square_y = sudokuCells[i][j].getY();
-		}
-
 		square_x +=50;
 	    }
 
@@ -122,14 +88,6 @@ class SudokuGrid extends JPanel implements ActionListener{
 
 	square_x = 0; // reset to default
 	square_y = offset_y; // reset to default
-	
-	//this.repaint(); //after adding everything, because of absolut locations, repaint
-
-	// exterior border
-	//setBorder(BorderFactory.createLineBorder(Color.black));
-	//setBorder(BorderFactory.createMatteBorder(2,2,2,2, Color.BLACK)); ///////
-	//System.out.println("Is sudoku grid EDT " + SwingUtilities.isEventDispatchThread());
-
 
 	for(int i=0; i<11; i++){
 	    String value = Integer.toString(i);
@@ -177,9 +135,7 @@ class SudokuGrid extends JPanel implements ActionListener{
 
 	Timer thisTimer = null;
 	
-	if(movingToTheRight == true){ // INDENT
-	    //System.out.println("called moving COLUMN to the right");
-
+	if(movingToTheRight == true){
 	    thisTimer = getTimerMovingRight();
 	    for(int i=0; i<9; i++){
 		sudokuCells3Before[i] = sudokuCells[i][column];
@@ -195,10 +151,7 @@ class SudokuGrid extends JPanel implements ActionListener{
 		add(sudokuCells3Now[i], sudokuCells[i][column].getX(), sudokuCells[i][column].getY());
 
 	    }
-	} // INDENT
-	else if(movingToTheRight == false){
-	    //System.out.println("called moving COLUMN to the left");
-
+	} else if(movingToTheRight == false){
 	    thisTimer = getTimerMovingLeft();
 	    
 	    for(int i=0; i<9; i++){
@@ -208,29 +161,19 @@ class SudokuGrid extends JPanel implements ActionListener{
 	    }
 	    
 	    for(int i=0; i<9; i++){
-		//sudokuCells3Now[i].setAlphaZero();
 		sudokuCells3NowLeft[i].setNoBoldBorder();
 		sudokuCells3NowLeft[i].setNotInTheGrid();
-		
-		//add(sudokuCells3Now[i], sudokuCells[i][column].getX(), sudokuCells[i][column].getY());
-
 	    }
 	    
 	}
-
-
 	
 	ArrayList<Timer> timers1 = new ArrayList<Timer>();
 	timers1.add(thisTimer);
 	theModel.timers.add(timers1);
 	if(theModel.timers.size() == 1){
-	    // otherwise let another timer start this one when it finishes
-	    //System.out.println("Move column model timers = 1, start level");
 	    for(Timer t:theModel.timers.get(0)){
 		t.start();
 	    }
-	} else {
-	    //System.out.println("Move column blocked by other animation");
 	}
 
 	return timers1;
@@ -249,9 +192,7 @@ class SudokuGrid extends JPanel implements ActionListener{
 
 	Timer thisTimer = null;
 	
-	if(movingToTheRight == true){ // INDENT
-	    //System.out.println("called moving ROW to the right");
-
+	if(movingToTheRight == true){
 	    thisTimer = getTimerMovingRight();
 	    for(int i=0; i<9; i++){
 		sudokuCells3Before[i] = sudokuCells[row][i];
@@ -267,10 +208,7 @@ class SudokuGrid extends JPanel implements ActionListener{
 		add(sudokuCells3Now[i], sudokuCells[row][i].getX(), sudokuCells[row][i].getY());
 
 	    }
-	} // INDENT
-	else if(movingToTheRight == false){
-	    //System.out.println("called moving ROW to the left");
-
+	} else if(movingToTheRight == false){
 	    thisTimer = getTimerMovingLeft();
 	    
 	    for(int i=0; i<9; i++){
@@ -280,12 +218,8 @@ class SudokuGrid extends JPanel implements ActionListener{
 	    }
 	    
 	    for(int i=0; i<9; i++){
-		//sudokuCells3Now[i].setAlphaZero();
 		sudokuCells3NowLeft[i].setNoBoldBorder();
 		sudokuCells3NowLeft[i].setNotInTheGrid();
-		
-		//add(sudokuCells3NowLeft[i], sudokuCells[row][i].getX(), sudokuCells[row][i].getY());
-
 	    }
 	    
 	}
@@ -294,18 +228,10 @@ class SudokuGrid extends JPanel implements ActionListener{
 	timers1.add(thisTimer);
 	theModel.timers.add(timers1);
 	if(theModel.timers.size() == 1){
-	    // otherwise let another timer start this one when it finishes
-	    // TODO: remove this debug info?
-	    if(DEBUG.getValue()){System.out.println("Move ROW model timers = 1, start level");}
 	    for(Timer t:theModel.timers.get(0)){
 		t.start();
 	    }
-	} else {
-	    //System.out.println("Move ROW blocked by other animation");
 	}
-
-	//TODO: remove this dubug info?
-	if(DEBUG.getValue()){System.out.println("Move row timer start setting ended");}
 
 	return timers1;
     }
@@ -362,9 +288,7 @@ class SudokuGrid extends JPanel implements ActionListener{
 
 	Timer thisTimer = null;
 	
-	if(movingToTheRight == true){ // INDENT
-	    //System.out.println("called moving BLOCK to the right");
-
+	if(movingToTheRight == true){
 	    thisTimer = getTimerMovingRight();
 	    for(int i=y, k=0; i<y+3; i++){
 		for(int j=x; j<x+3 && k<9; j++, k++){
@@ -378,10 +302,7 @@ class SudokuGrid extends JPanel implements ActionListener{
 		    add(sudokuCells3Now[k], sudokuCells[i][j].getX(), sudokuCells[i][j].getY());
 		}
 	    }
-	} // INDENT
-	else if(movingToTheRight == false){
-	    //System.out.println("called moving ROW to the left");
-
+	} else if(movingToTheRight == false){
 	    thisTimer = getTimerMovingLeft();
 	    
 	    for(int i=y, k=0; i<y+3; i++){
@@ -389,11 +310,8 @@ class SudokuGrid extends JPanel implements ActionListener{
 		    sudokuCells3BeforeLeft[k] = sudokuCells[i][j];
 		    sudokuCells3NowLeft[k] = sudokuCells2[i][j];
 		    
-		    //sudokuCells3Now[k].setAlphaZero();
 		    sudokuCells3NowLeft[k].setNoBoldBorder();
 		    sudokuCells3NowLeft[k].setNotInTheGrid();
-		    
-		    //add(sudokuCells3Now[k], sudokuCells[i][j].getX(), sudokuCells[i][j].getY());
 		}
 	    }
 	}
@@ -402,20 +320,16 @@ class SudokuGrid extends JPanel implements ActionListener{
 	timers1.add(thisTimer);
 	theModel.timers.add(timers1);
 	if(theModel.timers.size() == 1){
-	    // otherwise let another timer start this one when it finishes
-	    //System.out.println("Move (BLOCK) model timers = 1, start level");
 	    for(Timer t:theModel.timers.get(0)){
 		t.start();
 	    }
-	} else {
-	    //System.out.println("Move (BLOCK) blocked by other animation");
-	}
+	} 
 
 	return timers1;
     }
     
     @Override
-    public synchronized void actionPerformed(ActionEvent e) { // TODO: TRY REMOVING SYNC?
+    public void actionPerformed(ActionEvent e) {
 	if(theModel.isAnimationPaused){
 	    return;
 	}
@@ -447,6 +361,7 @@ class SudokuGrid extends JPanel implements ActionListener{
 
 		if(x >= 450){
 		    sudokuCells3Now[i].setOpaque(true);
+		    //sudokuCells3Before[i].setOpaque(true);
 		}
 		
 		//System.out.println("X + DELTA" + x);
@@ -493,6 +408,7 @@ class SudokuGrid extends JPanel implements ActionListener{
 		*/
 		if(x <= 450){
 		    sudokuCells3Now[i].setOpaque(false);
+		    //sudokuCells3Before[i].setOpaque(false);
 		}
 		
 	        if(i > 0 && 600 - sudokuCells3NowLeft[i-1].getX() < 60){

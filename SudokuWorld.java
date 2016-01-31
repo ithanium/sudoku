@@ -51,4 +51,16 @@ public class SudokuWorld{
 
 	return null;
     }
+
+    public ArrayList<Integer> getIJFromVar(Var v){
+	for(int i=0; i<9; i++){
+	    for(int j=0; j<9; j++){
+		if(grid[i][j] == v){
+		    return new ArrayList<Integer>(Arrays.asList(new Integer[]{i, j}));
+		}
+	    }
+	}
+
+	return null;
+    }
 }

@@ -17,7 +17,7 @@ public class SudokuCell extends JPanel implements ActionListener{
     private float alpha = 1f;
     private float fadeOutMinimum = 0f;
     
-    private JLabel valuesLabel = new JLabel();
+    public JLabel valuesLabel = new JLabel();
     private boolean noBoldBorder = false;
     public boolean notInTheGrid = false;
     public Color fontColor = Color.BLACK;
@@ -32,26 +32,11 @@ public class SudokuCell extends JPanel implements ActionListener{
     public SudokuCell(int i, int j){
 	super();
 
-	//this.setPreferredSize(new Dimension(256, 96));
-        this.setOpaque(false); // don't know why
-        //this.setBackground(Color.black);
-	/*
-        timer1.setInitialDelay(100);
-        timer1.addActionListener(this);
-	timer1.setCoalesce(false);
+        this.setOpaque(false);
 
-	timer2.setInitialDelay(100);
-        timer2.addActionListener(this);
-	timer2.setCoalesce(false);
-	*/
-	
 	valuesLabel.setFont(theFont);
 	valuesLabel.setForeground(fontColor);
-	//valuesLabel.setSize(SIZE, SIZE);
 	valuesLabel.setSize(new Dimension(SIZE, SIZE));
-	//valuesLabel.setVerticalAlignment(SwingConstants.CENTER);
-	//valuesLabel.setSize(new Dimension(50, 50));
-	//valuesLabel.setText("<html><div style=\"text-align: center; padding-top: 3px; padding-left: 1px;\"><font color='BLACK'>1 2 3<br>4 5 6<br>7 8 9</font></div></html>");
 	
 	setLayout(new GridBagLayout());
 	setPreferredSize(new Dimension(50, 50));
