@@ -56,12 +56,16 @@ public class SudokuCell extends JPanel implements ActionListener{
 	    fontSizeSmall = 11;
 	    //paddingTop = 0;
 	    //paddingLeft = 4;
-	} else {
+	} else if(OS.startsWith("Mac")){
 	    //Mac
 	    fontSizeLarge = 20;
 	    fontSizeSmall = 14;
 	    //paddingTop = 3;
 	    //paddingLeft = 4;
+	} else {
+	    //Linux?
+	    fontSizeLarge = 20;
+	    fontSizeSmall = 12;
 	}
 	
     }
