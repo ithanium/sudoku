@@ -228,6 +228,9 @@ public class SudokuCell extends JPanel implements ActionListener{
 	//TODO:
 	//setBorder(BorderFactory.createMatteBorder(top, left, bottom, right, prevColor));
 
+	int x_offset = 0;
+	int y_offset = 0;
+	
 	String OS = System.getProperty("os.name");
 
 	if(OS.startsWith("Windows")){
@@ -239,6 +242,9 @@ public class SudokuCell extends JPanel implements ActionListener{
 	    g2d.drawLine(0, 49, 49, 49);
 	    g2d.setStroke(new BasicStroke(right));
 	    g2d.drawLine(50, 0, 50, 50);
+	    
+	    x_offset = 5;
+	    y_offset = 15;
 	} else {
 	    //Mac
 	    g2d.setStroke(new BasicStroke(top));
@@ -252,14 +258,14 @@ public class SudokuCell extends JPanel implements ActionListener{
 	}
 
 	int fontSize = fontSizeSmall;
-        int stringWidth = g2d.getFontMetrics().stringWidth("1 2 ");
+        int stringWidth = g2d.getFontMetrics().stringWidth("1 2 ") - x_offset;
 	int stringHeight = g2d.getFontMetrics().getHeight() * valuesText.split(NEWLINE).length - 2;
 	int stringHeightNoBorder = 4;
 	
 	if(valuesText.length() <= 1){
 	    fontSize = fontSizeLarge;
 	    stringWidth = g2d.getFontMetrics().stringWidth("9")/2;
-	    stringHeight += 8;
+	    stringHeight += 8 + y_offset;
 	    stringHeightNoBorder = 6;
 	}
 	
