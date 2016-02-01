@@ -7,9 +7,11 @@ public class SudokuCell extends JPanel implements ActionListener{
 
     int i, j;  // the place on the grid
     int value; // the value, if known
+    String valuesText = new String();
     public SudokuModel theModel;
 
     private static final int SIZE = 50; // TODO change name
+    protected static final String NEWLINE = System.getProperty("line.separator");
     
     public float DELTA = 0.01f;
     public ArrayList<Timer> fadeOutTimers = new ArrayList<Timer>();
@@ -41,7 +43,7 @@ public class SudokuCell extends JPanel implements ActionListener{
 	setLayout(new GridBagLayout());
 	setPreferredSize(new Dimension(50, 50));
 
-	add(valuesLabel);
+	//add(valuesLabel);
 
 	this.i = i;
 	this.j = j;
@@ -52,14 +54,14 @@ public class SudokuCell extends JPanel implements ActionListener{
 	    //Windows
 	    fontSizeLarge = 20;
 	    fontSizeSmall = 11;
-	    paddingTop = 0;
-	    paddingLeft = 4;
+	    //paddingTop = 0;
+	    //paddingLeft = 4;
 	} else {
 	    //Mac
 	    fontSizeLarge = 20;
 	    fontSizeSmall = 14;
-	    paddingTop = 3;
-	    paddingLeft = 4;
+	    //paddingTop = 3;
+	    //paddingLeft = 4;
 	}
 	
     }
@@ -108,33 +110,87 @@ public class SudokuCell extends JPanel implements ActionListener{
 
     }
 
+    //TODO, not necessary to return something
     public String formatPossibleValues(){
 	// first refresh the values
 	//System.out.println(theModel);
 	ArrayList<Integer> possibleValues = theModel.getPossibleValues(i, j);
 	
 	if(possibleValues.size() == 1){
+	    valuesText = Integer.toString(possibleValues.get(0));
+	    repaint();
+	    //return;
 	    return Integer.toString(possibleValues.get(0));
 	}
 
 	StringBuilder sb = new StringBuilder();
-	sb.append("<html><div style=\"text-align: center; padding-top: " + paddingTop + "px; padding-left: " + paddingLeft + "px;\">");
+	//	sb.append("<html><div style=\"text-align: center; padding-top: " + paddingTop + "px; padding-left: " + paddingLeft + "px;\">");
 	for(int i=1; i<=9; i++){
 	    if(possibleValues.contains(i)){
-		sb.append(i + "&nbsp;");
+		//sb.append(i + "&nbsp;");
+		if(i != 3 && i != 6 && i !=9){
+		    sb.append(i + " ");
+		} else {
+		    sb.append(i);
+		}
 	    } else {
-		sb.append("&nbsp;&nbsp;&nbsp;");
+		//sb.append("&nbsp;&nbsp;&nbsp;");
+		//sb.append("&nbsp;&nbsp;");
+		sb.append(" ");
+		sb.append(" ");
 	    }
 	    
 	    if(i%3 == 0){
-		sb.append("<br>");
+		//sb.append("<br>");
+		sb.append(NEWLINE);
 	    }
 	}
-	sb.append("</div></html>");
+	
+	//sb.append("</div></html>");
 
+	valuesText = sb.toString();
+	repaint();
+	
 	return sb.toString();
     }
 
+    private void drawString(Graphics g, String text, int x, int y) {
+	int whitespaces = 0;
+
+	if(text.matches("\\d")){
+	    y += g.getFontMetrics().getHeight();
+	    g.drawString(text, x, y);
+	    return;
+	}
+	
+	for (String line : text.split(NEWLINE)){
+	    y += g.getFontMetrics().getHeight();
+	    
+	    for(String digit: line.split("\\s+")){
+		if(!digit.matches("^-?\\d+$")){
+		    continue;
+		}
+		
+		if(Integer.parseInt(digit) % 3 == 1){
+		    //1, 4, 7
+		    whitespaces = 0;
+		} else if(Integer.parseInt(digit) % 3 == 2){
+		    //2, 5, 8
+		    whitespaces = 3;
+		    } else if(Integer.parseInt(digit) % 3 == 0){
+		    //3, 6, 9
+		    whitespaces = 6;
+		}
+
+		int x_offset = g.getFontMetrics().stringWidth(" ") * whitespaces;
+		// we are printing individual digits
+		// as drawString doesn't handle two or more consecutive
+		// whitespaces
+		g.drawString(digit, x + x_offset, y);
+	    }
+	}
+    }
+    
     @Override
     protected void paintComponent(Graphics grphcs) {
 	super.paintComponent(grphcs);
@@ -194,7 +250,38 @@ public class SudokuCell extends JPanel implements ActionListener{
 	    g2d.setStroke(new BasicStroke(right));
 	    g2d.drawLine(50, 0, 50, 50);
 	}
+
+	int fontSize = fontSizeSmall;
+        int stringWidth = g2d.getFontMetrics().stringWidth("1 2 ");
+	int stringHeight = g2d.getFontMetrics().getHeight() * valuesText.split(NEWLINE).length - 2;
+	int stringHeightNoBorder = 4;
 	
+	if(valuesText.length() <= 1){
+	    fontSize = fontSizeLarge;
+	    stringWidth = g2d.getFontMetrics().stringWidth("9")/2;
+	    stringHeight += 8;
+	    stringHeightNoBorder = 6;
+	}
+	
+	Font f = new Font("Serif", Font.PLAIN, fontSize);
+	g2d.setFont(f);
+	g2d.setColor(fontColor);
+	//System.out.println("i: " + i + " j: " + j + " left: " + left + " right: " + right + " top: " + top + " bottom: " + bottom);
+	//int text_xpos = (50 - left/2 - right/4)/2 - g2d.getFontMetrics().stringWidth((valuesText.length()<=1?valuesText:"1 2 3"))/2;
+	//int text_ypos = (50 - top/4 - bottom/2)/2 - g2d.getFontMetrics().getHeight()*valuesText.split(NEWLINE).length/2;
+
+	//int text_xpos = (50 - left - right - g2d.getFontMetrics().stringWidth((valuesText.length()<=1?valuesText:"1 2")))/2;
+	//int text_ypos = (50 - top - bottom - g2d.getFontMetrics().getHeight()*valuesText.split(NEWLINE).length)/2;
+
+        int text_xpos = (50 - right - stringWidth)/2;
+	int text_ypos = (50 - bottom - stringHeight)/2;
+
+	if(noBoldBorder == true){
+	    text_xpos = (50 - stringWidth - 6)/2;
+	    text_ypos = (50 - stringHeight - stringHeightNoBorder)/2; 
+	}
+
+	drawString(g2d, valuesText, text_xpos, text_ypos);
     }
 
     @Override
@@ -323,12 +410,6 @@ public class SudokuCell extends JPanel implements ActionListener{
 
     public void setFontColor(Color color){
 	this.fontColor = color;
-
-	//System.out.println("SudokuCell setting font color: " + colorName);
-	valuesLabel.setForeground(fontColor);
-	// TODO: in one call
-	setValuesLabel(formatPossibleValues());
-	//valuesLabel.repaint();
-	//repaint();
+	repaint();
     }
 }
