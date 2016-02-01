@@ -249,7 +249,7 @@ public class SudokuCell extends JPanel implements ActionListener{
 	    
 	    x_offset = 5;
 	    y_offset = 15;
-	} else {
+	} else if(OS.startsWith("Mac")){
 	    //Mac
 	    g2d.setStroke(new BasicStroke(top));
 	    g2d.drawLine(0, 0, 50, 0);
@@ -259,6 +259,19 @@ public class SudokuCell extends JPanel implements ActionListener{
 	    g2d.drawLine(0, 50, 50, 50);
 	    g2d.setStroke(new BasicStroke(right));
 	    g2d.drawLine(50, 0, 50, 50);
+	} else {
+	    //Linux?
+	    g2d.setStroke(new BasicStroke(top));
+	    g2d.drawLine(0, 0, 50, 0);
+	    g2d.setStroke(new BasicStroke(left));
+	    g2d.drawLine(0, 0, 0, 50);
+	    g2d.setStroke(new BasicStroke(bottom));
+	    g2d.drawLine(0, 50, 50, 50);
+	    g2d.setStroke(new BasicStroke(right));
+	    g2d.drawLine(50, 0, 50, 50);
+
+	    x_offset = 0;
+	    y_offset = 5;
 	}
 
 	int fontSize = fontSizeSmall;
