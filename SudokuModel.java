@@ -87,7 +87,7 @@ public class SudokuModel {
     } // x != y
 
     public boolean propagate(){
-	int SLEEP_HERE = 10;
+	int SLEEP_HERE = 1;
 	SudokuWorld world = worldPeek();
 	ArrayList<Integer> ij1;
 	ArrayList<Integer> ij2;
