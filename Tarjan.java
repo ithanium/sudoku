@@ -6,8 +6,8 @@ public class Tarjan {
     
     SudokuModel theModel;
     int[][] A;         // adjacency matrix, will be used only for displaying output
-    int n;             // order of graph
-    int pre = 0;
+    int n;             // number of vertices in the graph
+    int index = 0;     // the index of the  current node discovered in the depth-first search
     int count = 0;
 
     Stack<Integer> S;  // stack for algo
@@ -85,8 +85,8 @@ public class Tarjan {
     void dfs(int u){
 	stacked[u] = true;
 
-	low[u] = pre;
-	pre = pre + 1;
+	low[u] = index;
+	index = index + 1;
 	int min = low[u];
 	
 	S.push(u);

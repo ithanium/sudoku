@@ -87,7 +87,7 @@ public class SudokuModel {
     } // x != y
 
     public boolean propagate(){
-	int SLEEP_HERE = 1;
+	int SLEEP_HERE = 100;
 	SudokuWorld world = worldPeek();
 	ArrayList<Integer> ij1;
 	ArrayList<Integer> ij2;
@@ -123,8 +123,8 @@ public class SudokuModel {
 	    
 	    ij1 = world.getIJFromVar(c.v1);
 	    ij2 = world.getIJFromVar(c.v2);
-	    this.theGrid.sudokuCells[ij1.get(0)][ij1.get(1)].setBackground(null);
-	    this.theGrid.sudokuCells[ij2.get(0)][ij2.get(1)].setBackground(null);
+	    this.theGrid.sudokuCells[ij1.get(0)][ij1.get(1)].setBackground(Color.RED);
+	    this.theGrid.sudokuCells[ij2.get(0)][ij2.get(1)].setBackground(Color.RED);
 
 	    //if(SLEEP_BETWEEN_STEPS > 0){
 	    try{
