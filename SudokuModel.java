@@ -28,7 +28,7 @@ public class SudokuModel {
     private static Stack<SudokuWorld> worldStack = new Stack<SudokuWorld>();
     
     private Solver solver = new Solver("sudoku");
-    private IntVar[][] rows = VariableFactory.enumeratedMatrix("rows", 9, 9, new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 }, solver); // TODO update the name
+    private IntVar[][] rows = VariableFactory.enumeratedMatrix("rows", 9, 9, new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 }, solver);
 
     ArrayList<ArrayList<Timer>> timers = new ArrayList<ArrayList<Timer>>();
     
@@ -45,6 +45,8 @@ public class SudokuModel {
     public boolean runAllDifferentOnSelection = false;
     public boolean deselectAfterAllDifferent = false;
     public boolean solveInSteps = false;
+
+    public boolean isDemoPlaying = false;
 
     public SudokuModel(){
 	worldStack = new Stack<SudokuWorld>();
@@ -87,24 +89,29 @@ public class SudokuModel {
     } // x != y
 
     public boolean propagate(){
-	int SLEEP_HERE = 100;
+	//int SLEEP_HERE = 100;
 	SudokuWorld world = worldPeek();
 	ArrayList<Integer> ij1;
 	ArrayList<Integer> ij2;
 	
 	ArrayList<Constraint> constraints = worldStack.peek().constraints;
-	
+
+	setCurrentStepStatusLabel("Propagating");
+	if(DEBUG.getValue()){System.out.println("\n\tPropagating");}
+	    
 	boolean consistent = true;
 	Stack<Constraint> S = new Stack<Constraint>();
 	for (Constraint c : constraints){ // add all the constraints on the stack
 	    S.push(c); c.flag = true;
-
+	    /*
 	    ij1 = world.getIJFromVar(c.v1);
 	    ij2 = world.getIJFromVar(c.v2);
 	    this.theGrid.sudokuCells[ij1.get(0)][ij1.get(1)].setBackground(Color.GREEN);
 	    this.theGrid.sudokuCells[ij2.get(0)][ij2.get(1)].setBackground(Color.GREEN);
+	    */
 	}
 
+	/*
 	//if(SLEEP_BETWEEN_STEPS > 0){
 	    try{
 		//Thread.sleep(SLEEP_BETWEEN_STEPS);
@@ -113,19 +120,19 @@ public class SudokuModel {
 		e.printStackTrace();
 	    }
 	//}
-
+	*/
         //if(solveInSteps){pauseAnimation();}
         //ifNotAnimatingThenWait();
 	
 	while (consistent && !S.isEmpty()){
 	    Constraint c = S.pop();
 	    c.flag = false;
-	    
+	    /*
 	    ij1 = world.getIJFromVar(c.v1);
 	    ij2 = world.getIJFromVar(c.v2);
 	    this.theGrid.sudokuCells[ij1.get(0)][ij1.get(1)].setBackground(Color.RED);
 	    this.theGrid.sudokuCells[ij2.get(0)][ij2.get(1)].setBackground(Color.RED);
-
+	    
 	    //if(SLEEP_BETWEEN_STEPS > 0){
 	    try{
 		//Thread.sleep(SLEEP_BETWEEN_STEPS);
@@ -134,7 +141,7 @@ public class SudokuModel {
 		e.printStackTrace();
 	    }
 	    //}
-
+	    */
             //if(solveInSteps){pauseAnimation();}
             //ifNotAnimatingThenWait();
 	    
@@ -144,6 +151,7 @@ public class SudokuModel {
 		for (Constraint cv1 : c.v1.constraints){
 		    if (!cv1.flag){
 			S.push(cv1); cv1.flag = true;
+			/*
 			ij1 = world.getIJFromVar(c.v1);
 			ij2 = world.getIJFromVar(c.v2);		this.theGrid.sudokuCells[ij1.get(0)][ij1.get(1)].setBackground(Color.GREEN);
 			this.theGrid.sudokuCells[ij2.get(0)][ij2.get(1)].setBackground(Color.GREEN);
@@ -156,14 +164,17 @@ public class SudokuModel {
 			    e.printStackTrace();
 			}
 			//}
-
+			*/
 			//if(solveInSteps){pauseAnimation();}
 			//ifNotAnimatingThenWait();
 		    }
 		}
 	    }
 	}
-	
+
+	setCurrentStepStatusLabel("Finished propagating");
+	if(DEBUG.getValue()){System.out.println("\n\tFinished propagating");}
+	    
 	return consistent;
     }
 
@@ -197,6 +208,9 @@ public class SudokuModel {
     public boolean allDifferent(){
 	ifNotAnimatingThenWait();
 
+	referenceToMain.allDifferentButton.setEnabled(false);
+	referenceToMain.deselectButton.setEnabled(false);
+	
 	setCurrentStepStatusLabel("Started running the all-different implementation");
 	if(DEBUG.getValue()){System.out.println("Started running the all-different implementation");}
 
@@ -276,9 +290,6 @@ public class SudokuModel {
 	if(solveInSteps){pauseAnimation();}
 	ifNotAnimatingThenWait();
 
-	setCurrentStepStatusLabel("Step 2 - Add arrows after maximum matching - started");
-	if(DEBUG.getValue()){System.out.println("Step 2 - Add arrows after maximum matching - started");}
-	
 	int newA[][] = new int[20][20];
 	int newA2[][] = new int[18][18];
 
@@ -306,14 +317,7 @@ public class SudokuModel {
 		}
 	    }
 	}
-
-	////////////////////////////////////////////////////
-	//Printing step 2 arrow flows after maximum matching
-	//newA2
-
-	setCurrentStepStatusLabel("Step 2 - Add arrows after maximum matching - finished");
-       	if(DEBUG.getValue()){System.out.println("Step 2 - Add arrows after maximum matching - finished");}
-
+	
 	if(SLEEP_BETWEEN_STEPS > 0){
 	    try{
 		Thread.sleep(SLEEP_BETWEEN_STEPS);
@@ -322,8 +326,10 @@ public class SudokuModel {
 	    }
 	}
 
+	/* this could make trouble TODO
 	if(solveInSteps){pauseAnimation();}
 	ifNotAnimatingThenWait();
+	*/
 	
 	/*
 	try{
@@ -339,18 +345,18 @@ public class SudokuModel {
 	}
 			*/
 
-			setCurrentStepStatusLabel("Step 3 - Tarjan -  started");
-			if(DEBUG.getValue()){System.out.println("Step 3 - Tarjan -  started");}
+			setCurrentStepStatusLabel("Step 2 - Tarjan -  started");
+			if(DEBUG.getValue()){System.out.println("Step 2 - Tarjan -  started");}
 	
 	Tarjan tarjan = new Tarjan(super_getThis(), newA2, 18);
 	tarjan.DEBUG = DEBUG;
 	tarjan.run();
 
-	setCurrentStepStatusLabel("Step 3 - Tarjan - finished");
-	if(DEBUG.getValue()){System.out.println("Step 3 - Tarjan - finished");}
+	setCurrentStepStatusLabel("Step 2 - Tarjan - finished");
+	if(DEBUG.getValue()){System.out.println("Step 2 - Tarjan - finished");}
 
-	setCurrentStepStatusLabel("Step 4 - Apply knowledge after running Tartajn - started");
-	if(DEBUG.getValue()){System.out.println("Step 4 - Apply knowledge after running Tartajn - started");}
+	setCurrentStepStatusLabel("Step 3 - Apply knowledge after running Tartajn - started");
+	if(DEBUG.getValue()){System.out.println("Step 3 - Apply knowledge after running Tartajn - started");}
 	
 	int newA3[][] = new int[18][18];
 	
@@ -492,8 +498,8 @@ public class SudokuModel {
 			setCurrentStepStatusLabel("Finished applying results in the original grid");
 			if(DEBUG.getValue()){System.out.println("\tFinished applying results in the original grid");}
 
-			setCurrentStepStatusLabel("Step 4 - Apply knowledge after running Tarjan - finished");
-			if(DEBUG.getValue()){System.out.println("Step 4 - Apply knowledge after running Tarjan - finished");}
+			setCurrentStepStatusLabel("Step 3 - Apply knowledge after running Tarjan - finished");
+			if(DEBUG.getValue()){System.out.println("Step 3 - Apply knowledge after running Tarjan - finished");}
 
 	if(SLEEP_BETWEEN_STEPS > 0){
 	    try{
@@ -525,9 +531,6 @@ public class SudokuModel {
 	    //public boolean propagateOnAssignment(int shown_x, int shown_y){
 	    propagate();
 
-	    setCurrentStepStatusLabel("Finished propagating");
-	    if(DEBUG.getValue()){System.out.println("\n\tFinished propagating");}
-
 	    if(solveInSteps){pauseAnimation();}
 	    ifNotAnimatingThenWait();
 	}
@@ -548,8 +551,10 @@ public class SudokuModel {
 		e.printStackTrace();
 	    }
 	}
-		
-	return true; // not important yet
+
+	referenceToMain.deselectButton.setEnabled(true);
+		    
+	return true; 
     }
     
     public boolean solveUsingBacktracking(SudokuWorld sw){
@@ -721,6 +726,9 @@ public class SudokuModel {
     }
 
     public SudokuWorld readFromFile(String fileName) throws FileNotFoundException {
+	solver = new Solver("sudoku");
+	rows = VariableFactory.enumeratedMatrix("rows", 9, 9, new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 }, solver);
+
 	SudokuWorld world = new SudokuWorld();
 	
 	Scanner sc = new Scanner(new FileReader(fileName));
@@ -1214,6 +1222,15 @@ public class SudokuModel {
 
     public void select(int number, int selectionType){
 	ifNotAnimatingThenWait();
+
+	if(!referenceToMain.selectButton.isEnabled()){
+	    setCurrentStepStatusLabel("Please make sure you deselect first");
+	    if(DEBUG.getValue()){System.out.println("Please make sure you deselect first");}
+
+	    return;
+	}
+		
+	referenceToMain.selectButton.setEnabled(false);
 	
 	ArrayList<Timer> sameLevelTimers = new ArrayList<Timer>();
 	
@@ -1278,6 +1295,8 @@ public class SudokuModel {
 	setCurrentStepStatusLabel("Moving row, column or block to the right finished");
 	if(DEBUG.getValue()){System.out.println("Moving row, column or block to the right finished");}
 
+	viewController.theEdges.loadColorsFromModel();
+		
 	if(SLEEP == 0 && SLEEP_BETWEEN_STEPS == 0){
 	    // notice that now doesn't return a timer level
 	    // therefore don't synchronize below
@@ -1287,8 +1306,6 @@ public class SudokuModel {
 	    sameLevelTimers = fadeInGraph();
 	}
 	    
-	//theModel.scheduleSolveFF();
-
 	ifNotAnimatingThenWait();
 	
 	if(!(SLEEP == 0 && SLEEP_BETWEEN_STEPS == 0)){
@@ -1304,11 +1321,19 @@ public class SudokuModel {
 
 	setCurrentStepStatusLabel("Fading graph finished");
 	if(DEBUG.getValue()){System.out.println("Fading graph finished");}
+
+	if(!isDemoPlaying){
+	    referenceToMain.allDifferentButton.setEnabled(true);
+	    referenceToMain.deselectButton.setEnabled(true);
+	}
     }
 
     public void deselect(){
 	ifNotAnimatingThenWait();
 
+	referenceToMain.deselectButton.setEnabled(false);
+	referenceToMain.allDifferentButton.setEnabled(false);
+	
 	for (int i = 0; i < 9; i++) {
 	    for (int j = 0; j < 9; j++) {
 		this.theGrid.sudokuCells[i][j].setOpaque(false);
@@ -1391,7 +1416,14 @@ public class SudokuModel {
 	setCurrentStepStatusLabel("Finished cleaning after moving left");
 	if(DEBUG.getValue()){System.out.println("Finished cleaning after moving left");}
 
-	
+	referenceToMain.allDifferentButton.setEnabled(false);
+
+	if(!isDemoPlaying){
+	    referenceToMain.deselectButton.setEnabled(false);
+	    referenceToMain.showDemoButton.setEnabled(true);
+	}
+
+	referenceToMain.selectButton.setEnabled(true);
     }
 
     public void setPropagateAfterAllDifferent(boolean value){

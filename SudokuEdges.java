@@ -47,11 +47,18 @@ public class SudokuEdges extends JPanel implements ActionListener {
 
 	for(int i=0; i<20; i++){
 	    for(int j=0; j<20; j++){
-		//initially all edges are gray
+		//initiallization
 		edgeColors[i][j] = Color.LIGHT_GRAY;
 	    }
 	}
-	
+
+	for(int i=1; i<10; i++){
+	    for(int j=10; j<19; j++){
+		//initiallization
+		edgeColors[i][j] = Color.WHITE;
+	    }
+	}
+		
 	setPreferredSize(new Dimension(1200, 550-4));
 	setLayout(null);
 
@@ -67,6 +74,80 @@ public class SudokuEdges extends JPanel implements ActionListener {
 	this.theModel = theModel;
     }
 
+    public void loadColorsFromModel(){
+	for(int k=0; k<9; k++){ // each of the 9 variables
+	    if(theModel.theGrid.sudokuCells3Now[k] == null){
+		System.out.println("return");
+		return;
+	    }
+	    
+	    int shown_x = theModel.theGrid.sudokuCells3Now[k].i;
+	    int shown_y = theModel.theGrid.sudokuCells3Now[k].j;
+
+	    ArrayList<Integer> possibleValues = theModel.worldPeek().grid[shown_x][shown_y].getPossibleValues(); System.out.println(possibleValues);
+	    
+	    for(int l=1; l<=9; l++){ // each of the 9 possible digits from a sudoku cell in a sudoku row
+		int u = k + 1;
+		int v = l + 9;
+		
+		if(possibleValues.contains(l)){
+		    // the value exists in the domain
+		    edgeColors[u][v] = Color.LIGHT_GRAY;
+		} else {
+		    // the value does not exist in the domain
+		    edgeColors[u][v] = Color.WHITE; // invisible color
+		}
+	    }
+	}
+	/*
+	for(int i=1; i<10; i++){ // vertices in the left partition
+	    for(int j=10; j<19; j++){ // vertices in the right partition
+		for(int k=0; k<9; k++){ // each of the 9 variables
+		    if(theModel.theGrid.sudokuCells3Now[k] == null){
+			System.out.println("return");
+			return;
+		    }
+		
+		    int shown_x = theModel.theGrid.sudokuCells3Now[k].i;
+		    int shown_y = theModel.theGrid.sudokuCells3Now[k].j;
+		
+		    for(int l=1; l<=9; l++){ // each of the 9 possible digits from a sudoku cell in a sudoku row
+			//int u = i + 1;
+			//int v = j + 9 + 1;
+
+			ArrayList<Integer> possibleValues = theModel.worldPeek().grid[shown_x][shown_y].getPossibleValues(); //System.out.println(theModel.worldPeek().grid[shown_x][shown_y].getPossibleValues());
+			if(possibleValues.contains(l)){
+			    // the value exists in the domain
+			    edgeColors[i][j] = Color.LIGHT_GRAY;
+			} else {
+			    // the value does not exist in the domain
+			    edgeColors[i][j] = Color.WHITE; // invisible color
+			}
+		    }
+		}
+	    }
+	}
+	*/
+	/*
+	  for(int i=0; i<9; i++){ // each row in the sudoku
+	  for(int j=0; j<9; j++){ // each cell in the row of the sudoku
+	  for(int k=1; k<=9; k++){ // each of the 9 possible digits from a sudoku cell in a sudoku row
+	  int u = i + 1;
+	  int v = j + 9 + 1;
+	  System.out.println()
+	  if(theModel.worldPeek().grid[i][j].hasValue(k)){
+	  // the value exists in the domain
+	  edgeColors[u][v] = Color.LIGHT_GRAY;
+	  } else {
+	  // the value does not exist in the domain
+	  edgeColors[u][v] = Color.WHITE; // invisible color
+	  }
+	  }
+	  }
+	  }
+	*/
+    }
+    
     public void add (JComponent jc, int x, int y, int width, int height){
 	jc.setLocation(x, y);
 	jc.setBounds(new Rectangle(new Point(x, y), new Dimension(width, height)));
@@ -85,18 +166,18 @@ public class SudokuEdges extends JPanel implements ActionListener {
 	setAlphaZero();
 	statusLabel.setVisible(false);
     }
-    
-    private static class MouseListener implements ActionListener{
+    /* TODO
+       private static class MouseListener implements ActionListener{
 
-	public void actionPerformed(ActionEvent e) {
+       public void actionPerformed(ActionEvent e) {
 
-	    // Handle open button action
-	    if (e.getSource() == printButton) {
-		System.out.println("edges print button");
-	    }
-	}
-    }
-
+       // Handle open button action
+       if (e.getSource() == printButton) {
+       System.out.println("edges print button");
+       }
+       }
+       }
+    */
     @Override
     protected void paintComponent(Graphics grphcs) {
 	super.paintComponent(grphcs);
@@ -194,7 +275,7 @@ public class SudokuEdges extends JPanel implements ActionListener {
 		// from VAR i to VALUE j
 	        int shown_x = theModel.theGrid.sudokuCells3Now[i].i;
 		int shown_y = theModel.theGrid.sudokuCells3Now[i].j;
-		
+
 		x1 = 600;
 		y1 = (i) * 50 + (i)*distanceBetweenCells_y;
 		
@@ -233,23 +314,21 @@ public class SudokuEdges extends JPanel implements ActionListener {
 	theModel.stopAllTimersOnDiffLevelComparedTo(thisTimer);
 
 	if(thisTimer == timerSolve){
-	    System.out.println("THIS TIMER IS SOLVER, CALL MODEL");
-
 	    SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>(){
-		protected Boolean doInBackground() throws Exception{
-		    try{
-			SwingUtilities.invokeAndWait(new Runnable() {
-				public void run() {
-				    theModel.allDifferent(); 
-				}
-			    });
-		    } catch (Exception e2){
-			e2.printStackTrace();
-		    }
+		    protected Boolean doInBackground() throws Exception{
+			try{
+			    SwingUtilities.invokeAndWait(new Runnable() {
+				    public void run() {
+					theModel.allDifferent(); 
+				    }
+				});
+			} catch (Exception e2){
+			    e2.printStackTrace();
+			}
 		    
-		    return true;
-		}
-	    };
+			return true;
+		    }
+		};
 	    
 	    worker.execute();
 	    /////////////////////////////////////////////////////////

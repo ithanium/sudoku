@@ -21,7 +21,9 @@ public class Sudoku{
     public JButton playButton;
     public JButton playPauseButton;
     public JButton nextStepButton;
+    public JButton propagateButton;
     public JButton allDifferentButton;
+    public JButton selectButton;
     public JButton deselectButton;
     public JButton showDemoButton;
     public JButton backtrackButton;
@@ -31,6 +33,7 @@ public class Sudoku{
     
     public JMenu fileMenu;
     public JMenuItem openMenuItem;
+    public JMenuItem resetFileMenuItem;
     public JMenuItem exitMenuItem;
 
     public JMenu settingsMenu;
@@ -49,6 +52,8 @@ public class Sudoku{
 
     public JSlider speedSlider;
 
+    public String filePath = new String();
+
     private Sudoku(){
 	theModel = new SudokuModel();
 	theModel.referenceToMain = this;
@@ -64,7 +69,9 @@ public class Sudoku{
 		    
 	try {
 	    // demo file
-	    theModel.readFromFile(workingDirectory.getAbsolutePath() + "/puzzles/lockedset.txt");
+
+	    filePath = workingDirectory.getAbsolutePath() + "/puzzles/lockedset.txt";
+	    theModel.readFromFile(filePath);
 	} catch (FileNotFoundException ex) {
 	    ex.printStackTrace();
 	}
@@ -83,6 +90,7 @@ public class Sudoku{
 	
 	fileMenu = new javax.swing.JMenu("File");
 	openMenuItem = new javax.swing.JMenuItem("Open");
+	resetFileMenuItem = new javax.swing.JMenuItem("Reset file");
 	exitMenuItem = new javax.swing.JMenuItem("Exit");
 	exitMenuItem.addActionListener(new ActionListener(){
 		@Override
@@ -91,6 +99,7 @@ public class Sudoku{
 		}
 	    });
 	fileMenu.add(openMenuItem);
+	fileMenu.add(resetFileMenuItem);
 	fileMenu.add(exitMenuItem);
 
 	settingsMenu = new javax.swing.JMenu("Settings");
@@ -125,6 +134,7 @@ public class Sudoku{
 	jMenuBar.add(settingsMenu);
 
 	openMenuItem.addActionListener(new MouseListener());
+	resetFileMenuItem.addActionListener(new MouseListener());
 	solveInStepsTrueMenuItem.addActionListener(new MouseListener());
 	solveInStepsFalseMenuItem.addActionListener(new MouseListener());
 	setNormalSpeedMenuItem.addActionListener(new MouseListener());
@@ -168,11 +178,16 @@ public class Sudoku{
 	nextStepButton = new JButton("Next step");
 	nextStepButton.addActionListener(new MouseListener());
 	buttonHolders.add(nextStepButton);
-	    
+
+	propagateButton = new JButton("Propagate");
+	propagateButton.addActionListener(new MouseListener());
+	buttonHolders.add(propagateButton);
+	
 	allDifferentButton = new JButton("AllDifferent");
 	allDifferentButton.addActionListener(new MouseListener());
 	buttonHolders.add(allDifferentButton);
 
+	selectButton = new JButton();
 	deselectButton = new JButton("Deselect row/column/block");
 	deselectButton.addActionListener(new MouseListener());
 	buttonHolders.add(deselectButton);
@@ -219,7 +234,8 @@ public class Sudoku{
 	theGridPlaceHolder.add(speedSlider);
 
 	playPauseButton.setEnabled(false);
-	allDifferentButton.setEnabled(true); //// TODO
+	allDifferentButton.setEnabled(false);
+	selectButton.setEnabled(true);
 	deselectButton.setEnabled(false);
 		
 	mainFrame.setVisible(true);
@@ -383,7 +399,13 @@ public class Sudoku{
 	    
 	    // Handle open button action
 	    if (e.getSource() == openFileButton || e.getSource() == openMenuItem) {
-
+		if(!selectButton.isEnabled()){
+		    theModel.setCurrentStepStatusLabel("Please make sure you deselect first and no operation is currently playing");
+		    if(DEBUG.getValue()){System.out.println("Please make sure you deselect first and no operation is currently playing");}
+		    
+		    return;
+		}
+				
 		JFileChooser fc = new JFileChooser();
 		fc.setAcceptAllFileFilterUsed(false);
 		fc.addChoosableFileFilter(new FileNameExtensionFilter(".txt - plain text files", "txt"));
@@ -397,12 +419,31 @@ public class Sudoku{
 		    File file = fc.getSelectedFile();
 
 		    try {
-			theModel.readFromFile(file.getAbsolutePath());
+			filePath = file.getAbsolutePath();
+			theModel.readFromFile(filePath);
 		    } catch (FileNotFoundException ex) {
 			ex.printStackTrace();
 		    }
 		} else {
 		    if(DEBUG.getValue()){System.out.println("Open command canceled by the user");}
+		}
+	    }
+
+	    // Handle open button action
+	    if (e.getSource() == resetFileMenuItem) {
+		if(!selectButton.isEnabled()){
+		    theModel.setCurrentStepStatusLabel("Please make sure you deselect first and no operation is currently playing");
+		    if(DEBUG.getValue()){System.out.println("Please make sure you deselect first and no operation is currently playing");}
+		    
+		    return;
+		}
+		
+		File workingDirectory = new File(System.getProperty("user.dir"));
+		
+		try {
+		    theModel.readFromFile(filePath);
+		} catch (FileNotFoundException ex) {
+		    ex.printStackTrace();
 		}
 	    }
 
@@ -424,9 +465,6 @@ public class Sudoku{
 
 	    // Handle next move button
 	    if (e.getSource() == nextStepButton) {
-		//allDifferentButton.setEnabled(false);
-		//deselectButton.setEnabled(true);
-
 		// escape from EDT
 		Thread t = new Thread(new Runnable() {
 			@Override
@@ -436,32 +474,18 @@ public class Sudoku{
 		    });
 		t.start();
 	    }
-	    /*
-	    // Handle pause button
-	    if (e.getSource() == pauseButton) {
+
+	    // Handle propagate button
+	    if (e.getSource() == propagateButton) {
 		// escape from EDT
 		Thread t = new Thread(new Runnable() {
 			@Override
 			public void run() {
-			    theModel.pauseAnimation();
+			    theModel.propagate();
 			}			
 		    });
 		t.start();
 	    }
-
-	    // Handle play button
-	    if (e.getSource() == playButton) {
-		// escape from EDT
-		Thread t = new Thread(new Runnable() {
-			@Override
-			public void run() {
-			    theModel.playAnimation();
-			}			
-		    });
-		t.start();
-
-	    }
-	    */
 	    
 	    // Handle playPauseButton button
 	    if (e.getSource() == playPauseButton) {
@@ -508,9 +532,6 @@ public class Sudoku{
 
 	    // Handle allDifferent button
 	    if (e.getSource() == allDifferentButton){
-		allDifferentButton.setEnabled(false);
-		deselectButton.setEnabled(true);
-
 		// escape from EDT
 		Thread th = new Thread(new Runnable() {
 			@Override
@@ -523,9 +544,6 @@ public class Sudoku{
 	    
 	    // Handle deselect button
 	    if (e.getSource() == deselectButton){
-		allDifferentButton.setEnabled(true);
-		deselectButton.setEnabled(false);
-
 		// escape from EDT
 		Thread th = new Thread(new Runnable() {
 			@Override
@@ -545,6 +563,30 @@ public class Sudoku{
 		Thread th = new Thread(new Runnable() {
 			@Override
 			public void run() {
+			    String fileName = new String();
+			    
+			    if (filePath.length() == 13) {
+				fileName = filePath;
+			    }
+			    else if (filePath.length() > 13) {
+				fileName = filePath.substring(filePath.length() - 13);
+			    }
+
+			    if(fileName.compareTo("lockedset.txt") != 0){
+				theModel.setCurrentStepStatusLabel("Please make sure you are running the lockedset.txt demo file");
+				if(DEBUG.getValue()){System.out.println("Please make sure you are running the lockedset.txt demo file");}
+				return;
+			    }
+
+			    if(!selectButton.isEnabled()){
+				theModel.setCurrentStepStatusLabel("Please make sure you deselect first");
+				if(DEBUG.getValue()){System.out.println("Please make sure you deselect first");}
+				
+				return;
+			    }
+
+			    theModel.isDemoPlaying = true;
+			    
 			    theModel.setCurrentStepStatusLabel("Started running demo");
 			    if(DEBUG.getValue()){System.out.println("Started running demo");}
 
@@ -580,7 +622,9 @@ public class Sudoku{
 			    theModel.fadeInGridNow();
 			    
 			    deselectButton.setEnabled(true);
-			    
+
+			    theModel.isDemoPlaying = false;
+						    
 			    theModel.setCurrentStepStatusLabel("Finished running demo");
 			    if(DEBUG.getValue()){System.out.println("Finished running demo");}
 			    
