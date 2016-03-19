@@ -1,14 +1,11 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-
 import java.util.ArrayList;
-
 import java.awt.geom.Line2D;
-//import java.awt.geom.Line2D;
 
 public class SudokuEdges extends JPanel implements ActionListener {
-    public static MutableBoolean DEBUG; //TODO: delete it? not used
+    public static MutableBoolean DEBUG;
 
     public SudokuModel theModel;
 
@@ -119,18 +116,7 @@ public class SudokuEdges extends JPanel implements ActionListener {
 	setAlphaZero();
 	statusLabel.setVisible(false);
     }
-    /* TODO
-       private static class MouseListener implements ActionListener{
 
-       public void actionPerformed(ActionEvent e) {
-
-       // Handle open button action
-       if (e.getSource() == printButton) {
-       System.out.println("edges print button");
-       }
-       }
-       }
-    */
     @Override
     protected void paintComponent(Graphics grphcs) {
 	super.paintComponent(grphcs);
@@ -453,9 +439,8 @@ public class SudokuEdges extends JPanel implements ActionListener {
 
     public void drawMoves(){
 	for(TripletIIB t:this.moves){
-	    theModel.ifNotAnimatingThenWait(); //TODO only one or two?
+	    theModel.ifNotAnimatingThenWait();
 
-	    //System.out.println("Drawing move");
 	    if(t.getC() == Color.GREEN){
 		drawGreen(t.getA(), t.getB());
 	    } else if(t.getC() == Color.RED){
@@ -470,7 +455,7 @@ public class SudokuEdges extends JPanel implements ActionListener {
 	    
 	    prevColor = t.getC();
 
-	    theModel.ifNotAnimatingThenWait(); //TODO only one or two?
+	    theModel.ifNotAnimatingThenWait();
 	}
 		    
 	applyDrawing();

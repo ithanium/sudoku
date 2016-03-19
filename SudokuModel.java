@@ -1326,6 +1326,9 @@ public class SudokuModel {
 	    referenceToMain.allDifferentButton.setEnabled(true);
 	    referenceToMain.deselectButton.setEnabled(true);
 	}
+
+	if(solveInSteps){pauseAnimation();}
+	ifNotAnimatingThenWait();
     }
 
     public void deselect(){

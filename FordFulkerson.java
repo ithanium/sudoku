@@ -90,6 +90,9 @@ public class FordFulkerson {
 		    theModel.setCurrentStepStatusLabel("Greedy match finished");
 		    if(DEBUG.getValue()){System.out.println("\tGreedy match finished");}
 		    theModel.viewController.theEdges.drawMovesNow();
+
+		    if(theModel.solveInSteps){theModel.pauseAnimation();}
+		    theModel.ifNotAnimatingThenWait();
 		} else {
 		    lastVarVisited = u;
 		}
