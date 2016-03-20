@@ -415,8 +415,6 @@ public class Sudoku{
 		    return;
 		}
 		
-		File workingDirectory = new File(System.getProperty("user.dir"));
-		
 		try {
 		    theModel.readFromFile(filePath);
 		} catch (FileNotFoundException ex) {
