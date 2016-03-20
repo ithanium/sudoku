@@ -13,8 +13,8 @@ import java.util.ArrayList;
 
 public class Circle extends JPanel implements ActionListener{
     public float DELTA = 0.01f;
-    public ArrayList<Timer> fadeOutTimers = new ArrayList<Timer>(); //fadeOut
-    public ArrayList<Timer> fadeInTimers = new ArrayList<Timer>(); //fadeIn
+    public ArrayList<Timer> fadeOutTimers = new ArrayList<Timer>();
+    public ArrayList<Timer> fadeInTimers = new ArrayList<Timer>();
     private float alpha = 1f;
     private float fadeOutMinimum = 0f;
 
@@ -75,11 +75,6 @@ public class Circle extends JPanel implements ActionListener{
 	g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 	g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
-	// for circle
-
-	////////// do not show any lines as we do not have any
-	////////// row column or block selected
-	
 	if(theModel.theGrid.sudokuCells3Now[0] == null){
 	    textLabel.setVisible(false);
 	    return;
@@ -120,7 +115,6 @@ public class Circle extends JPanel implements ActionListener{
 	theModel.stopAllTimersOnDiffLevelComparedTo(thisTimer);
 
 	if(fadeOutTimers.contains(thisTimer)){
-	    //System.out.println("Fadeing out timer");
 	    alpha -= DELTA;
 	    
 	    if (alpha <= fadeOutMinimum) {
@@ -128,12 +122,11 @@ public class Circle extends JPanel implements ActionListener{
 
 		fadeOutTimers.remove(thisTimer);
 		
-		thisTimer.stop(); // STOP IT, START THE NEXT ONE IN QUEUE
+		thisTimer.stop(); 
 		theModel.removeTimer(thisTimer);
 		theModel.startNextTimers();
 	    }
 	} else if(fadeInTimers.contains(thisTimer)){
-	    //System.out.println("Fading in timer");
 	    alpha += DELTA;
 	    
 	    if (alpha >= 1) {
@@ -141,7 +134,7 @@ public class Circle extends JPanel implements ActionListener{
 
 		fadeInTimers.remove(thisTimer);
 		
-		thisTimer.stop(); // STOP IT, START THE NEXT ONE IN QUEUE
+		thisTimer.stop();
 		theModel.removeTimer(thisTimer);
 		theModel.startNextTimers();
 	    }
@@ -175,20 +168,17 @@ public class Circle extends JPanel implements ActionListener{
     
     public void fadeOut(){
 	fadeOutMinimum = 0f;
-	//timer1.start(); KEEP IT DELETED	
     }
 
     public void fadeOutALittle(){
 	fadeOutMinimum = 0.30f;
-	//theModel.timers.add(timer);/////////////////////////////////
-	//timer1.start(); KEEP IT DELETED
     }
     
     public void fadeIn(){
     }
 
     public Timer getTimerFadeOut(){
-	Timer timer1 = new Timer(10, null); //fadeOut
+	Timer timer1 = new Timer(10, null);
 	timer1.setInitialDelay(100);
         timer1.addActionListener(this);
 	timer1.setCoalesce(false);
@@ -199,7 +189,7 @@ public class Circle extends JPanel implements ActionListener{
     }
 
     public Timer getTimerFadeIn(){
-	Timer timer2 = new Timer(10, null); //fadeOut
+	Timer timer2 = new Timer(10, null);
 	timer2.setInitialDelay(100);
         timer2.addActionListener(this);
 	timer2.setCoalesce(false);

@@ -1,11 +1,8 @@
 import java.io.*;
 import java.util.*;
-
 import javax.swing.*;
 import javax.swing.Timer;
 import java.awt.Color;
-
-
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -20,7 +17,7 @@ public class SudokuModel {
 
     public Object animationLock = new Object();
     
-    public SudokuGrid theGrid; // TODO update the name // GUI
+    public SudokuGrid theGrid;
     public int SIZE;
     public int SLEEP;
     public int SLEEP_BETWEEN_STEPS = 3000;
@@ -72,10 +69,8 @@ public class SudokuModel {
 	return worldStack.peek();
     }
 
-    // TODO Namechange
-    // TODO SHOULD I STORE THE GUI in the SudokuWorld
     public void setGrid(SudokuGrid theGrid){
-	this.theGrid = theGrid; // GUI
+	this.theGrid = theGrid;
     }
 
     static boolean[][] differentThan (Var x, Var y){
@@ -89,7 +84,6 @@ public class SudokuModel {
     } // x != y
 
     public boolean propagate(){
-	//int SLEEP_HERE = 100;
 	SudokuWorld world = worldPeek();
 	ArrayList<Integer> ij1;
 	ArrayList<Integer> ij2;
@@ -103,70 +97,18 @@ public class SudokuModel {
 	Stack<Constraint> S = new Stack<Constraint>();
 	for (Constraint c : constraints){ // add all the constraints on the stack
 	    S.push(c); c.flag = true;
-	    /*
-	    ij1 = world.getIJFromVar(c.v1);
-	    ij2 = world.getIJFromVar(c.v2);
-	    this.theGrid.sudokuCells[ij1.get(0)][ij1.get(1)].setBackground(Color.GREEN);
-	    this.theGrid.sudokuCells[ij2.get(0)][ij2.get(1)].setBackground(Color.GREEN);
-	    */
 	}
-
-	/*
-	//if(SLEEP_BETWEEN_STEPS > 0){
-	    try{
-		//Thread.sleep(SLEEP_BETWEEN_STEPS);
-		Thread.sleep(SLEEP_HERE);
-	    } catch (Exception e){
-		e.printStackTrace();
-	    }
-	//}
-	*/
-        //if(solveInSteps){pauseAnimation();}
-        //ifNotAnimatingThenWait();
 	
 	while (consistent && !S.isEmpty()){
 	    Constraint c = S.pop();
 	    c.flag = false;
-	    /*
-	    ij1 = world.getIJFromVar(c.v1);
-	    ij2 = world.getIJFromVar(c.v2);
-	    this.theGrid.sudokuCells[ij1.get(0)][ij1.get(1)].setBackground(Color.RED);
-	    this.theGrid.sudokuCells[ij2.get(0)][ij2.get(1)].setBackground(Color.RED);
-	    
-	    //if(SLEEP_BETWEEN_STEPS > 0){
-	    try{
-		//Thread.sleep(SLEEP_BETWEEN_STEPS);
-		Thread.sleep(SLEEP_HERE);
-	    } catch (Exception e){
-		e.printStackTrace();
-	    }
-	    //}
-	    */
-            //if(solveInSteps){pauseAnimation();}
-            //ifNotAnimatingThenWait();
-	    
+
 	    if (c.revise()){
 		redraw();
 		consistent = c.v1.domain.cardinality() > 0;
 		for (Constraint cv1 : c.v1.constraints){
 		    if (!cv1.flag){
 			S.push(cv1); cv1.flag = true;
-			/*
-			ij1 = world.getIJFromVar(c.v1);
-			ij2 = world.getIJFromVar(c.v2);		this.theGrid.sudokuCells[ij1.get(0)][ij1.get(1)].setBackground(Color.GREEN);
-			this.theGrid.sudokuCells[ij2.get(0)][ij2.get(1)].setBackground(Color.GREEN);
-			
-			//if(SLEEP_BETWEEN_STEPS > 0){
-			try{
-			    //Thread.sleep(SLEEP_BETWEEN_STEPS);
-			    Thread.sleep(SLEEP_HERE);
-			} catch (Exception e){
-			    e.printStackTrace();
-			}
-			//}
-			*/
-			//if(solveInSteps){pauseAnimation();}
-			//ifNotAnimatingThenWait();
 		    }
 		}
 	    }
@@ -191,14 +133,10 @@ public class SudokuModel {
 	
 	if(timers.size() == 1){ // if this is the only timer, start it
 	    // otherwise let another timer start this one when it finishes
-	    //System.out.println("Fadeout model timers = 1, start level");
 	    for(Timer t:timers.get(0)){
 		t.start();
 	    }
-	} else {
-	    //System.out.println("Fade in blocked by other animation");
-	}
-	
+	} 
     }
 
     public SudokuModel super_getThis(){
@@ -251,39 +189,23 @@ public class SudokuModel {
 	    }
 	}
 
-	//if(solveInSteps){pauseAnimation();} //this is not a step
 	ifNotAnimatingThenWait();
 
 	setCurrentStepStatusLabel("Step 1 - Ford Fulkerson - started");
 	if(DEBUG.getValue()){System.out.println("Step 1 - Ford Fulkerson - started");}
 
-	FordFulkerson ff = new FordFulkerson(super_getThis(), A, R, 20); //TODO this works with only using "this" !
+	FordFulkerson ff = new FordFulkerson(super_getThis(), A, R, 20);
 	ff.DEBUG = DEBUG;
 	ff.run();
 
-	
+	viewController.theEdges.drawMoves();
+			
+	viewController.theEdges.finishDrawing(false); // hide unmatched paths
+	ifNotAnimatingThenWait(); 
+			
+	viewController.theGrid.finishDrawing(); // hide S/T + S/T edges
+	ifNotAnimatingThenWait(); 
 
-	/*
-	try{
-	    SwingUtilities.invokeAndWait(new Runnable() {
-	    public void run() { */
-	//System.out.println("Is invokeandwait EDT " + SwingUtilities.isEventDispatchThread());
-			//viewController.theEdges.applyDrawing(); // apply last green/red
-			
-			viewController.theEdges.drawMoves();
-			
-			viewController.theEdges.finishDrawing(false); // hide unmatched paths
-			ifNotAnimatingThenWait(); //TODO only one or two?
-			
-			viewController.theGrid.finishDrawing(); // hide S/T + S/T edges
-			ifNotAnimatingThenWait(); //TODO only one or two?
-			/*  }
-		});
-	} catch (Exception e){
-	    e.printStackTrace();
-	}
-			*/
-			
 	setCurrentStepStatusLabel("Step 1 - Ford Fulkerson - finished");
 	if(DEBUG.getValue()){System.out.println("Step 1 - Ford Fulkerson - finished");}
 	
@@ -326,27 +248,13 @@ public class SudokuModel {
 	    }
 	}
 
-	/* this could make trouble TODO
-	if(solveInSteps){pauseAnimation();}
+	viewController.theEdges.makeAllEdgesGray();
+
 	ifNotAnimatingThenWait();
-	*/
-	
-	/*
-	try{
-	    SwingUtilities.invokeAndWait(new Runnable() {
-	    public void run() {*/
-			viewController.theEdges.makeAllEdgesGray();
 
-			ifNotAnimatingThenWait();
-			/*}
-		});
-	} catch (Exception e){
-	    e.printStackTrace();
-	}
-			*/
 
-			setCurrentStepStatusLabel("Step 2 - Tarjan -  started");
-			if(DEBUG.getValue()){System.out.println("Step 2 - Tarjan -  started");}
+	setCurrentStepStatusLabel("Step 2 - Tarjan -  started");
+	if(DEBUG.getValue()){System.out.println("Step 2 - Tarjan -  started");}
 	
 	Tarjan tarjan = new Tarjan(super_getThis(), newA2, 18);
 	tarjan.DEBUG = DEBUG;
@@ -380,49 +288,38 @@ public class SudokuModel {
 	if(DEBUG.getValue()){System.out.println();}
 	setCurrentStepStatusLabel("Starting coloring edges in blue & red");
 	if(DEBUG.getValue()){System.out.println("\tStarting coloring edges in blue & red");}
-	/*
-	try{
-	    SwingUtilities.invokeAndWait(new Runnable() {
-	    public void run() {*/
-			/////////////////
-			for(int u=0; u<18; u++){
-			    for(int v=0; v<18; v++){
-				if(newA3[u][v] == 0){
-				    continue;
-				}
 
-				if(u<9){
-				    setCurrentStepStatusLabel("Color red for edge u: " + u + " v:" + v + " (cell: " + u + " to number: " + (v-8) + ")");
-				    if(DEBUG.getValue()){System.out.println("\t\tColor red for edge u: " + u + " v:" + v + " (cell: " + u + " to number: " + (v-8) + ")");}
-				    
-				    int shown_x = theGrid.sudokuCells3Before[u].i;
-				    int shown_y = theGrid.sudokuCells3Before[u].j;
+	for(int u=0; u<18; u++){
+	    for(int v=0; v<18; v++){
+		if(newA3[u][v] == 0){
+		    continue;
+		}
 
-				    viewController.theEdges.edgeColors[u+1][v+1] = Color.RED;
+		if(u<9){
+		    setCurrentStepStatusLabel("Color red for edge u: " + u + " v:" + v + " (cell: " + u + " to number: " + (v-8) + ")");
+		    if(DEBUG.getValue()){System.out.println("\t\tColor red for edge u: " + u + " v:" + v + " (cell: " + u + " to number: " + (v-8) + ")");}
 				    
-				} else if(u>8){
-				    setCurrentStepStatusLabel("Color blue for edge v: " + v + " u:" + u + " (cell: " + v + " to number: " + (u-8) + ")");
-				    if(DEBUG.getValue()){System.out.println("\t\tColor blue for edge v: " + v + " u:" + u + " (cell: " + v + " to number: " + (u-8) + ")");}  // switch
-				    
-				    int shown_x = theGrid.sudokuCells3Before[v].i;
-				    int shown_y = theGrid.sudokuCells3Before[v].j;
+		    int shown_x = theGrid.sudokuCells3Before[u].i;
+		    int shown_y = theGrid.sudokuCells3Before[u].j;
 
-				    viewController.theEdges.edgeColors[v+1][u+1] = Color.BLUE;
+		    viewController.theEdges.edgeColors[u+1][v+1] = Color.RED;
 				    
-				}
-			    }
-			}
-			
-			viewController.theEdges.repaint(); //TODO: need this?
-			/////////////////
-			/*  }
-		});
-	} catch (Exception e){
-	    e.printStackTrace();
+		} else if(u>8){
+		    setCurrentStepStatusLabel("Color blue for edge v: " + v + " u:" + u + " (cell: " + v + " to number: " + (u-8) + ")");
+		    if(DEBUG.getValue()){System.out.println("\t\tColor blue for edge v: " + v + " u:" + u + " (cell: " + v + " to number: " + (u-8) + ")");}  // switch
+				    
+		    int shown_x = theGrid.sudokuCells3Before[v].i;
+		    int shown_y = theGrid.sudokuCells3Before[v].j;
+
+		    viewController.theEdges.edgeColors[v+1][u+1] = Color.BLUE;
+				    
+		}
+	    }
 	}
-			*/
-			setCurrentStepStatusLabel("Finished coloring edges in blue & red");
-			if(DEBUG.getValue()){System.out.println("\tFinished coloring edges in blue & red");}
+			
+	viewController.theEdges.repaint();
+	setCurrentStepStatusLabel("Finished coloring edges in blue & red");
+	if(DEBUG.getValue()){System.out.println("\tFinished coloring edges in blue & red");}
 	
 	if(SLEEP_BETWEEN_STEPS > 0){
 	    try{
@@ -439,67 +336,48 @@ public class SudokuModel {
 	if(DEBUG.getValue()){System.out.println();}
 	setCurrentStepStatusLabel("Start applying results in the original grid");
 	if(DEBUG.getValue()){System.out.println("\tStart applying results in the original grid");}
-	/*
-	try{
-	    SwingUtilities.invokeAndWait(new Runnable() {
-	    public void run() {*/
-			////////////////
-			for(int u=0; u<18; u++){
-			    for(int v=0; v<18; v++){
-				if(newA3[u][v] == 0){
-				    continue;
-				}
+	for(int u=0; u<18; u++){
+	    for(int v=0; v<18; v++){
+		if(newA3[u][v] == 0){
+		    continue;
+		}
 
-				ifNotAnimatingThenWait(); //TODO: one or two?
+		ifNotAnimatingThenWait();
 				
-				if(u<9){
-				    setCurrentStepStatusLabel("Remove value u: " + u + " v:" + v + " (cell: " + u + " to number: " + (v-8) + ")");
-				    if(DEBUG.getValue()){System.out.println("\t\tRemove value u: " + u + " v:" + v + " (cell: " + u + " to number: " + (v-8) + ")");}
+		if(u<9){
+		    setCurrentStepStatusLabel("Remove value u: " + u + " v:" + v + " (cell: " + u + " to number: " + (v-8) + ")");
+		    if(DEBUG.getValue()){System.out.println("\t\tRemove value u: " + u + " v:" + v + " (cell: " + u + " to number: " + (v-8) + ")");}
 				    
-				    int shown_x = theGrid.sudokuCells3Before[u].i;
-				    int shown_y = theGrid.sudokuCells3Before[u].j;
+		    int shown_x = theGrid.sudokuCells3Before[u].i;
+		    int shown_y = theGrid.sudokuCells3Before[u].j;
 				    
-				    // delete from sudoku
-				    worldPeek().grid[shown_x][shown_y].eliminateValue(v - (9-1));
+		    // delete from sudoku
+		    worldPeek().grid[shown_x][shown_y].eliminateValue(v - (9-1));
 				    
-				    // TODO: in one call
-				    theGrid.sudokuCells3Now[u].setValuesLabel(theGrid.sudokuCells3Now[u].formatPossibleValues());
-				    theGrid.sudokuCells3Before[u].setValuesLabel(theGrid.sudokuCells3Before[u].formatPossibleValues());
+		    theGrid.sudokuCells3Now[u].setValuesLabel(theGrid.sudokuCells3Now[u].formatPossibleValues());
+		    theGrid.sudokuCells3Before[u].setValuesLabel(theGrid.sudokuCells3Before[u].formatPossibleValues());
 				    
-				} else if(u>8){
-				    setCurrentStepStatusLabel("Assign value v: " + v + " u:" + u + " (cell: " + v + " to number: " + (u-8) + ")");
-				    if(DEBUG.getValue()){System.out.println("\t\tAssign value v: " + v + " u:" + u + " (cell: " + v + " to number: " + (u-8) + ")");} // switch
+		} else if(u>8){
+		    setCurrentStepStatusLabel("Assign value v: " + v + " u:" + u + " (cell: " + v + " to number: " + (u-8) + ")");
+		    if(DEBUG.getValue()){System.out.println("\t\tAssign value v: " + v + " u:" + u + " (cell: " + v + " to number: " + (u-8) + ")");} // switch
 				    
-				    int shown_x = theGrid.sudokuCells3Before[v].i;
-				    int shown_y = theGrid.sudokuCells3Before[v].j;
+		    int shown_x = theGrid.sudokuCells3Before[v].i;
+		    int shown_y = theGrid.sudokuCells3Before[v].j;
 				    
-				    // delete from sudoku
-				    worldPeek().grid[shown_x][shown_y].setValue(u - (9-1));
+		    worldPeek().grid[shown_x][shown_y].setValue(u - (9-1));
 				    
-				    // TODO: in one call
-				    theGrid.sudokuCells3Now[v].setValuesLabel(theGrid.sudokuCells3Now[v].formatPossibleValues());
-				    theGrid.sudokuCells3Before[v].setValuesLabel(theGrid.sudokuCells3Before[v].formatPossibleValues());
+		    theGrid.sudokuCells3Now[v].setValuesLabel(theGrid.sudokuCells3Now[v].formatPossibleValues());
+		    theGrid.sudokuCells3Before[v].setValuesLabel(theGrid.sudokuCells3Before[v].formatPossibleValues());
 				    
-				}
-			    }
-			}
-			
-			// WANT TO REMOVE THE RED EDGES? THEN UNCOMMENT
-			//viewController.theEdges.repaint(); // VERY INTERESTING, KEEP THIS COMMENT
-			
-			//viewController.theEdges.makeAllEdgesGray();
-			////////////////
-			/*}
-		});
-	} catch (Exception e){
-	    e.printStackTrace();
+		}
+	    }
 	}
-			*/
-			setCurrentStepStatusLabel("Finished applying results in the original grid");
-			if(DEBUG.getValue()){System.out.println("\tFinished applying results in the original grid");}
+			
+	setCurrentStepStatusLabel("Finished applying results in the original grid");
+	if(DEBUG.getValue()){System.out.println("\tFinished applying results in the original grid");}
 
-			setCurrentStepStatusLabel("Step 3 - Apply knowledge after running Tarjan - finished");
-			if(DEBUG.getValue()){System.out.println("Step 3 - Apply knowledge after running Tarjan - finished");}
+	setCurrentStepStatusLabel("Step 3 - Apply knowledge after running Tarjan - finished");
+	if(DEBUG.getValue()){System.out.println("Step 3 - Apply knowledge after running Tarjan - finished");}
 
 	if(SLEEP_BETWEEN_STEPS > 0){
 	    try{
@@ -527,8 +405,6 @@ public class SudokuModel {
 		}
 	    }
 
-	    //TODO: remove this
-	    //public boolean propagateOnAssignment(int shown_x, int shown_y){
 	    propagate();
 
 	    if(solveInSteps){pauseAnimation();}
@@ -619,7 +495,7 @@ public class SudokuModel {
 	SudokuWorld world =  worldStack.peek();
 	
 	// Not equal constraint between each case of a row
-      	for (int i = 0; i < SIZE; i++) {
+	for (int i = 0; i < SIZE; i++) {
 	    for (int j = 0; j < SIZE; j++) {
 		for (int k = j; k < SIZE; k++) {
 		    if (k != j) {
@@ -634,7 +510,7 @@ public class SudokuModel {
 	}
     
 	// Not equal constraint between each case of a column
-      	for (int j = 0; j < SIZE; j++) {
+	for (int j = 0; j < SIZE; j++) {
 	    for (int i = 0; i < SIZE; i++) {
 		for (int k = 0; k < SIZE; k++) {
 		    if (k != i) {
@@ -652,7 +528,7 @@ public class SudokuModel {
 	for (int ci = 0; ci < SIZE; ci += 3) {
 	    for (int cj = 0; cj < SIZE; cj += 3) {
 		// Extraction of disequality of a sub region
-             	for (int i = ci; i < ci + 3; i++) {
+		for (int i = ci; i < ci + 3; i++) {
 		    for (int j = cj; j < cj + 3; j++) {
 			for (int k = ci; k < ci + 3; k++) {
 			    for (int l = cj; l < cj + 3; l++) {
@@ -711,7 +587,7 @@ public class SudokuModel {
 	    }
 	}
 	
-    	// Populate choco3 with the given values
+	// Populate choco3 with the given values
 	for(int i=0; i<SIZE; i++){
 	    for(int j=0; j<SIZE; j++){
 		if(worldPeek().grid[i][j].getValue() != -1){
@@ -733,7 +609,7 @@ public class SudokuModel {
 	
 	Scanner sc = new Scanner(new FileReader(fileName));
 	
- 	for(int i = 0; i < 9; i++) {
+	for(int i = 0; i < 9; i++) {
 	    if (sc.hasNextLine()) {
 		for (int j = 0; j < 9; j++) {
 		    if (sc.hasNextInt()) {
@@ -752,30 +628,16 @@ public class SudokuModel {
 	worldPush(world);
 	redraw();
 
-	postConstraints(); // TODO do we want this?
+	postConstraints();
 	
 	return world;
     }
 
     public void redraw(){
-	/*
-
-	  no need for this as SudokuCell automatically reads from model
-	  I think so
-
-	for(int i=0; i<9; i++){
-	    for(int j=0; j<9; j++){
-		ArrayList<Integer> possibleValues = worldPeek().grid[i][j].getPossibleValues();
-		this.theGrid.sudokuCells[i][j].possibleValues = possibleValues;
-	    }
-	}
-	*/
-	
 	// Separate loop so we can just redraw everything after knowing the values
 	
 	for(int i=0; i<9; i++){
 	    for(int j=0; j<9; j++){
-		// TODO do it in one call in SudokuCell
 		this.theGrid.sudokuCells[i][j].setValuesLabel(this.theGrid.sudokuCells[i][j].formatPossibleValues());
 		if(this.theGrid.sudokuCells2[i][j] != null){
 		    this.theGrid.sudokuCells2[i][j].setValuesLabel(this.theGrid.sudokuCells2[i][j].formatPossibleValues());
@@ -804,9 +666,8 @@ public class SudokuModel {
 		continue;
 	    }
 	    for(int j=0; j<9; j++){
-		//System.out.println("Is model EDT " + SwingUtilities.isEventDispatchThread());
 		Timer timerFadeOut = theGrid.sudokuCells[i][j].getTimerFadeOut();
-		timers81.add(timerFadeOut); //timer 1 = fadeout
+		timers81.add(timerFadeOut);
 		theGrid.sudokuCells[i][j].fadeOutALittle();
 		timerFadeOut.start();
 	    }
@@ -832,12 +693,9 @@ public class SudokuModel {
 	
 	if(timers.size() == 1){ // if this is the only timer, start it
 	    // otherwise let another timer start this one when it finishes
-	    //System.out.println("Fadeout model timers = 1, start level");
 	    for(Timer t:timers.get(0)){
 		t.start();
 	    }
-	} else {
-	    // System.out.println("Fadeout blocked by other animation");
 	}
 
 	return timers81;
@@ -855,7 +713,6 @@ public class SudokuModel {
 		    // skip the column (it was an exception from fading out)
 		    continue;
 		}
-		//System.out.println("Is model EDT " + SwingUtilities.isEventDispatchThread());
 		Timer timerFadeOut = theGrid.sudokuCells[i][j].getTimerFadeOut();
 		timers81.add(timerFadeOut); //timer 1 = fadeout
 		theGrid.sudokuCells[i][j].fadeOutALittle();
@@ -883,12 +740,9 @@ public class SudokuModel {
 	
 	if(timers.size() == 1){ // if this is the only timer, start it
 	    // otherwise let another timer start this one when it finishes
-	    //System.out.println("Fadeout model timers = 1, start level");
 	    for(Timer t:timers.get(0)){
 		t.start();
 	    }
-	} else {
-	    // System.out.println("Fadeout blocked by other animation");
 	}
 
 	return timers81;
@@ -945,7 +799,7 @@ public class SudokuModel {
 		    // skip the block (it was an exception from fading out)
 		    continue;
 		}
-		//System.out.println("Is model EDT " + SwingUtilities.isEventDispatchThread());
+
 		Timer timerFadeOut = theGrid.sudokuCells[i][j].getTimerFadeOut();
 		timers81.add(timerFadeOut); //timer 1 = fadeout
 		theGrid.sudokuCells[i][j].fadeOutALittle();
@@ -973,12 +827,9 @@ public class SudokuModel {
 	
 	if(timers.size() == 1){ // if this is the only timer, start it
 	    // otherwise let another timer start this one when it finishes
-	    //System.out.println("Fadeout model timers = 1, start level");
 	    for(Timer t:timers.get(0)){
 		t.start();
 	    }
-	} else {
-	    // System.out.println("Fadeout blocked by other animation");
 	}
 
 	return timers81;
@@ -991,7 +842,7 @@ public class SudokuModel {
 	for(int i=0; i<9; i++){
 	    for(int j=0; j<9; j++){
 		Timer timerFadeIn = theGrid.sudokuCells[i][j].getTimerFadeIn();
-		timers81.add(timerFadeIn); //timer 2 = fadein
+		timers81.add(timerFadeIn);
 		theGrid.sudokuCells[i][j].fadeIn();
 		timerFadeIn.start();
 	    }
@@ -1017,12 +868,9 @@ public class SudokuModel {
 	
 	if(timers.size() == 1){ // if this is the only timer, start it
 	    // otherwise let another timer start this one when it finishes
-	    //System.out.println("Fadeout model timers = 1, start level");
 	    for(Timer t:timers.get(0)){
 		t.start();
 	    }
-	} else {
-	    //System.out.println("Fade in blocked by other animation");
 	}
 
 	return timers81;
@@ -1038,7 +886,7 @@ public class SudokuModel {
 	}
     }
     
-    public ArrayList<Timer> fadeInGraph(){ ///////// COMASEAZA ASTA
+    public ArrayList<Timer> fadeInGraph(){
 	ArrayList<Timer> timers81 = new ArrayList<Timer>();
 
 	//////// adding the circles
@@ -1061,18 +909,15 @@ public class SudokuModel {
 	
 	if(timers.size() == 1){ // if this is the only timer, start it
 	    // otherwise let another timer start this one when it finishes
-	    //System.out.println("Fadeout model timers = 1, start level");
 	    for(Timer t:timers.get(0)){
 		t.start();
 	    }
-	} else {
-	    //System.out.println("Fade in blocked by other animation");
 	}
 
 	return timers81;
     }
 
-    public void fadeInGraphNow(){ ///////// COMASEAZA ASTA
+    public void fadeInGraphNow(){
 	for(int i = 0; i <11; i++){
 	    theGrid.valueCircles[i].setAlphaOne();
 	}
@@ -1080,7 +925,6 @@ public class SudokuModel {
 	viewController.theEdges.setAlphaOne();
     }
     
-    // TODO: USES WORLDPEEK() ; DO YOU WANT OLDER ONES?
     public ArrayList<Integer> getPossibleValues(int i, int j){
 	ArrayList<Integer> possibleValues = new ArrayList<Integer>();
 	if(worldPeek() != null){
@@ -1205,15 +1049,15 @@ public class SudokuModel {
     }
 
     public ArrayList<Timer> moveColumn(int column, boolean movingToTheRight){
-	return theGrid.moveColumn(column, movingToTheRight); // i don't like this
+	return theGrid.moveColumn(column, movingToTheRight);
     }
 
     public ArrayList<Timer> moveRow(int row, boolean movingToTheRight){
-	return theGrid.moveRow(row, movingToTheRight); // i don't like this
+	return theGrid.moveRow(row, movingToTheRight);
     }
 
     public ArrayList<Timer> moveBlock(int block, boolean movingToTheRight){
-	return theGrid.moveBlock(block, movingToTheRight); // i don't like this
+	return theGrid.moveBlock(block, movingToTheRight);
     }
 
     public void setViewController(ViewController vc){
@@ -1260,23 +1104,17 @@ public class SudokuModel {
 	
 
 	if(selectionType == 0){ //row
-	    //theModel.fadeOutAllExceptRow(number);
 	    sameLevelTimers = moveRow(number, true);
 	}
 	    
 	if(selectionType == 1){ //column
-	    //theModel.fadeOutAllExceptColumn(number);
 	    sameLevelTimers = moveColumn(number, true);
 	}
 	    
 	if(selectionType == 2){ //block
-	    //theModel.fadeOutAllExceptBlock(number);
 	    sameLevelTimers = moveBlock(number, true);
 	}
 	    
-	//theModel.viewController.theEdges.setAlphaOne();
-	//theModel.viewController.theEdges.repaint();
-
 	ifNotAnimatingThenWait();
 	
 	synchronized (sameLevelTimers) {
@@ -1449,45 +1287,12 @@ public class SudokuModel {
 	referenceToMain.currentStepStatusLabel.setText(value);
     }
 
-    public static int getMaxFittingFontSize(String text, Font font, Component comp, int compWidth, int compHeight){
-	
-	//int compWidth = comp.getSize().width;
-	//int compHeight = comp.getSize().height;
-	/*
-	int width = compWidth;
-	int height = compHeight;
-	
-	int minSize = 0;
-	int maxSize = 288;
-	int curSize = font.getSize();
-
-	while (maxSize - minSize > 2){
-	    FontMetrics fm = comp.getFontMetrics(new Font(font.getName(), font.getStyle(), curSize));
-	    int fontWidth = fm.stringWidth(text);
-	    int fontHeight = fm.getLeading() + fm.getMaxAscent() + fm.getMaxDescent();
-	    
-	    if ((fontWidth > width) || (fontHeight > height)){
-		maxSize = curSize;
-		curSize = (maxSize + minSize) / 2;
-	    }
-	    else{
-		minSize = curSize;
-		curSize = (minSize + maxSize) / 2;
-	    }
-	}
-
-	System.out.println(text + ": " + curSize);
-
-	return curSize;
-	*/
-	
+    public static int getMaxFittingFontSize(String text, Font font, Component comp, int compWidth, int compHeight){	
 	int stringWidth = comp.getFontMetrics(font).stringWidth(text);
 	double widthRatio = (double)compWidth / (double)stringWidth;
 	int newFontSize = (int)(font.getSize() * widthRatio);
 	int fontSizeToUse = Math.min(newFontSize, compHeight);
 
-	//System.out.println(text + "\n" + compWidth + " " + compHeight + " " + stringWidth + " " + widthRatio + " " + newFontSize + " " + fontSizeToUse);
-	
 	return (int)(fontSizeToUse / 1.75);
     }
 }

@@ -44,13 +44,13 @@ public class Var {
 	    if(value-1!=i){
 		domain.clear(i);
 	    }
-	    if(value-1==i){ // TEST THIS, SHOULD WORK FINE
+	    if(value-1==i){
 		domain.set(i);
 	    }
 	}
     }
 
-    public void eliminateAll(){ // TEST THIS, SHOULD WORK FINE
+    public void eliminateAll(){
 	for(int i=domain.nextSetBit(0);i>=0;i=domain.nextSetBit(i+1)){
 	    domain.clear(i);
 	}

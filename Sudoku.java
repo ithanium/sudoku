@@ -149,7 +149,7 @@ public class Sudoku{
 	mainFrame.setJMenuBar(jMenuBar);
 	
 	JPanel theGridPlaceHolder = new JPanel();
-	theGridPlaceHolder.setSize(1250, 725); /////// CHECK THE SIZES
+	theGridPlaceHolder.setSize(1250, 725);
 
 	ViewController vc = new ViewController(theModel);
 	
@@ -162,15 +162,7 @@ public class Sudoku{
 	openFileButton = new JButton("Open");
 	openFileButton.addActionListener(new MouseListener());
 	buttonHolders.add(openFileButton);
-	/*
-	pauseButton = new JButton("Pause");
-	pauseButton.addActionListener(new MouseListener());
-	buttonHolders.add(pauseButton);
 
-	playButton = new JButton("Play");
-	playButton.addActionListener(new MouseListener());
-	buttonHolders.add(playButton);
-	*/
 	playPauseButton = new JButton("Pause");
 	playPauseButton.addActionListener(new MouseListener());
 	buttonHolders.add(playPauseButton);
@@ -242,7 +234,7 @@ public class Sudoku{
     }
     
     public static void main(String args[]){
-    	//System.setProperty("J2D_D3D", "false");
+
 	if(args.length > 0){
 	    if(args[0].compareTo("debug") == 0 || args[0].compareTo("DEBUG") == 0){
 		DEBUG.setValue(true);
@@ -273,7 +265,7 @@ public class Sudoku{
 	int SLEEP_BETWEEN_STEPS_THE_EDGES_MAX = 0;    // sleep thread when drawing
 	float DELTA_SUDOKU_CELLS_MIN = 0.01f;         // for fade out/fade in alpha
 	float DELTA_SUDOKU_CELLS_MAX = 1f;            // for fade out/fade in alpha
-	float DELTA_THE_GRID_MIN = 0.5f;                // move cells right by delta
+	float DELTA_THE_GRID_MIN = 0.5f;              // move cells right by delta
 	float DELTA_THE_GRID_MAX = 200f;              // move cells right by delta
 	float DELTA_THE_EDGES_MIN = 0.01f;            // for fade out/fade in alpha
 	float DELTA_THE_EDGES_MAX = 1f;               // for fade out/fade in alpha
@@ -288,18 +280,7 @@ public class Sudoku{
 	float DELTA_THE_GRID = SPEED / 100 * (DELTA_THE_GRID_MAX - DELTA_THE_GRID_MIN) + DELTA_THE_GRID_MIN;
 	float DELTA_THE_EDGES = SPEED / 100 * (DELTA_THE_EDGES_MAX - DELTA_THE_EDGES_MIN) + DELTA_THE_EDGES_MIN;
 	float DELTA_VALUE_CIRCLES = SPEED / 100 * (DELTA_VALUE_CIRCLES_MAX - DELTA_VALUE_CIRCLES_MIN) + DELTA_VALUE_CIRCLES_MIN;
-	/*
-	System.out.println();
-	System.out.println("SPEED: " + SPEED);
-	System.out.println("SLEEP: " + SLEEP);
-	System.out.println("SLEEP_BETWEEN_STEPS: " + SLEEP_BETWEEN_STEPS);
-	System.out.println("SLEEP_THE_EDGES: " + SLEEP_THE_EDGES);
-	System.out.println("SLEEP_BETWEEN_STEPS_THE_EDGES: " + SLEEP_BETWEEN_STEPS_THE_EDGES);
-	System.out.println("DELTA_SUDOKU_CELLS: " + DELTA_SUDOKU_CELLS);
-	System.out.println("DELTA_THE_GRID: " + DELTA_THE_GRID);
-	System.out.println("DELTA_THE_EDGES: " + DELTA_THE_EDGES);
-	System.out.println("DELTA_VALUE_CIRCLES: " + DELTA_VALUE_CIRCLES);
-	*/
+
 	theModel.SLEEP = SLEEP;
 	theModel.SLEEP_BETWEEN_STEPS = SLEEP_BETWEEN_STEPS;
 	theModel.viewController.theEdges.SLEEP = SLEEP_THE_EDGES;
@@ -320,10 +301,6 @@ public class Sudoku{
 	}
 
     }
-    
-    // make sudoku.java implement changelistener and actionlistener
-    // and just write the methods
-    // with this as a listener
     
     private class MyChangeListener implements ChangeListener{
 	
@@ -449,9 +426,6 @@ public class Sudoku{
 
 	    // Handle backtrack solve button
 	    if (e.getSource() == backtrackButton) {
-		//allDifferentButton.setEnabled(false);
-		//deselectButton.setEnabled(true);
-
 		// escape from EDT
 		Thread t = new Thread(new Runnable() {
 			@Override
@@ -516,9 +490,6 @@ public class Sudoku{
 	    
 	    // Handle solve choco3 button
 	    if (e.getSource() == choco3Button) {
-		//allDifferentButton.setEnabled(false);
-		//deselectButton.setEnabled(true);
-
 		// escape from EDT
 		Thread th = new Thread(new Runnable() {
 			@Override
@@ -557,7 +528,6 @@ public class Sudoku{
 	    // Handle showDemoButton button
 	    if (e.getSource() == showDemoButton){
 		playPauseButton.setEnabled(true);
-		//System.out.println("EDT? " + SwingUtilities.isEventDispatchThread() + " " + Thread.currentThread().getId() + " " + new Throwable().getStackTrace()[0].getClassName() + " " + new Throwable().getStackTrace()[0].getLineNumber());
 
 		// escape from EDT
 		Thread th = new Thread(new Runnable() {
@@ -603,10 +573,6 @@ public class Sudoku{
 			    theModel.allDifferent();
 			    theModel.deselect();
 			    
-			    //
-			    // make buttons selectable/deselectable
-			    //
-			    
 			    theModel.select(5, 0); // 6th, type 0 for row
 			    theModel.allDifferent();
 			    theModel.deselect();
@@ -617,7 +583,6 @@ public class Sudoku{
 			    
 			    theModel.select(0, 1); // 1st, type 1 for column
 			    theModel.allDifferent();
-			    //theModel.deselect();
 			    
 			    theModel.fadeInGridNow();
 			    

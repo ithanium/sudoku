@@ -3,13 +3,12 @@ import java.util.*;
 public class SudokuWorld{
     public Var[][] grid = new Var[9][9];
     public ArrayList<Constraint> constraints = new ArrayList<Constraint>();
-    public SudokuGrid sudokuGrid; // GUI // TODO SHOULD I REMOVE LINK TO GUI?
+    public SudokuGrid sudokuGrid;
     
     SudokuWorld(){
 	for(int i = 0; i<9; i++){
 	    for(int j=0; j<9; j++){
 		this.grid[i][j] = new Var(i + "" + j, 9);
-		// did I forget to add the constraints as well?
 	    }
 	}
     }
@@ -43,7 +42,6 @@ public class SudokuWorld{
 	for(int i=0; i<9; i++){
 	    for(int j=0; j<9; j++){
 		if(this.grid[i][j].name.compareTo(name) == 0){
-		    //System.out.println(name);
 		    return this.grid[i][j];
 		}
 	    }

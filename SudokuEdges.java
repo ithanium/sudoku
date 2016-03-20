@@ -10,10 +10,10 @@ public class SudokuEdges extends JPanel implements ActionListener {
     public SudokuModel theModel;
 
     public float DELTA = 0.01f;
-    public ArrayList<Timer> fadeOutTimers = new ArrayList<Timer>(); //fadeOut
-    public ArrayList<Timer> fadeInTimers = new ArrayList<Timer>(); //fadeIn
+    public ArrayList<Timer> fadeOutTimers = new ArrayList<Timer>();
+    public ArrayList<Timer> fadeInTimers = new ArrayList<Timer>();
 
-    public Timer timerSolve; // I THINK WE DO NOT NEED THIS
+    public Timer timerSolve;
     
     private float alpha = 1f;
     private float fadeOutMinimum = 0f;
@@ -158,7 +158,6 @@ public class SudokuEdges extends JPanel implements ActionListener {
 	    x2 = 600;
 	    y2 = (i) * 50 + (i)*distanceBetweenCells_y;
 
-	    // was 25 all four
 	    x1 += 50; 
 	    x2 += 0;
 	    y1 += 25;
@@ -166,10 +165,6 @@ public class SudokuEdges extends JPanel implements ActionListener {
 
 	    u = 0;
 	    v = i + 1;
-
-	    if(drawColor(u, v) == Color.WHITE){
-		//continue;
-	    }
 
 	    g2d.setColor(drawColor(u, v));
 	    g2d.draw(new Line2D.Float(x1, y1, x2, y2));
@@ -191,10 +186,6 @@ public class SudokuEdges extends JPanel implements ActionListener {
 
 	    u = i + 9 + 1;
 	    v = 19;
-
-	    if(drawColor(u, v) == Color.WHITE){
-		//continue;
-	    }
 		    
 	    g2d.setColor(drawColor(u, v));
 	    g2d.draw(new Line2D.Float(x1, y1, x2, y2));
@@ -203,11 +194,6 @@ public class SudokuEdges extends JPanel implements ActionListener {
 	for(int i=0; i<9; i++){
 	    for(int j=0; j<9; j++){
 		if(theModel.theGrid.sudokuCells3Now[i] == null){
-		    // TODO
-		    // I used this because sometimes on high speed
-		    // we get an exception below due to null pointer
-		    //
-		    // CHECK
 		    return;
 		}
 		
@@ -229,17 +215,11 @@ public class SudokuEdges extends JPanel implements ActionListener {
 
 		u = i + 1;
 		v = j + 9 + 1;
-
-		if(drawColor(u, v) == Color.WHITE){
-		    //continue;
-		}
 			    
 		g2d.setColor(drawColor(u, v));
-		//g2d.setColor(Color.BLACK);
 		g2d.draw(new Line2D.Float(x1, y1, x2, y2));
 	    }
 	}
-	/////// end adding the lines
     }
 
     @Override
@@ -270,15 +250,13 @@ public class SudokuEdges extends JPanel implements ActionListener {
 		};
 	    
 	    worker.execute();
-	    /////////////////////////////////////////////////////////
 	    
-	    thisTimer.stop(); // STOP IT, START THE NEXT ONE IN QUEUE
+	    thisTimer.stop();
 	    theModel.removeTimer(thisTimer);
 	    theModel.startNextTimers();
 	}
 	
 	if(fadeOutTimers.contains(thisTimer)){
-	    //System.out.println("Fadeing out timer");
 	    alpha -= DELTA;
 	    
 	    if (alpha <= fadeOutMinimum) {
@@ -286,12 +264,11 @@ public class SudokuEdges extends JPanel implements ActionListener {
 
 		fadeOutTimers.remove(thisTimer);
 		
-		thisTimer.stop(); // STOP IT, START THE NEXT ONE IN QUEUE
+		thisTimer.stop();
 		theModel.removeTimer(thisTimer);
 		theModel.startNextTimers();
 	    }
 	} else if(fadeInTimers.contains(thisTimer)){
-	    //System.out.println("Fading in timer");
 	    alpha += DELTA;
 	    
 	    if (alpha >= 1) {
@@ -299,7 +276,7 @@ public class SudokuEdges extends JPanel implements ActionListener {
 
 		fadeInTimers.remove(thisTimer);
 		
-		thisTimer.stop(); // STOP IT, START THE NEXT ONE IN QUEUE
+		thisTimer.stop();
 		theModel.removeTimer(thisTimer);
 		theModel.startNextTimers();
 	    }
@@ -334,21 +311,18 @@ public class SudokuEdges extends JPanel implements ActionListener {
     public void fadeOut(){
 	fadingOut = true;
 	fadeOutMinimum = 0f;
-	//timer1.start(); KEEP IT DELETED	
     }
 
     public void fadeOutALittle(){
 	fadeOutMinimum = 0.30f;
-	//timer1.start(); KEEP IT DELETED
     }
     
     public void fadeIn(){
 	fadingOut = false;
-        //timer2.start(); KEEP IT DELETED
     }
 
     public Timer getTimerFadeOut(){
-	Timer timer1 = new Timer(10, null); //fadeOut
+	Timer timer1 = new Timer(10, null);
 	timer1.setInitialDelay(100);
         timer1.addActionListener(this);
 	timer1.setCoalesce(false);
@@ -359,7 +333,7 @@ public class SudokuEdges extends JPanel implements ActionListener {
     }
 
     public Timer getTimerFadeIn(){
-	Timer timer2 = new Timer(10, null); //fadeOut
+	Timer timer2 = new Timer(10, null);
 	timer2.setInitialDelay(100);
         timer2.addActionListener(this);
 	timer2.setCoalesce(false);
@@ -390,7 +364,8 @@ public class SudokuEdges extends JPanel implements ActionListener {
 	}
     }
 
-    public void drawBlack(int u, int v){ // special as it doesn't repaint/sleep
+    public void drawBlack(int u, int v){
+	// special as it doesn't repaint/sleep
 	edgeColors[u][v] = Color.BLACK;
     }
     
@@ -587,7 +562,7 @@ public class SudokuEdges extends JPanel implements ActionListener {
 	
 	for(int i=0; i<20; i++){
 	    for(int j=0; j<20; j++){
-		if(/*j<10 || i>9 || */edgeColors[i][j] == Color.BLACK){
+		if(edgeColors[i][j] == Color.BLACK){
 		    edgeColors[i][j] = Color.LIGHT_GRAY;
 		}
 	    }

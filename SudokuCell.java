@@ -10,7 +10,7 @@ public class SudokuCell extends JPanel implements ActionListener{
     String valuesText = new String();
     public SudokuModel theModel;
 
-    private static final int SIZE = 50; // TODO change name
+    private static final int SIZE = 50;
     protected static final String NEWLINE = System.getProperty("line.separator");
     
     public float DELTA = 0.01f;
@@ -43,8 +43,6 @@ public class SudokuCell extends JPanel implements ActionListener{
 	setLayout(new GridBagLayout());
 	setPreferredSize(new Dimension(50, 50));
 
-	//add(valuesLabel);
-
 	this.i = i;
 	this.j = j;
 
@@ -71,10 +69,6 @@ public class SudokuCell extends JPanel implements ActionListener{
     }
 
     public void setValuesLabel(String valuesText){
-	//SwingUtilities.invokeLater(new Runnable() {
-	//	public void run() {
-		    //System.out.println("TEST X0");
-		    //System.out.println("Should be true " + SwingUtilities.isEventDispatchThread());
 		    valuesLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		    valuesLabel.setVerticalAlignment(SwingConstants.CENTER);
 		    
@@ -87,37 +81,19 @@ public class SudokuCell extends JPanel implements ActionListener{
 			    valuesLabel.setText(" ");
 			}
 
-			// TODO DISSERTATION
-			// NUMBERS ARE HARDCODED BECAUSE
-			// FONT FORMATING RETURNS SAME THING ON ALL PLATFORMS
-			// EVEN THOUGH FONTS LOOK DIFFERENT
 			fontSize = fontSizeLarge;
-			//fontSize = theModel.getMaxFittingFontSize("9", theFont, valuesLabel, 50, 50);
-
 			valuesLabel.setFont(new Font("Serif", Font.PLAIN, fontSize));
-
-			//valuesLabel.repaint();
 		    } else {
 			// More choices available
 			valuesLabel.setText(valuesText);
 			
 			fontSize = fontSizeSmall;
-			//fontSize = theModel.getMaxFittingFontSize("1 2 3", theFont, valuesLabel, 50, 50);
-			//System.out.println("fontSize: " + fontSize);
-			
 			valuesLabel.setFont(new Font("Serif", Font.PLAIN, fontSize));
-			//valuesLabel.repaint();
-			
 		    }
-		    //		}
-    //  });
-
     }
 
-    //TODO, not necessary to return something
     public String formatPossibleValues(){
 	// first refresh the values
-	//System.out.println(theModel);
 	ArrayList<Integer> possibleValues = theModel.getPossibleValues(i, j);
 	
 	if(possibleValues.size() == 1){
@@ -128,29 +104,22 @@ public class SudokuCell extends JPanel implements ActionListener{
 	}
 
 	StringBuilder sb = new StringBuilder();
-	//	sb.append("<html><div style=\"text-align: center; padding-top: " + paddingTop + "px; padding-left: " + paddingLeft + "px;\">");
 	for(int i=1; i<=9; i++){
 	    if(possibleValues.contains(i)){
-		//sb.append(i + "&nbsp;");
 		if(i != 3 && i != 6 && i !=9){
 		    sb.append(i + " ");
 		} else {
 		    sb.append(i);
 		}
 	    } else {
-		//sb.append("&nbsp;&nbsp;&nbsp;");
-		//sb.append("&nbsp;&nbsp;");
 		sb.append(" ");
 		sb.append(" ");
 	    }
 	    
 	    if(i%3 == 0){
-		//sb.append("<br>");
 		sb.append(NEWLINE);
 	    }
 	}
-	
-	//sb.append("</div></html>");
 
 	valuesText = sb.toString();
 	repaint();
@@ -227,11 +196,6 @@ public class SudokuCell extends JPanel implements ActionListener{
 	    if(this.j % 9 == 8){right = 8;}
 	}	 
 
-	//THIS DIDN'T WORK ON WINDOWS
-	//KEEP THIS TO WRITE IN DISSERTATION
-	//TODO:
-	//setBorder(BorderFactory.createMatteBorder(top, left, bottom, right, prevColor));
-
 	int x_offset = 0;
 	int y_offset = 0;
 	
@@ -289,12 +253,6 @@ public class SudokuCell extends JPanel implements ActionListener{
 	Font f = new Font("Serif", Font.PLAIN, fontSize);
 	g2d.setFont(f);
 	g2d.setColor(fontColor);
-	//System.out.println("i: " + i + " j: " + j + " left: " + left + " right: " + right + " top: " + top + " bottom: " + bottom);
-	//int text_xpos = (50 - left/2 - right/4)/2 - g2d.getFontMetrics().stringWidth((valuesText.length()<=1?valuesText:"1 2 3"))/2;
-	//int text_ypos = (50 - top/4 - bottom/2)/2 - g2d.getFontMetrics().getHeight()*valuesText.split(NEWLINE).length/2;
-
-	//int text_xpos = (50 - left - right - g2d.getFontMetrics().stringWidth((valuesText.length()<=1?valuesText:"1 2")))/2;
-	//int text_ypos = (50 - top - bottom - g2d.getFontMetrics().getHeight()*valuesText.split(NEWLINE).length)/2;
 
         int text_xpos = (50 - right - stringWidth)/2;
 	int text_ypos = (50 - bottom - stringHeight)/2;
@@ -323,7 +281,6 @@ public class SudokuCell extends JPanel implements ActionListener{
 	theModel.stopAllTimersOnDiffLevelComparedTo(thisTimer);
 
 	if(fadeOutTimers.contains(thisTimer)){
-	    //System.out.println("Fadeing out timer");
 	    alpha -= DELTA;
 	    
 	    if (alpha <= fadeOutMinimum) {
@@ -331,12 +288,11 @@ public class SudokuCell extends JPanel implements ActionListener{
 
 		fadeOutTimers.remove(thisTimer);
 		
-		thisTimer.stop(); // STOP IT, START THE NEXT ONE IN QUEUE
+		thisTimer.stop();
 		theModel.removeTimer(thisTimer);
 		theModel.startNextTimers();
 	    }
 	} else if(fadeInTimers.contains(thisTimer)){
-	    //System.out.println("Fading in timer");
 	    alpha += DELTA;
 	    
 	    if (alpha >= 1) {
@@ -344,7 +300,7 @@ public class SudokuCell extends JPanel implements ActionListener{
 
 		fadeInTimers.remove(thisTimer);
 		
-		thisTimer.stop(); // STOP IT, START THE NEXT ONE IN QUEUE
+		thisTimer.stop();
 		theModel.removeTimer(thisTimer);
 		theModel.startNextTimers();
 	    }
@@ -378,13 +334,10 @@ public class SudokuCell extends JPanel implements ActionListener{
     
     public void fadeOut(){
 	fadeOutMinimum = 0f;
-	//timer1.start(); KEEP IT DELETED	
     }
 
     public void fadeOutALittle(){
 	fadeOutMinimum = 0.30f;
-	//theModel.timers.add(timer);/////////////////////////////////
-	//timer1.start(); KEEP IT DELETED
     }
     
     public void fadeIn(){
@@ -396,13 +349,9 @@ public class SudokuCell extends JPanel implements ActionListener{
 
     public void setNoBoldBorder(){
 	noBoldBorder = true;
-	//Color prevColor = new Color(Color.BLACK.getRed(), Color.BLACK.getGreen(), Color.BLACK.getBlue(), (int)(alpha*255));
-	//setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, prevColor));
-	//repaint();
     }
 
     public void setNotInTheGrid(){
-
 	// this means this cell is in the right of the screen
 	// use this in order to assign new click actions
 	// in sudoku cell listener
@@ -410,7 +359,7 @@ public class SudokuCell extends JPanel implements ActionListener{
     }
 
     public Timer getTimerFadeOut(){
-	Timer timer1 = new Timer(10, null); //fadeOut
+	Timer timer1 = new Timer(10, null);
 	timer1.setInitialDelay(100);
         timer1.addActionListener(this);
 	timer1.setCoalesce(false);
@@ -421,7 +370,7 @@ public class SudokuCell extends JPanel implements ActionListener{
     }
 
     public Timer getTimerFadeIn(){
-	Timer timer2 = new Timer(10, null); //fadeOut
+	Timer timer2 = new Timer(10, null);
 	timer2.setInitialDelay(100);
         timer2.addActionListener(this);
 	timer2.setCoalesce(false);

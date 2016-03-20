@@ -67,7 +67,7 @@ public class Tarjan {
 	// END INIT UNIVERSITY COLORS
 	
 	this.A = A;
-	this.n = n; // 18 vertices = 9 + 9
+	this.n = n;
 
 	S = new Stack<Integer>();
 	stacked = new boolean[n];
@@ -94,7 +94,7 @@ public class Tarjan {
 	for(int i=0; i<A[u].length; i++){
 	    int w = A[u][i];
 
-	    if(w == 1 && u!=i){ //// u!=i !!!!
+	    if(w == 1 && u!=i){
 		if(!stacked[i]){
 		    dfs(i);
 		}
@@ -158,8 +158,6 @@ public class Tarjan {
 	    
             for (int v : components.get(i)) {
 
-		//TODO: how to make it in one call?
-		//setCurrentStepStatusLabel("Component " + i + ": " + v + " ");
                 if(DEBUG.getValue()){System.out.print(v + " ");}
 		if(v < 9){
 		    // dealing with a var on the left
@@ -171,7 +169,7 @@ public class Tarjan {
 		    theModel.theGrid.valueCircles[v-9 + 1].setFontColor(universityFontColors.get(i));
 		}
 
-		theModel.viewController.theEdges.repaint(); // !! otherwise we get strange background
+		theModel.viewController.theEdges.repaint();
 	    }
 	    
             if(DEBUG.getValue()){System.out.println();}

@@ -6,7 +6,7 @@ public class Constraint {
     Var v1;
     boolean[][] relation;
     Var v2;
-    boolean flag; // to be used as deemed fit!
+    boolean flag;
 
     Constraint (Var v1,boolean[][] relation,Var v2,String name){
 	this.v1       = v1;
@@ -24,8 +24,6 @@ public class Constraint {
 	this.name = new String(oldC.name);
 	flag = false;
 	v2.constraints.add(this);
-
-	//v2.constraints.remove(oldC); //? TODO: ????????????? should I?
     }
     
     public boolean revise(){ // reminder, only first domain is checked
@@ -39,15 +37,13 @@ public class Constraint {
 	for (int i=dom1.nextSetBit(0);i>=0;i=dom1.nextSetBit(i+1)){
 	    boolean consistent = false;
 	    // when consistent is true, !consistent is false and breaks one loop
-	    //System.out.println();
 	    for (int j=dom2.nextSetBit(0);j>=0 && !consistent;j=dom2.nextSetBit(j+1)){
 		consistent = relation[i][j];
-		//System.out.print(consistent + " ");
 	    }
 	    // still part of the first loop
 	    if (!consistent){v1.domain.set(i,false); change = true;}
 	}
-	//if (change) for (Constraint c : v1.constraints) revise(c);
+
 	return change;
     }
 
