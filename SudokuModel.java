@@ -171,7 +171,10 @@ public class SudokuModel {
 	
 	for(int i=0; i<9; i++){
 	    for(int j=0; j< 9; j++){
-		
+		if(theModel.theGrid.sudokuCells3Now[i] == null){
+		    return;
+		}
+
 		// from VAR i to VALUE j
 		int shown_x = theGrid.sudokuCells3Now[i].i;
 		int shown_y = theGrid.sudokuCells3Now[i].j;
